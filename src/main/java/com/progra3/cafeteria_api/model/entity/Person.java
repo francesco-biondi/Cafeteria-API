@@ -1,11 +1,13 @@
 package com.progra3.cafeteria_api.model.entity;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
+@NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
+@Data
+@SuperBuilder
 public class Person {
-    private final Long id;
+    private Long id;
     private String name;
     private String lastName;
     private String dni;
