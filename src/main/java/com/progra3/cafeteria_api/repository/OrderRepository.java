@@ -11,5 +11,5 @@ import java.util.List;
 public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByEmployeeId(Long employeeId) throws OrderNotFoundException;
     List<Order> findByCustomerId(Long customerId) throws OrderNotFoundException;
-    List<Order> findByTableId(Long tableId) throws OrderNotFoundException;
+    List<Order> findByTableSlotId(Long tableId) throws OrderNotFoundException;
 }

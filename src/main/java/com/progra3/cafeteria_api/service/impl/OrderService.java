@@ -65,7 +65,7 @@ public class OrderService implements IOrderService {
 
     @Override
     public List<OrderResponseDTO> getByTable(Long tableId) {
-        return orderRepository.findByTableId(tableId)
+        return orderRepository.findByTableSlotId(tableId)
                 .stream()
                 .map(orderMapper::toDTO)
                 .toList();
