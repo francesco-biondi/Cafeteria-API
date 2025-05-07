@@ -1,10 +1,11 @@
 package com.progra3.cafeteria_api.model.dto;
 
+import jakarta.validation.constraints.*;
 import lombok.Builder;
-import lombok.Data;
 
-@Data
 @Builder
-public class TableSlotRequestDTO {
-    private String name;
-}
+public record TableSlotRequestDTO (
+        @NotNull(message = "Name cannot be null")
+        @NotBlank(message = "Name cannot be blank")
+        String name
+){}

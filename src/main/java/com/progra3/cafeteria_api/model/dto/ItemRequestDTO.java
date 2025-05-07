@@ -1,13 +1,18 @@
 package com.progra3.cafeteria_api.model.dto;
 
+import jakarta.validation.constraints.*;
 import lombok.Builder;
-import lombok.Data;
 
 @Builder
-@Data
-public class ItemRequestDTO {
-    private Long orderId;
-    private Long productId;
-    private Integer quantity;
-    private String comment;
-}
+public record ItemRequestDTO(
+        @NotNull(message = "orderId cannot be null")
+        Long orderId,
+
+        @NotNull(message = "productId cannot be null")
+        Long productId,
+
+        @Min(value = 1, message = "Minimum quantity is 1")
+        Integer quantity,
+
+        String comment
+) {}

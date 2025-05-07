@@ -1,25 +1,23 @@
 package com.progra3.cafeteria_api.model.dto;
 
 import lombok.Builder;
-import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
 @Builder
-@Data
-public class OrderResponseDTO {
-    private Long id;
-    private String employeeName;
-    private String customerName;
-    private Integer table;
-    private List<ItemResponseDTO> items;
-    private LocalDate date;
-    private LocalTime time;
-    private Integer peopleCount;
-    private Double discount;
-    private String status;
-    private Double subtotal;
-    private Double total;
-}
+public record OrderResponseDTO (
+    Long id,
+    String employeeName,
+    String customerName,
+    Integer table,
+    List<ItemResponseDTO> items,
+    LocalDate date,
+    LocalTime time,
+    Integer peopleCount,
+    Double discount,
+    String status,
+    Double subtotal,
+    Double total
+){}
