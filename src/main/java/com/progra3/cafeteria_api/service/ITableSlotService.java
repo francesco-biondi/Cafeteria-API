@@ -12,7 +12,7 @@ public interface ITableSlotService {
     TableSlotResponseDTO getById(Long id);
     TableSlot getEntityById(Long id);
     List<TableSlotResponseDTO> getAll();
-    TableSlotResponseDTO update(Long id, TableSlotRequestDTO tableSlotRequestDTO);
+    TableSlotResponseDTO updateName(Long id, TableSlotRequestDTO tableSlotRequestDTO);
     void updateStatus(Long id, TableSlotStatus status);
     void delete(Long id);
     TableSlotResponseDTO getByName(String name);

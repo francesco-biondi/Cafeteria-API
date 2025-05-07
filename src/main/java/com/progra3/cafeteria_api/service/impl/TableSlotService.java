@@ -50,7 +50,7 @@ public class TableSlotService implements ITableSlotService {
     }
 
     @Override
-    public TableSlotResponseDTO update(Long id, TableSlotRequestDTO tableSlotRequestDTO) {
+    public TableSlotResponseDTO updateName(Long id, TableSlotRequestDTO tableSlotRequestDTO) {
         TableSlot tableSlot = getEntityById(id);
         tableSlot.setName(tableSlotRequestDTO.getName());
 
