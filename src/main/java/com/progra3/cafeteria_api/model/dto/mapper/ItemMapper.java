@@ -1,0 +1,30 @@
+package com.progra3.cafeteria_api.model.dto.mapper;
+
+import com.progra3.cafeteria_api.model.dto.ItemRequestDTO;
+import com.progra3.cafeteria_api.model.dto.ItemResponseDTO;
+import com.progra3.cafeteria_api.model.entity.Item;
+import com.progra3.cafeteria_api.model.entity.Order;
+import org.springframework.stereotype.Component;
+
+@Component
+public class ItemMapper {
+    public ItemResponseDTO toDTO(Item item) {
+        return ItemResponseDTO.builder()
+                .id(item.getId())
+                .orderId(item.getOrder().getId())
+                .productName(item.getProduct().getName())
+                .unitPrice(item.getUnitPrice())
+                .quantity(item.getQuantity())
+                .build();
+    }
+
+    public Item toEntity(ItemRequestDTO dto, Product product, Order order) {
+        return Item.builder()
+                .product(product)
+                .order(order)
+                .comment(dto.getComment())
+                .quantity(dto.getQuantity())
+                .unitPrice(product.getPrice())
+                .build();
+    }
+}
