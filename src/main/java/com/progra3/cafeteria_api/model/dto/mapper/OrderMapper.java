@@ -16,6 +16,7 @@ import java.time.LocalTime;
 @RequiredArgsConstructor
 public class OrderMapper {
     private final Clock clock;
+    private final ItemMapper itemMapper;
 
     public OrderResponseDTO toDTO(Order order) {
         return OrderResponseDTO.builder()
@@ -25,7 +26,7 @@ public class OrderMapper {
                 .table(order.getTable().getNumber())
                 .items(order.getItems()
                         .stream()
-                        .map(ItemMapper::toDTO)
+                        .map(itemMapper::toDTO)
                         .toList())
                 .date(order.getDate())
                 .time(order.getTime())

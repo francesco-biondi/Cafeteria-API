@@ -9,6 +9,7 @@ import com.progra3.cafeteria_api.model.entity.Item;
 import com.progra3.cafeteria_api.model.entity.Order;
 import com.progra3.cafeteria_api.model.entity.TableSlot;
 import com.progra3.cafeteria_api.model.enums.OrderStatus;
+import com.progra3.cafeteria_api.model.enums.TableSlotStatus;
 import com.progra3.cafeteria_api.repository.OrderRepository;
 import com.progra3.cafeteria_api.service.IOrderService;
 import lombok.RequiredArgsConstructor;
@@ -79,34 +80,44 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public void applyDiscount(Long orderId, Double discount) {
+    public OrderResponseDTO update(Long orderId, OrderRequestDTO dto) throws OrderNotFoundException, IllegalStateException {
+        Order order = getEntityById(orderId);
+
+        validateOrderStatus(order);
+
+        order.setEmployee(employeeService.getEntityById(dto.getEmployeeId()).orElse(null));
+        order.setCustomer(customerService.getEntityById(dto.getCustomerId()).orElse(null));
+        order.setTableSlot(tableSlotService.getEntityById(dto.getTableId()));
+        order.setPeopleCount(dto.getPeopleCount());
+
+        recalculate(order);
+
+        return orderMapper.toDTO(orderRepository.save(order));
+    }
+
+    @Override
+    public OrderResponseDTO updateDiscount(Long orderId, Double discount) {
         Order order = getEntityById(orderId);
 
         validateOrderStatus(order);
 
         applyDiscount(order, discount);
 
-        orderRepository.save(order);
-    }
-
-    @Override
-    public OrderResponseDTO cancel(Long orderId) {
-        Order order = getEntityById(orderId);
-
-        validateOrderStatus(order);
-        order.setStatus(OrderStatus.CANCELED);
-        order.getItems().forEach(item -> item.setDeleted(true));
-
         return orderMapper.toDTO(orderRepository.save(order));
     }
 
     @Override
-    public OrderResponseDTO finalizeOrder(Long orderId) {
-        Order order = getEntityById(orderId);
+    public OrderResponseDTO updateStatus(Long id, OrderStatus status){
+        Order order = getEntityById(id);
+
+        if (status.equals(OrderStatus.BILLED))
+            tableSlotService.updateStatus(order.getTableSlot().getId(), TableSlotStatus.BILLING);
+        else
+            tableSlotService.updateStatus(order.getTableSlot().getId(), TableSlotStatus.FREE);
 
         validateOrderStatus(order);
 
-        order.setStatus(OrderStatus.FINALIZED);
+        order.setStatus(status);
 
         return orderMapper.toDTO(orderRepository.save(order));
     }
@@ -129,7 +140,7 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public void removeItem(Long orderId, Long itemId) {
+    public ItemResponseDTO removeItem(Long orderId, Long itemId) {
         Order order = getEntityById(orderId);
 
         validateOrderStatus(order);
@@ -138,8 +149,9 @@ public class OrderService implements IOrderService {
         itemToRemove.setDeleted(true);
 
         recalculate(order);
-
         orderRepository.save(order);
+
+        return itemMapper.toDTO(itemToRemove);
     }
 
     @Override

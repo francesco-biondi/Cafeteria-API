@@ -1,10 +1,12 @@
 package com.progra3.cafeteria_api.controller;
 
+import com.progra3.cafeteria_api.exception.OrderModificationNotAllowedException;
 import com.progra3.cafeteria_api.exception.OrderNotFoundException;
 import com.progra3.cafeteria_api.model.dto.ItemRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ItemResponseDTO;
 import com.progra3.cafeteria_api.model.dto.OrderRequestDTO;
 import com.progra3.cafeteria_api.model.dto.OrderResponseDTO;
+import com.progra3.cafeteria_api.model.enums.OrderStatus;
 import com.progra3.cafeteria_api.service.impl.OrderService;
 import lombok.RequiredArgsConstructor;
 
@@ -41,16 +43,29 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getById(id));
     }
 
-    @GetMapping("/{orderId}/items")
-    public ResponseEntity<List<ItemResponseDTO>> getItems(@PathVariable Long orderId) {
-        return ResponseEntity.ok(orderService.getItems(orderId));
+    @PutMapping("/{id}")
+    public ResponseEntity<OrderResponseDTO> update(@PathVariable Long id, @RequestBody OrderRequestDTO dto) {
+        return ResponseEntity.ok(orderService.update(id, dto));
     }
 
-    @PostMapping("/{orderId}/items")
+    @PatchMapping("/{id}")
+    public ResponseEntity<Void> updateDiscount(
+            @PathVariable Long id,
+            @RequestParam Double discount) {
+        orderService.updateDiscount(id, discount);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{id}/items")
+    public ResponseEntity<List<ItemResponseDTO>> getItems(@PathVariable Long id) {
+        return ResponseEntity.ok(orderService.getItems(id));
+    }
+
+    @PostMapping("/{id}/items")
     public ResponseEntity<ItemResponseDTO> addItem(
-            @PathVariable Long orderId,
-            @RequestBody ItemRequestDTO itemDTO) {
-        ItemResponseDTO itemResponseDTO = orderService.addItem(orderId, itemDTO);
+            @PathVariable Long id,
+            @RequestBody ItemRequestDTO dto) {
+        ItemResponseDTO itemResponseDTO = orderService.addItem(id, dto);
         return ResponseEntity
                 .created(URI.create("/api/orders/{orderId}/items/" + itemResponseDTO.getId()))
                 .body(itemResponseDTO);
@@ -60,34 +75,29 @@ public class OrderController {
     public ResponseEntity<ItemResponseDTO> updateItem(
             @PathVariable Long orderId,
             @PathVariable Long itemId,
-            @RequestBody ItemRequestDTO itemDTO) {
-        return ResponseEntity.ok(orderService.updateItem(orderId, itemId, itemDTO));
+            @RequestBody ItemRequestDTO dto) {
+        return ResponseEntity.ok(orderService.updateItem(orderId, itemId, dto));
     }
 
     @DeleteMapping("/{orderId}/items/{itemId}")
-    public ResponseEntity<Void> removeItem(
+    public ResponseEntity<ItemResponseDTO> removeItem(
             @PathVariable Long orderId,
             @PathVariable Long itemId) {
-        orderService.removeItem(orderId, itemId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(orderService.removeItem(orderId, itemId));
     }
-
-    @PatchMapping("/{orderId}/discount")
-    public ResponseEntity<Void> applyDiscount(
-            @PathVariable Long orderId,
-            @RequestParam Double discount) {
-        orderService.applyDiscount(orderId, discount);
-        return ResponseEntity.ok().build();
-    }
-
     @PostMapping("/{orderId}/finalize")
     public ResponseEntity<OrderResponseDTO> finalizeOrder(@PathVariable Long orderId) {
-        return ResponseEntity.ok(orderService.finalizeOrder(orderId));
+        return ResponseEntity.ok(orderService.updateStatus(orderId, OrderStatus.FINALIZED));
     }
 
-    @PostMapping("/{orderId}/delete")
-    public ResponseEntity<OrderResponseDTO> deleteOrder(@PathVariable Long orderId) {
-        return ResponseEntity.ok(orderService.cancel(orderId));
+    @PostMapping("/{orderId}/bill")
+    public ResponseEntity<OrderResponseDTO> billOrder(@PathVariable Long orderId) {
+        return ResponseEntity.ok(orderService.updateStatus(orderId, OrderStatus.BILLED));
+    }
+
+    @PostMapping("/{orderId}/cancel")
+    public ResponseEntity<OrderResponseDTO> cancelOrder(@PathVariable Long orderId) {
+        return ResponseEntity.ok(orderService.updateStatus(orderId, OrderStatus.CANCELED));
     }
 
     @ExceptionHandler(ItemNotFoundException.class)
@@ -101,6 +111,13 @@ public class OrderController {
     public ResponseEntity<String> handleItemNotFound(OrderNotFoundException e) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
+                .body(e.getMessage());
+    }
+
+    @ExceptionHandler(OrderModificationNotAllowedException.class)
+    public ResponseEntity<String> handleOrderModificationNotAllowed(OrderModificationNotAllowedException e) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
                 .body(e.getMessage());
     }
 
