@@ -22,8 +22,8 @@ public class ItemMapper {
         return Item.builder()
                 .product(product)
                 .order(order)
-                .comment(dto.getComment())
-                .quantity(dto.getQuantity())
+                .comment(dto.comment())
+                .quantity(dto.quantity())
                 .unitPrice(product.getPrice())
                 .build();
     }

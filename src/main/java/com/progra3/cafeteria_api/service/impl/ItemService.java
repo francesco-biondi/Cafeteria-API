@@ -38,8 +38,8 @@ public class ItemService implements IItemService {
     public Item updateItem(Order order, Long itemId, ItemRequestDTO itemDTO) {
         Item itemToUpdate = getItemById(order, itemId);
 
-        itemToUpdate.setComment(itemDTO.getComment());
-        itemToUpdate.setQuantity(itemDTO.getQuantity());
+        itemToUpdate.setComment(itemDTO.comment());
+        itemToUpdate.setQuantity(itemDTO.quantity());
 
         return itemToUpdate;
     }

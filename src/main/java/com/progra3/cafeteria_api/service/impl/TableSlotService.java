@@ -23,7 +23,7 @@ public class TableSlotService implements ITableSlotService {
     @Override
     public TableSlotResponseDTO create(TableSlotRequestDTO tableSlotRequestDTO) {
         TableSlot tableSlot = TableSlot.builder()
-                .name(tableSlotRequestDTO.getName())
+                .name(tableSlotRequestDTO.name())
                 .status(TableSlotStatus.FREE)
                 .build();
 
@@ -52,7 +52,7 @@ public class TableSlotService implements ITableSlotService {
     @Override
     public TableSlotResponseDTO updateName(Long id, TableSlotRequestDTO tableSlotRequestDTO) {
         TableSlot tableSlot = getEntityById(id);
-        tableSlot.setName(tableSlotRequestDTO.getName());
+        tableSlot.setName(tableSlotRequestDTO.name());
 
         return tableSlotMapper.toDTO(tableSlotRepository.save(tableSlot));
     }

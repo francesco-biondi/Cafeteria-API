@@ -33,9 +33,9 @@ public class OrderService implements IOrderService {
 
     @Override
     public OrderResponseDTO create(OrderRequestDTO dto) {
-        Employee employee = employeeService.getEntityById(dto.getEmployeeId()).orElse(null);
-        Customer customer = customerService.getEntityById(dto.getCustomerId()).orElse(null);
-        TableSlot tableSlot = tableSlotService.getEntityById(dto.getTableId());
+        Employee employee = employeeService.getEntityById(dto.employeeId()).orElse(null);
+        Customer customer = customerService.getEntityById(dto.customerId()).orElse(null);
+        TableSlot tableSlot = tableSlotService.getEntityById(dto.tableSlotId());
 
         Order order = orderMapper.toEntity(dto, employee, customer, tableSlot);
 
@@ -85,10 +85,10 @@ public class OrderService implements IOrderService {
 
         validateOrderStatus(order);
 
-        order.setEmployee(employeeService.getEntityById(dto.getEmployeeId()).orElse(null));
-        order.setCustomer(customerService.getEntityById(dto.getCustomerId()).orElse(null));
-        order.setTableSlot(tableSlotService.getEntityById(dto.getTableId()));
-        order.setPeopleCount(dto.getPeopleCount());
+        order.setEmployee(employeeService.getEntityById(dto.employeeId()).orElse(null));
+        order.setCustomer(customerService.getEntityById(dto.customerId()).orElse(null));
+        order.setTableSlot(tableSlotService.getEntityById(dto.tableSlotId()));
+        order.setPeopleCount(dto.peopleCount());
 
         recalculate(order);
 

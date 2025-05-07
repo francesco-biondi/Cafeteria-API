@@ -21,7 +21,7 @@ public class TableSlotController {
     public ResponseEntity<TableSlotResponseDTO> create(@RequestBody TableSlotRequestDTO dto) {
         TableSlotResponseDTO tableSlotResponseDTO = tableSlotService.create(dto);
         return ResponseEntity
-                .created(URI.create("/api/table-slots/" + tableSlotResponseDTO.getId()))
+                .created(URI.create("/api/table-slots/" + tableSlotResponseDTO.id()))
                 .body(tableSlotResponseDTO);
     }
 

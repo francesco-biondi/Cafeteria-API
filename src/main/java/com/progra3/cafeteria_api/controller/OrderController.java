@@ -29,7 +29,7 @@ public class OrderController {
     public ResponseEntity<OrderResponseDTO> create(@RequestBody OrderRequestDTO dto) {
         OrderResponseDTO responseDTO = orderService.create(dto);
         return ResponseEntity
-                .created(URI.create("/api/orders/" + responseDTO.getId()))
+                .created(URI.create("/api/orders/" + responseDTO.id()))
                 .body(responseDTO);
     }
 
@@ -67,7 +67,7 @@ public class OrderController {
             @RequestBody ItemRequestDTO dto) {
         ItemResponseDTO itemResponseDTO = orderService.addItem(id, dto);
         return ResponseEntity
-                .created(URI.create("/api/orders/{orderId}/items/" + itemResponseDTO.getId()))
+                .created(URI.create("/api/orders/{orderId}/items/" + itemResponseDTO.id()))
                 .body(itemResponseDTO);
     }
 
