@@ -20,7 +20,7 @@ public class ItemService implements IItemService {
 
     @Override
     public Item createItem(Order order, ItemRequestDTO itemDTO) {
-        Product product = productService.findEntityById(itemDTO.getProductId());
+        Product product = productService.getEntityById(itemDTO.productId());
 
         return itemMapper.toEntity(itemDTO, product, order);
     }
