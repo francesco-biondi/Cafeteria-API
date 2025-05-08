@@ -96,7 +96,7 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public OrderResponseDTO updateDiscount(Long orderId, Double discount) {
+    public OrderResponseDTO updateDiscount(Long orderId, Integer discount) {
         Order order = getEntityById(orderId);
 
         validateOrderStatus(order);
@@ -186,7 +186,7 @@ public class OrderService implements IOrderService {
         }
     }
 
-    private void applyDiscount(Order order, double discount) {
+    private void applyDiscount(Order order, Integer discount) {
         order.setDiscount(discount);
         recalculate(order);
     }
@@ -201,7 +201,7 @@ public class OrderService implements IOrderService {
     }
 
     private void calculateTotal(Order order) {
-        order.setTotal(order.getSubtotal() * (1 - order.getDiscount()));
+        order.setTotal(order.getSubtotal() * (1 - order.getDiscount() / 100));
     }
 
     private void recalculate(Order order) {

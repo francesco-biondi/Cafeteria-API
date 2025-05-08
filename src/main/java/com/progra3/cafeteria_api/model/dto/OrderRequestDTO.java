@@ -20,9 +20,9 @@ public record OrderRequestDTO(
         @Min(value = 1, message = "It must be at least 1 person")
         Integer peopleCount,
 
-        @DecimalMin(value = "0.0", inclusive = true, message = "Discount percentage cannot be negative")
-        @DecimalMax(value = "1.0", inclusive = true, message = "Discount percentage cannot be greater than 1")
-        Double discount,
+        @Min(value = 0, message = "Discount must be greater than or equal to 0")
+        @Max(value = 100, message = "Discount must be less than or equal to 100")
+        Integer discount,
 
         @Valid
         List<@NotNull ItemResponseDTO> items

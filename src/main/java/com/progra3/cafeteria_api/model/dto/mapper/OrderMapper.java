@@ -23,7 +23,7 @@ public class OrderMapper {
                 .id(order.getId())
                 .employeeName(order.getEmployee() != null ? order.getEmployee().getName() : null)
                 .customerName(order.getCustomer() != null ? order.getCustomer().getName() : null)
-                .table(order.getTable().getNumber())
+                .table(order.getTableSlot().getName())
                 .items(order.getItems()
                         .stream()
                         .map(itemMapper::toDTO)

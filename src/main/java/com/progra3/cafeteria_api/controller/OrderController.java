@@ -66,11 +66,14 @@ public class OrderController {
     @Operation(summary = "Update the discount of an order", description = "Updates the discount value of an order")
     @ApiResponse(responseCode = "200", description = "Discount updated successfully")
     @PatchMapping("/{id}")
-    public ResponseEntity<Void> updateDiscount(
+    public ResponseEntity<OrderResponseDTO> updateDiscount(
             @PathVariable Long id,
-            @RequestParam Double discount) {
-        orderService.updateDiscount(id, discount);
-        return ResponseEntity.ok().build();
+            @RequestParam Integer discount) {
+        if (discount == null || discount < 0 || discount > 100) {
+            throw new IllegalArgumentException("Discount must be between 0 and 100");
+        }
+
+        return ResponseEntity.ok(orderService.updateDiscount(id, discount));
     }
 
     @Operation(summary = "Get items from an order", description = "Returns all items associated with a given order ID")
@@ -140,7 +143,7 @@ public class OrderController {
                 .status(HttpStatus.NOT_FOUND)
                 .body(e.getMessage());
     }
-    
+
     @ExceptionHandler(OrderNotFoundException.class)
     public ResponseEntity<String> handleItemNotFound(OrderNotFoundException e) {
         return ResponseEntity

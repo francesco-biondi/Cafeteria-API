@@ -16,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class Order {
-    public static final double NO_DISCOUNT = 0.0;
+    public static final Integer NO_DISCOUNT = 0;
     public static final double ZERO_AMOUNT = 0.0;
 
     @Id
@@ -43,7 +43,7 @@ public class Order {
     @Column(nullable = false)
     private LocalTime time;
     @Column(nullable = false)
-    private Double discount = NO_DISCOUNT;
+    private Integer discount = NO_DISCOUNT;
     @Column(name = "people_count", nullable = false)
     private Integer peopleCount;
     @Column(nullable = false)

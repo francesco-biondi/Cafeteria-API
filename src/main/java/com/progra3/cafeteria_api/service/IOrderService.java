@@ -19,7 +19,7 @@ public interface IOrderService {
     List<OrderResponseDTO> getByTable(Long tableId);
     List<OrderResponseDTO> getAll();
     OrderResponseDTO update(Long orderId, OrderRequestDTO dto) throws OrderNotFoundException, IllegalStateException;
-    OrderResponseDTO updateDiscount(Long orderId, Double discount) throws OrderNotFoundException, IllegalStateException;
+    OrderResponseDTO updateDiscount(Long orderId, Integer discount) throws OrderNotFoundException, IllegalStateException;
     OrderResponseDTO updateStatus(Long orderId, OrderStatus status) throws OrderNotFoundException, IllegalStateException;
 
     ItemResponseDTO addItem(Long orderId, ItemRequestDTO itemDTO) throws OrderNotFoundException, IllegalStateException;

@@ -16,7 +16,7 @@ public record OrderResponseDTO (
     LocalDate date,
     LocalTime time,
     Integer peopleCount,
-    Double discount,
+    Integer discount,
     String status,
     Double subtotal,
     Double total
