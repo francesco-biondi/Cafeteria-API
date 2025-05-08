@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum OrderStatus {
-    IN_PROGRESS("In Progress"),
+    ACTIVE("Active"),
     BILLED("Billed"),
     FINALIZED("Finalized"),
     CANCELED("Canceled");

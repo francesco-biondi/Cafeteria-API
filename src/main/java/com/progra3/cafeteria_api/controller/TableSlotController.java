@@ -11,7 +11,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/table-slots")
+@RequestMapping("/api/table-slots")
 @RequiredArgsConstructor
 public class TableSlotController {
 

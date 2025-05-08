@@ -45,7 +45,7 @@ public class OrderMapper {
                 .tableSlot(tableSlot)
                 .discount(customer.getDiscount().orElse(Order.NO_DISCOUNT))
                 .peopleCount(dto.peopleCount())
-                .status(OrderStatus.IN_PROGRESS)
+                .status(OrderStatus.ACTIVE)
                 .date(LocalDate.now(clock))
                 .time(LocalTime.now(clock))
                 .build();

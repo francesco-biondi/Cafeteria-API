@@ -181,7 +181,7 @@ public class OrderService implements IOrderService {
     }
 
     private void validateOrderStatus(Order order) {
-        if (order.getStatus() != OrderStatus.IN_PROGRESS) {
+        if (order.getStatus() != OrderStatus.ACTIVE) {
             throw new OrderModificationNotAllowedException(order.getId(), order.getStatus().getName());
         }
     }
