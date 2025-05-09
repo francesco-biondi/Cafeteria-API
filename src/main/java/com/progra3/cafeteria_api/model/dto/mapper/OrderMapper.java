@@ -3,7 +3,7 @@ package com.progra3.cafeteria_api.model.dto.mapper;
 import com.progra3.cafeteria_api.model.dto.OrderRequestDTO;
 import com.progra3.cafeteria_api.model.dto.OrderResponseDTO;
 import com.progra3.cafeteria_api.model.entity.Order;
-import com.progra3.cafeteria_api.model.entity.TableSlot;
+import com.progra3.cafeteria_api.model.entity.Seating;
 import com.progra3.cafeteria_api.model.enums.OrderStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -23,7 +23,7 @@ public class OrderMapper {
                 .id(order.getId())
                 .employeeName(order.getEmployee() != null ? order.getEmployee().getName() : null)
                 .customerName(order.getCustomer() != null ? order.getCustomer().getName() : null)
-                .table(order.getTableSlot().getName())
+                .table(order.getSeating().getNumber())
                 .items(order.getItems()
                         .stream()
                         .map(itemMapper::toDTO)
@@ -38,11 +38,11 @@ public class OrderMapper {
                 .build();
     }
 
-    public Order toEntity(OrderRequestDTO dto, Employee employee, Customer customer, TableSlot tableSlot) {
+    public Order toEntity(OrderRequestDTO dto, Employee employee, Customer customer, Seating seating) {
         return Order.builder()
                 .employee(employee)
                 .customer(customer)
-                .tableSlot(tableSlot)
+                .seating(seating)
                 .discount(customer.getDiscount().orElse(Order.NO_DISCOUNT))
                 .peopleCount(dto.peopleCount())
                 .status(OrderStatus.ACTIVE)

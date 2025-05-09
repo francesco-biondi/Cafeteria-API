@@ -7,9 +7,9 @@ import com.progra3.cafeteria_api.model.dto.mapper.ItemMapper;
 import com.progra3.cafeteria_api.model.dto.mapper.OrderMapper;
 import com.progra3.cafeteria_api.model.entity.Item;
 import com.progra3.cafeteria_api.model.entity.Order;
-import com.progra3.cafeteria_api.model.entity.TableSlot;
+import com.progra3.cafeteria_api.model.entity.Seating;
 import com.progra3.cafeteria_api.model.enums.OrderStatus;
-import com.progra3.cafeteria_api.model.enums.TableSlotStatus;
+import com.progra3.cafeteria_api.model.enums.SeatingStatus;
 import com.progra3.cafeteria_api.repository.OrderRepository;
 import com.progra3.cafeteria_api.service.IOrderService;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ public class OrderService implements IOrderService {
 
     private final EmployeeService employeeService;
     private final CustomerService customerService;
-    private final TableSlotService tableSlotService;
+    private final SeatingService tableSlotService;
     private final ItemService itemService;
 
     private final OrderMapper orderMapper;
@@ -35,9 +35,9 @@ public class OrderService implements IOrderService {
     public OrderResponseDTO create(OrderRequestDTO dto) {
         Employee employee = employeeService.getEntityById(dto.employeeId()).orElse(null);
         Customer customer = customerService.getEntityById(dto.customerId()).orElse(null);
-        TableSlot tableSlot = tableSlotService.getEntityById(dto.tableSlotId());
+        Seating seating = tableSlotService.getEntityById(dto.seatingId());
 
-        Order order = orderMapper.toEntity(dto, employee, customer, tableSlot);
+        Order order = orderMapper.toEntity(dto, employee, customer, seating);
 
         return orderMapper.toDTO(orderRepository.save(order));
     }
@@ -64,8 +64,8 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public List<OrderResponseDTO> getByTable(Long tableId) {
-        return orderRepository.findByTableSlotId(tableId)
+    public List<OrderResponseDTO> getBySeating(Long seatingId) {
+        return orderRepository.findBySeatingId(seatingId)
                 .stream()
                 .map(orderMapper::toDTO)
                 .toList();
@@ -87,7 +87,7 @@ public class OrderService implements IOrderService {
 
         order.setEmployee(employeeService.getEntityById(dto.employeeId()).orElse(null));
         order.setCustomer(customerService.getEntityById(dto.customerId()).orElse(null));
-        order.setTableSlot(tableSlotService.getEntityById(dto.tableSlotId()));
+        order.setSeating(tableSlotService.getEntityById(dto.seatingId()));
         order.setPeopleCount(dto.peopleCount());
 
         recalculate(order);
@@ -111,9 +111,9 @@ public class OrderService implements IOrderService {
         Order order = getEntityById(id);
 
         if (status.equals(OrderStatus.BILLED))
-            tableSlotService.updateStatus(order.getTableSlot().getId(), TableSlotStatus.BILLING);
+            tableSlotService.updateStatus(order.getSeating().getId(), SeatingStatus.BILLING);
         else
-            tableSlotService.updateStatus(order.getTableSlot().getId(), TableSlotStatus.FREE);
+            tableSlotService.updateStatus(order.getSeating().getId(), SeatingStatus.FREE);
 
         validateOrderStatus(order);
 

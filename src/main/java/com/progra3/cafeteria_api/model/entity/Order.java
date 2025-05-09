@@ -17,7 +17,7 @@ import java.util.List;
 @Builder
 public class Order {
     public static final Integer NO_DISCOUNT = 0;
-    public static final double ZERO_AMOUNT = 0.0;
+    public static final Double ZERO_AMOUNT = 0.0;
 
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
@@ -35,8 +35,8 @@ public class Order {
     private List<Item> items;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "table_id")
-    private TableSlot tableSlot;
+    @JoinColumn(name = "seating_id")
+    private Seating seating;
 
     @Column(nullable = false)
     private LocalDate date;

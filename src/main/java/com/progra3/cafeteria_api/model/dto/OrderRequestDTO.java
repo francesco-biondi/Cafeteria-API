@@ -13,10 +13,10 @@ public record OrderRequestDTO(
 
         Long customerId,
 
-        @NotNull(message = "Table slot ID cannot be null")
-        Long tableSlotId,
+        @NotNull(message = "Seating ID cannot be null")
+        Long seatingId,
 
-        @NotNull(message = "personCount cannot be null")
+        @NotNull(message = "People count cannot be null")
         @Min(value = 1, message = "It must be at least 1 person")
         Integer peopleCount,
 

@@ -16,7 +16,7 @@ public interface IOrderService {
     OrderResponseDTO getById(Long orderId) throws OrderNotFoundException;
     List<OrderResponseDTO> getByEmployee(Long employeeId);
     List<OrderResponseDTO> getByCustomer(Long customerId);
-    List<OrderResponseDTO> getByTable(Long tableId);
+    List<OrderResponseDTO> getBySeating(Long seatingId);
     List<OrderResponseDTO> getAll();
     OrderResponseDTO update(Long orderId, OrderRequestDTO dto) throws OrderNotFoundException, IllegalStateException;
     OrderResponseDTO updateDiscount(Long orderId, Integer discount) throws OrderNotFoundException, IllegalStateException;

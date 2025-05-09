@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum TableSlotStatus {
+public enum SeatingStatus {
     FREE("Free"),
     OCCUPIED("Occupied"),
     BILLING("Billing");

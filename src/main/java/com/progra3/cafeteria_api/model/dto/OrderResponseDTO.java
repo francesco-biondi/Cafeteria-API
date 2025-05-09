@@ -11,7 +11,7 @@ public record OrderResponseDTO (
     Long id,
     String employeeName,
     String customerName,
-    Integer table,
+    Integer seatingNumber,
     List<ItemResponseDTO> items,
     LocalDate date,
     LocalTime time,
