@@ -15,4 +15,6 @@ public interface IItemService {
     Item updateItem(Order order, Long itemId, ItemRequestDTO itemDTO);
 
     List<ItemResponseDTO> getItemsByOrder(Order order);
+
+    List<Item> splitItemsFromOrder(Order originalOrder, List<ItemRequestDTO> itemsToMove, Order newOrder);
 }

@@ -31,6 +31,6 @@ public record OrderRequestDTO(
         Integer discount,
 
         @Valid
-        List<@NotNull ItemResponseDTO> items
+        List<@NotNull ItemRequestDTO> items
 
 ) {}

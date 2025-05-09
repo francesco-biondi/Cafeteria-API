@@ -1,6 +1,7 @@
 package com.progra3.cafeteria_api.service;
 
 import com.progra3.cafeteria_api.exception.ItemNotFoundException;
+import com.progra3.cafeteria_api.exception.OrderModificationNotAllowedException;
 import com.progra3.cafeteria_api.exception.OrderNotFoundException;
 import com.progra3.cafeteria_api.model.dto.ItemRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ItemResponseDTO;
@@ -9,6 +10,7 @@ import com.progra3.cafeteria_api.model.dto.OrderResponseDTO;
 import com.progra3.cafeteria_api.model.enums.OrderStatus;
 
 import java.util.List;
+import java.util.Map;
 
 public interface IOrderService {
 
@@ -18,12 +20,14 @@ public interface IOrderService {
     List<OrderResponseDTO> getByCustomer(Long customerId);
     List<OrderResponseDTO> getBySeating(Long seatingId);
     List<OrderResponseDTO> getAll();
-    OrderResponseDTO update(Long orderId, OrderRequestDTO dto) throws OrderNotFoundException, IllegalStateException;
-    OrderResponseDTO updateDiscount(Long orderId, Integer discount) throws OrderNotFoundException, IllegalStateException;
-    OrderResponseDTO updateStatus(Long orderId, OrderStatus status) throws OrderNotFoundException, IllegalStateException;
+    OrderResponseDTO update(Long orderId, OrderRequestDTO dto) throws OrderNotFoundException, OrderModificationNotAllowedException;
+    OrderResponseDTO updateDiscount(Long orderId, Integer discount) throws OrderNotFoundException, OrderModificationNotAllowedException;
+    OrderResponseDTO updateStatus(Long orderId, OrderStatus status) throws OrderNotFoundException, OrderModificationNotAllowedException;
 
-    ItemResponseDTO addItem(Long orderId, ItemRequestDTO itemDTO) throws OrderNotFoundException, IllegalStateException;
+    public List<OrderResponseDTO> splitOrder(Long originalOrderId, OrderRequestDTO dto) throws OrderNotFoundException, OrderModificationNotAllowedException;
+
+    ItemResponseDTO addItem(Long orderId, ItemRequestDTO itemDTO) throws OrderNotFoundException, OrderModificationNotAllowedException;
     List<ItemResponseDTO> getItems(Long orderId) throws OrderNotFoundException;
-    ItemResponseDTO removeItem(Long orderId, Long itemId) throws OrderNotFoundException, IllegalStateException, ItemNotFoundException;
-    ItemResponseDTO updateItem(Long orderId, Long itemId, ItemRequestDTO itemDTO) throws OrderNotFoundException, ItemNotFoundException;
+    ItemResponseDTO removeItem(Long orderId, Long itemId) throws OrderNotFoundException, ItemNotFoundException, OrderModificationNotAllowedException;
+    ItemResponseDTO updateItem(Long orderId, Long itemId, ItemRequestDTO itemDTO) throws OrderNotFoundException, ItemNotFoundException, OrderModificationNotAllowedException;
 }

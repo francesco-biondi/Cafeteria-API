@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -50,6 +51,38 @@ public class ItemService implements IItemService {
         return order.getItems()
                 .stream()
                 .map(itemMapper::toDTO)
+                .toList();
+    }
+
+    @Override
+    public List<Item> splitItemsFromOrder(Order originalOrder, List<ItemRequestDTO> itemsToMove, Order newOrder) {
+
+        return itemsToMove.stream()
+                .map(dto -> {
+                    Product product = productService.getEntityById(dto.productId());
+
+                    Item originalItem = originalOrder.getItems().stream()
+                            .filter(item -> item.getProduct().getId().equals(dto.productId()) && !item.getDeleted())
+                            .findFirst()
+                            .orElseThrow(() -> new ItemNotFoundException("No items found for product ID: ", dto.productId()));
+
+                    int originalQty = originalItem.getQuantity();
+                    int qtyToMove = dto.quantity();
+
+                    if (qtyToMove <= 0 || qtyToMove > originalQty) {
+                        throw new IllegalArgumentException("Invalid quantity for product ID: " + dto.productId());
+                    }
+
+                    if (qtyToMove == originalQty) {
+                        originalOrder.getItems().remove(originalItem);
+                        originalItem.setOrder(newOrder);
+                        return originalItem;
+                    }
+
+                    originalItem.setQuantity(originalQty - qtyToMove);
+
+                    return itemMapper.toEntity(dto, product, newOrder);
+                })
                 .toList();
     }
 }

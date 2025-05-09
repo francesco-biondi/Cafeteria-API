@@ -25,7 +25,7 @@ public class OrderService implements IOrderService {
 
     private final EmployeeService employeeService;
     private final CustomerService customerService;
-    private final SeatingService tableSlotService;
+    private final SeatingService seatingService;
     private final ItemService itemService;
 
     private final OrderMapper orderMapper;
@@ -35,7 +35,7 @@ public class OrderService implements IOrderService {
     public OrderResponseDTO create(OrderRequestDTO dto) {
         Employee employee = employeeService.getEntityById(dto.employeeId()).orElse(null);
         Customer customer = customerService.getEntityById(dto.customerId()).orElse(null);
-        Seating seating = tableSlotService.getEntityById(dto.seatingId());
+        Seating seating = seatingService.getEntityById(dto.seatingId());
 
         Order order = orderMapper.toEntity(dto, employee, customer, seating);
 
@@ -87,7 +87,7 @@ public class OrderService implements IOrderService {
 
         order.setEmployee(employeeService.getEntityById(dto.employeeId()).orElse(null));
         order.setCustomer(customerService.getEntityById(dto.customerId()).orElse(null));
-        order.setSeating(tableSlotService.getEntityById(dto.seatingId()));
+        order.setSeating(seatingService.getEntityById(dto.seatingId()));
         order.setPeopleCount(dto.peopleCount());
 
         recalculate(order);
@@ -111,15 +111,39 @@ public class OrderService implements IOrderService {
         Order order = getEntityById(id);
 
         if (status.equals(OrderStatus.BILLED))
-            tableSlotService.updateStatus(order.getSeating().getId(), SeatingStatus.BILLING);
+            seatingService.updateStatus(order.getSeating().getId(), SeatingStatus.BILLING);
         else
-            tableSlotService.updateStatus(order.getSeating().getId(), SeatingStatus.FREE);
+            seatingService.updateStatus(order.getSeating().getId(), SeatingStatus.FREE);
 
         validateOrderStatus(order);
 
         order.setStatus(status);
 
         return orderMapper.toDTO(orderRepository.save(order));
+    }
+
+    @Override
+    public List<OrderResponseDTO> splitOrder(Long originalOrderId, OrderRequestDTO dto) {
+
+        Order originalOrder = getEntityById(originalOrderId);
+        validateOrderStatus(originalOrder);
+
+        Employee employee = employeeService.getEntityById(dto.employeeId()).orElse(null);
+        Customer customer = customerService.getEntityById(dto.customerId()).orElse(null);
+        Seating seating = seatingService.getEntityById(dto.seatingId());
+
+        Order newOrder = orderMapper.toEntity(dto, employee, customer, seating);
+
+        List<Item> newItems = itemService.splitItemsFromOrder(originalOrder, dto.items(), newOrder);
+        newOrder.setItems(newItems);
+
+        recalculate(originalOrder);
+        recalculate(newOrder);
+
+        originalOrder = orderRepository.save(originalOrder);
+        newOrder = orderRepository.save(newOrder);
+
+        return List.of(orderMapper.toDTO(originalOrder), orderMapper.toDTO(newOrder));
     }
 
 
