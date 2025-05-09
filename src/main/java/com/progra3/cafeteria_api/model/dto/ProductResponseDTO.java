@@ -4,13 +4,12 @@ import lombok.Builder;
 import lombok.Data;
 
 @Builder
-@Data
-public class ProductResponseDTO {
-    private Long id;
-    private String name;
-    private String description;
-    private Double price;
-    private Double cost;
-    private Integer stock;
-    private String categoryName;
-}
+public record ProductResponseDTO(
+        Long id,
+        String name,
+        String description,
+        Double price,
+        Double cost,
+        Integer stock,
+        String categoryName
+) { }
