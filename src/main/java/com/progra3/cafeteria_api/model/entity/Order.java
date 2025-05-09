@@ -32,7 +32,7 @@ public class Order {
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seating_id")
     private Seating seating;
 
@@ -52,7 +52,7 @@ public class Order {
     @Column(nullable = false)
     private Integer discount = NO_DISCOUNT;
 
-    @Column(name = "people_count", nullable = false)
+    @Column(name = "people_count")
     private Integer peopleCount;
 
     @Enumerated(EnumType.STRING)
