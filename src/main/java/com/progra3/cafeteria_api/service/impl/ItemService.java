@@ -40,6 +40,7 @@ public class ItemService implements IItemService {
 
         itemToUpdate.setComment(itemDTO.comment());
         itemToUpdate.setQuantity(itemDTO.quantity());
+        itemToUpdate.setTotalPrice(itemToUpdate.getUnitPrice() * itemDTO.quantity());
 
         return itemToUpdate;
     }

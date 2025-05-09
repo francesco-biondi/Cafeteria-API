@@ -195,7 +195,7 @@ public class OrderService implements IOrderService {
         order.setSubtotal(
                 order.getItems().stream()
                         .filter(item -> !item.getDeleted())
-                        .mapToDouble(item -> item.getUnitPrice() * item.getQuantity())
+                        .mapToDouble(Item::getTotalPrice)
                         .sum()
         );
     }

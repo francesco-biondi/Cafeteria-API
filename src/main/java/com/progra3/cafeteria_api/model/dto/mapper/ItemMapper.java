@@ -15,16 +15,22 @@ public class ItemMapper {
                 .productName(item.getProduct().getName())
                 .unitPrice(item.getUnitPrice())
                 .quantity(item.getQuantity())
+                .totalPrice(item.getTotalPrice())
                 .build();
     }
 
     public Item toEntity(ItemRequestDTO dto, Product product, Order order) {
+        double unitPrice = product.getPrice();
+        int quantity = dto.quantity();
+        double totalPrice = unitPrice * quantity;
+
         return Item.builder()
                 .product(product)
                 .order(order)
                 .comment(dto.comment())
-                .quantity(dto.quantity())
-                .unitPrice(product.getPrice())
+                .unitPrice(unitPrice)
+                .quantity(quantity)
+                .totalPrice(totalPrice)
                 .build();
     }
 }

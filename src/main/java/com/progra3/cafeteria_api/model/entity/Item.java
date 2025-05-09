@@ -26,11 +26,14 @@ public class Item {
     @Column(name = "comment")
     private String comment;
 
+    @Column(name = "unit_price", nullable = false)
+    private Double unitPrice;
+
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
-    @Column(name = "unit_price", nullable = false)
-    private Double unitPrice;
+    @Column(name = "total_price", nullable = false)
+    private Double totalPrice;
 
     @Column(name = "deleted", nullable = false)
     private Boolean deleted = false;
