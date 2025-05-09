@@ -24,6 +24,7 @@ public class Seating {
     @OneToMany(mappedBy = "seating", cascade = CascadeType.ALL)
     private List<Order> orders;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private SeatingStatus status;
 
