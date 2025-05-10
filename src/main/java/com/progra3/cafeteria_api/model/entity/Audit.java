@@ -17,6 +17,8 @@ public class Audit{
     private List<Order> orders;
     private List<Expense> expenses;
     private AuditStatus auditStatus;
+    private Double totalExpensed;
     private Double total;
     private Double balanceGap;
+    private Boolean deleted;
 }

@@ -14,6 +14,8 @@ public record AuditResponseDTO (
     List<OrderResponseDTO> orders,
     List<ExpenseResponseDTO> expenses,
     String auditStatus,
+    Double totalExpensed,
     Double total,
-    Double balanceGap
+    Double balanceGap,
+    Boolean deleted
 ){}
