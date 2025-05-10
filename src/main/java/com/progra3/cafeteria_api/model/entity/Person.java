@@ -1,11 +1,23 @@
 package com.progra3.cafeteria_api.model.entity;
-import lombok.*;
 
-@AllArgsConstructor
+import jakarta.persistence.*;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
+
+@MappedSuperclass
 @Getter
 @Setter
-public class Person {
-    private final Long id;
+@ToString
+@EqualsAndHashCode
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+public abstract class Person {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String name;
     private String lastName;
     private String dni;
