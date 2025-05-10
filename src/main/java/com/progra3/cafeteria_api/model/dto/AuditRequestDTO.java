@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 
 @Builder
 public record AuditRequestDTO (
-     LocalDateTime startTime,
-     Double initialCash
+    Long id,
+    LocalDateTime startTime,
+    Double initialCash
 ){}

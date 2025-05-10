@@ -7,6 +7,7 @@ import java.util.List;
 
 @Builder
 public record AuditResponseDTO (
+    Long id,
     LocalDateTime startTime,
     LocalDateTime closeTime,
     Double initialCash,
