@@ -7,6 +7,8 @@ import com.progra3.cafeteria_api.model.entity.Supplier;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+
 @RequiredArgsConstructor
 @Component
 public class ExpenseMapper {
@@ -14,6 +16,7 @@ public class ExpenseMapper {
 
     public ExpenseResponseDTO toDTO (Expense expense){
         return ExpenseResponseDTO.builder()
+                .id(expense.getId())
                 .supplier(supplierMapper.toDTO(expense.getSupplier()))
                 .amount(expense.getAmount())
                 .comment(expense.getComment())
@@ -21,12 +24,13 @@ public class ExpenseMapper {
                 .build();
     }
 
-    public Expense toEntity (ExpenseRequestDTO dto, Supplier supplier){
+    public Expense toEntity (ExpenseRequestDTO dto, Supplier supplier, LocalDateTime dateTime){
         return Expense.builder()
+                .id(dto.id())
                 .supplier(supplier)
                 .amount(dto.amount())
                 .comment(dto.comment())
-                .date(dto.date())
+                .date(dateTime)
                 .build();
     }
 }
