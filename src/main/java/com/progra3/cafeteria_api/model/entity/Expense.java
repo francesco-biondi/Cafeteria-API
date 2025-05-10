@@ -13,4 +13,5 @@ public class Expense {
     private Double amount;
     private String comment;
     private LocalDateTime date;
+    private Boolean deleted;
 }
