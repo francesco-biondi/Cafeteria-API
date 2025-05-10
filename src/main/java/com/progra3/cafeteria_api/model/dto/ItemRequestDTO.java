@@ -8,6 +8,7 @@ public record ItemRequestDTO(
         @NotNull(message = "productId cannot be null")
         Long productId,
 
+        @NotNull
         @Min(value = 1, message = "Minimum quantity is 1")
         Integer quantity,
 

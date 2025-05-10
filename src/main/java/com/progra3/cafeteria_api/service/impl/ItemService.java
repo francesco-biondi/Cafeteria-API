@@ -55,22 +55,16 @@ public class ItemService implements IItemService {
     }
 
     @Override
-    public List<Item> transferItems(Order fromOrder, Order toOrder, Map<Long, ItemRequestDTO> itemsToMove) {
-        if (fromOrder.equals(toOrder)) {
-            throw new IllegalArgumentException("Cannot transfer items to the same order.");
-        }
-
+    public List<Item> transferItems(Order fromOrder, Order toOrder, Map<Long, Integer> itemsToMove) {
         return itemsToMove.entrySet().stream()
                 .map(entry -> {
                     Long itemId = entry.getKey();
-                    ItemRequestDTO dto = entry.getValue();
+                    int quantityToMove = entry.getValue();
 
                     Item originalItem = fromOrder.getItems().stream()
                             .filter(i -> i.getId().equals(itemId) && !i.getDeleted())
                             .findFirst()
                             .orElseThrow(() -> new ItemNotFoundException(itemId));
-
-                    int quantityToMove = dto.quantity();
 
                     if (quantityToMove <= 0 || quantityToMove > originalItem.getQuantity()) {
                         throw new IllegalArgumentException("Invalid quantity for item ID: " + itemId);
@@ -80,11 +74,18 @@ public class ItemService implements IItemService {
                         fromOrder.getItems().remove(originalItem);
                         originalItem.setOrder(toOrder);
                         return originalItem;
+                    } else {
+                        originalItem.setQuantity(originalItem.getQuantity() - quantityToMove);
+                        return Item.builder()
+                                .product(originalItem.getProduct())
+                                .order(toOrder)
+                                .comment(originalItem.getComment())
+                                .unitPrice(originalItem.getUnitPrice())
+                                .quantity(quantityToMove)
+                                .totalPrice(originalItem.getUnitPrice() * quantityToMove)
+                                .deleted(false)
+                                .build();
                     }
-
-                    originalItem.setQuantity(originalItem.getQuantity() - quantityToMove);
-
-                    return itemMapper.toEntity(dto, originalItem.getProduct(), toOrder);
                 })
                 .toList();
     }

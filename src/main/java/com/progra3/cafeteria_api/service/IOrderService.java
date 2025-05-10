@@ -24,7 +24,7 @@ public interface IOrderService {
     OrderResponseDTO updateDiscount(Long orderId, Integer discount) throws OrderNotFoundException, OrderModificationNotAllowedException;
     OrderResponseDTO updateStatus(Long orderId, OrderStatus status) throws OrderNotFoundException, OrderModificationNotAllowedException;
 
-    List<OrderResponseDTO> splitOrder(Long originalOrderId, OrderRequestDTO dto, Map<Long, ItemRequestDTO> itemsToMove) throws OrderNotFoundException, OrderModificationNotAllowedException;
+    List<OrderResponseDTO> splitOrder(Long originalOrderId, OrderRequestDTO dto, Map<Long, Integer> itemsToMove) throws OrderNotFoundException, OrderModificationNotAllowedException;
 
     ItemResponseDTO addItem(Long orderId, ItemRequestDTO itemDTO) throws OrderNotFoundException, OrderModificationNotAllowedException;
     List<ItemResponseDTO> getItems(Long orderId) throws OrderNotFoundException;

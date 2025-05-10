@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -112,6 +113,16 @@ public class OrderController {
             @PathVariable Long orderId,
             @PathVariable Long itemId) {
         return ResponseEntity.ok(orderService.removeItem(orderId, itemId));
+    }
+
+    @Operation(summary = "Split an order", description = "Splits an order into two separate orders based on the provided items")
+    @ApiResponse(responseCode = "200", description = "Order split successfully")
+    @PatchMapping("/{id}/split")
+    public ResponseEntity<List<OrderResponseDTO>> splitOrder(
+            @PathVariable Long id,
+            @RequestBody @Valid OrderRequestDTO dto,
+            @RequestParam Map<Long, ItemRequestDTO> itemsToMove) {
+        return ResponseEntity.ok(orderService.splitOrder(id, dto, itemsToMove));
     }
 
     @Operation(summary = "Finalize an order", description = "Marks the order as finalized, preventing further changes")

@@ -9,15 +9,12 @@ import com.progra3.cafeteria_api.model.entity.Item;
 import com.progra3.cafeteria_api.model.entity.Order;
 import com.progra3.cafeteria_api.model.entity.Seating;
 import com.progra3.cafeteria_api.model.enums.OrderStatus;
-import com.progra3.cafeteria_api.model.enums.OrderType;
 import com.progra3.cafeteria_api.model.enums.SeatingStatus;
 import com.progra3.cafeteria_api.repository.OrderRepository;
 import com.progra3.cafeteria_api.service.IOrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 
@@ -127,13 +124,15 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public List<OrderResponseDTO> splitOrder(Long originalOrderId, OrderRequestDTO dto, Map<Long, ItemRequestDTO> itemsToMove) {
-        if (itemsToMove == null || itemsToMove.isEmpty()) {
-            throw new IllegalArgumentException("Items to move cannot be null or empty.");
-        }
+    public List<OrderResponseDTO> splitOrder(Long originalOrderId, OrderRequestDTO dto, Map<Long, Integer> itemsToMove) {
 
         Order originalOrder = getEntityById(originalOrderId);
         validateOrderStatus(originalOrder);
+
+        if (itemsToMove == null || itemsToMove.isEmpty())
+            throw new IllegalArgumentException("Items to move cannot be null or empty.");
+        if (originalOrder.getPeopleCount() < dto.peopleCount())
+            throw new IllegalArgumentException("Invalid number of people to move.");
 
         Order destinationOrder = orderRepository.findBySeatingId(dto.seatingId())
                 .orElseGet(() -> {
