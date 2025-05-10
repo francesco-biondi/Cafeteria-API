@@ -8,6 +8,8 @@ import com.progra3.cafeteria_api.model.enums.AuditStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+
 
 @RequiredArgsConstructor
 @Component
@@ -37,7 +39,6 @@ public class AuditMapper {
 
     public Audit toEntity (AuditRequestDTO dto){
         return Audit.builder()
-                .startTime(dto.startTime())
                 .initialCash(dto.initialCash())
                 .auditStatus(AuditStatus.IN_PROGRESS)
                 .build();

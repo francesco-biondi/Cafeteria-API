@@ -36,6 +36,7 @@ public class AuditService implements IAuditService {
         }
 
         Audit audit = auditMapper.toEntity(dto);
+        audit.setStartTime(LocalDateTime.now());
 
         return auditMapper.toDTO(auditRepository.save(audit));
     }
