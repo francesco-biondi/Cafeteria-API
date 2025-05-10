@@ -8,7 +8,8 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 public class Expense {
-    private long id;
+    private Long id;
+    private Audit audit;
     private Supplier supplier;
     private Double amount;
     private String comment;

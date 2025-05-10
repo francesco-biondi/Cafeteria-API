@@ -5,8 +5,10 @@ import com.progra3.cafeteria_api.exception.InvalidDateException;
 import com.progra3.cafeteria_api.model.dto.ExpenseRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ExpenseResponseDTO;
 import com.progra3.cafeteria_api.model.dto.mapper.ExpenseMapper;
+import com.progra3.cafeteria_api.model.entity.Audit;
 import com.progra3.cafeteria_api.model.entity.Expense;
 import com.progra3.cafeteria_api.model.entity.Supplier;
+import com.progra3.cafeteria_api.model.enums.AuditStatus;
 import com.progra3.cafeteria_api.repository.ExpenseRepository;
 import com.progra3.cafeteria_api.service.IExpenseService;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,7 @@ public class ExpenseService implements IExpenseService {
     private ExpenseRepository expenseRepository;
 
     private SupplierService supplierService;
+    private AuditService auditService;
 
     private ExpenseMapper expenseMapper;
 
@@ -29,6 +32,12 @@ public class ExpenseService implements IExpenseService {
         Supplier supplier = supplierService.getEntityById(dto.supplierId());
 
         Expense expense = expenseMapper.toEntity(dto, supplier, LocalDateTime.now());
+
+        Audit audit = auditService.findTop();
+
+        if (audit.getAuditStatus().equals(AuditStatus.IN_PROGRESS)){
+            expense.setAudit(audit);
+        }
 
         return expenseMapper.toDTO(expenseRepository.save(expense));
     }

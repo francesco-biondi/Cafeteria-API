@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 @Builder
 public record ExpenseResponseDTO (
     Long id,
+    AuditResponseDTO audit,
     SupplierResponseDTO supplier,
     Double amount,
     String comment,
