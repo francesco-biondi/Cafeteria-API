@@ -34,11 +34,7 @@ public class OrderService implements IOrderService {
 
     @Override
     public OrderResponseDTO create(OrderRequestDTO dto) {
-        Employee employee = employeeService.getEntityById(dto.employeeId()).orElse(null);
-        Customer customer = customerService.getEntityById(dto.customerId()).orElse(null);
-        Seating seating = seatingService.getEntityById(dto.seatingId());
-
-        Order order = orderMapper.toEntity(dto, employee, customer, seating);
+        Order order = createNewOrder(dto);
 
         return orderMapper.toDTO(orderRepository.save(order));
     }
@@ -135,13 +131,7 @@ public class OrderService implements IOrderService {
             throw new IllegalArgumentException("Invalid number of people to move.");
 
         Order destinationOrder = orderRepository.findBySeatingId(dto.seatingId())
-                .orElseGet(() -> {
-                    Employee employee = employeeService.getEntityById(dto.employeeId()).orElse(null);
-                    Customer customer = customerService.getEntityById(dto.customerId()).orElse(null);
-                    Seating seating = seatingService.getEntityById(dto.seatingId());
-
-                    return orderMapper.toEntity(dto, employee, customer, seating);
-                });
+                .orElseGet(() -> createNewOrder(dto));
 
         List<Item> itemsToTransfer = itemService.transferItems(originalOrder, destinationOrder, itemsToMove);
         destinationOrder.setItems(itemsToTransfer);
@@ -154,6 +144,7 @@ public class OrderService implements IOrderService {
 
         return List.of(orderMapper.toDTO(originalOrder), orderMapper.toDTO(destinationOrder));
     }
+
 
     @Override
     public ItemResponseDTO addItem(Long orderId, ItemRequestDTO itemDTO) {
@@ -216,6 +207,16 @@ public class OrderService implements IOrderService {
         if (order.getStatus() != OrderStatus.ACTIVE) {
             throw new OrderModificationNotAllowedException(order.getId(), order.getStatus().getName());
         }
+    }
+
+    private Order createNewOrder(OrderRequestDTO dto) {
+        Employee employee = employeeService.getEntityById(dto.employeeId()).orElse(null);
+        Customer customer = customerService.getEntityById(dto.customerId()).orElse(null);
+        Seating seating = null;
+        if (dto.seatingId() != null)
+            seating = seatingService.getEntityById(dto.seatingId());
+
+        return orderMapper.toEntity(dto, employee, customer, seating);
     }
 
     private void applyDiscount(Order order, Integer discount) {
