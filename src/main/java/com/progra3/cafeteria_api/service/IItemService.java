@@ -6,6 +6,7 @@ import com.progra3.cafeteria_api.model.entity.Item;
 import com.progra3.cafeteria_api.model.entity.Order;
 
 import java.util.List;
+import java.util.Map;
 
 public interface IItemService {
     Item createItem(Order order, ItemRequestDTO itemDTO);
@@ -16,5 +17,6 @@ public interface IItemService {
 
     List<ItemResponseDTO> getItemsByOrder(Order order);
 
-    List<Item> splitItemsFromOrder(Order originalOrder, List<ItemRequestDTO> itemsToMove, Order newOrder);
+    List<Item> transferItems(Order fromOrder, Order toOrder, Map<Long, ItemRequestDTO> itemsToMove);
+
 }

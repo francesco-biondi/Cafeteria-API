@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -55,34 +55,38 @@ public class ItemService implements IItemService {
     }
 
     @Override
-    public List<Item> splitItemsFromOrder(Order originalOrder, List<ItemRequestDTO> itemsToMove, Order newOrder) {
+    public List<Item> transferItems(Order fromOrder, Order toOrder, Map<Long, ItemRequestDTO> itemsToMove) {
+        if (fromOrder.equals(toOrder)) {
+            throw new IllegalArgumentException("Cannot transfer items to the same order.");
+        }
 
-        return itemsToMove.stream()
-                .map(dto -> {
-                    Product product = productService.getEntityById(dto.productId());
+        return itemsToMove.entrySet().stream()
+                .map(entry -> {
+                    Long itemId = entry.getKey();
+                    ItemRequestDTO dto = entry.getValue();
 
-                    Item originalItem = originalOrder.getItems().stream()
-                            .filter(item -> item.getProduct().getId().equals(dto.productId()) && !item.getDeleted())
+                    Item originalItem = fromOrder.getItems().stream()
+                            .filter(i -> i.getId().equals(itemId) && !i.getDeleted())
                             .findFirst()
-                            .orElseThrow(() -> new ItemNotFoundException("No items found for product ID: ", dto.productId()));
+                            .orElseThrow(() -> new ItemNotFoundException(itemId));
 
-                    int originalQty = originalItem.getQuantity();
-                    int qtyToMove = dto.quantity();
+                    int quantityToMove = dto.quantity();
 
-                    if (qtyToMove <= 0 || qtyToMove > originalQty) {
-                        throw new IllegalArgumentException("Invalid quantity for product ID: " + dto.productId());
+                    if (quantityToMove <= 0 || quantityToMove > originalItem.getQuantity()) {
+                        throw new IllegalArgumentException("Invalid quantity for item ID: " + itemId);
                     }
 
-                    if (qtyToMove == originalQty) {
-                        originalOrder.getItems().remove(originalItem);
-                        originalItem.setOrder(newOrder);
+                    if (quantityToMove == originalItem.getQuantity()) {
+                        fromOrder.getItems().remove(originalItem);
+                        originalItem.setOrder(toOrder);
                         return originalItem;
                     }
 
-                    originalItem.setQuantity(originalQty - qtyToMove);
+                    originalItem.setQuantity(originalItem.getQuantity() - quantityToMove);
 
-                    return itemMapper.toEntity(dto, product, newOrder);
+                    return itemMapper.toEntity(dto, originalItem.getProduct(), toOrder);
                 })
                 .toList();
     }
+    
 }

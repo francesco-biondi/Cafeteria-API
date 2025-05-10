@@ -9,13 +9,17 @@ import com.progra3.cafeteria_api.model.entity.Item;
 import com.progra3.cafeteria_api.model.entity.Order;
 import com.progra3.cafeteria_api.model.entity.Seating;
 import com.progra3.cafeteria_api.model.enums.OrderStatus;
+import com.progra3.cafeteria_api.model.enums.OrderType;
 import com.progra3.cafeteria_api.model.enums.SeatingStatus;
 import com.progra3.cafeteria_api.repository.OrderRepository;
 import com.progra3.cafeteria_api.service.IOrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -123,29 +127,34 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public List<OrderResponseDTO> splitOrder(Long originalOrderId, OrderRequestDTO dto) {
+    public List<OrderResponseDTO> splitOrder(Long originalOrderId, OrderRequestDTO dto, Map<Long, ItemRequestDTO> itemsToMove) {
+        if (itemsToMove == null || itemsToMove.isEmpty()) {
+            throw new IllegalArgumentException("Items to move cannot be null or empty.");
+        }
 
         Order originalOrder = getEntityById(originalOrderId);
         validateOrderStatus(originalOrder);
 
-        Employee employee = employeeService.getEntityById(dto.employeeId()).orElse(null);
-        Customer customer = customerService.getEntityById(dto.customerId()).orElse(null);
-        Seating seating = seatingService.getEntityById(dto.seatingId());
+        Order destinationOrder = orderRepository.findBySeatingId(dto.seatingId())
+                .orElseGet(() -> {
+                    Employee employee = employeeService.getEntityById(dto.employeeId()).orElse(null);
+                    Customer customer = customerService.getEntityById(dto.customerId()).orElse(null);
+                    Seating seating = seatingService.getEntityById(dto.seatingId());
 
-        Order newOrder = orderMapper.toEntity(dto, employee, customer, seating);
+                    return orderMapper.toEntity(dto, employee, customer, seating);
+                });
 
-        List<Item> newItems = itemService.splitItemsFromOrder(originalOrder, dto.items(), newOrder);
-        newOrder.setItems(newItems);
+        List<Item> itemsToTransfer = itemService.transferItems(originalOrder, destinationOrder, itemsToMove);
+        destinationOrder.setItems(itemsToTransfer);
 
         recalculate(originalOrder);
-        recalculate(newOrder);
+        recalculate(destinationOrder);
 
         originalOrder = orderRepository.save(originalOrder);
-        newOrder = orderRepository.save(newOrder);
+        destinationOrder = orderRepository.save(destinationOrder);
 
-        return List.of(orderMapper.toDTO(originalOrder), orderMapper.toDTO(newOrder));
+        return List.of(orderMapper.toDTO(originalOrder), orderMapper.toDTO(destinationOrder));
     }
-
 
     @Override
     public ItemResponseDTO addItem(Long orderId, ItemRequestDTO itemDTO) {

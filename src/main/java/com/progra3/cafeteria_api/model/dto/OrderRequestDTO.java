@@ -28,9 +28,5 @@ public record OrderRequestDTO(
 
         @Min(value = 0, message = "Discount must be greater than or equal to 0")
         @Max(value = 100, message = "Discount must be less than or equal to 100")
-        Integer discount,
-
-        @Valid
-        List<@NotNull ItemRequestDTO> items
-
+        Integer discount
 ) {}
