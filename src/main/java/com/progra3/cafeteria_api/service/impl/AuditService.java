@@ -29,7 +29,7 @@ public class AuditService implements IAuditService {
 
     @Override
     public AuditResponseDTO createAudit(AuditRequestDTO dto) {
-        AuditStatus auditStatus = auditRepository.findTopByOrderByIdDesc().get().getAuditStatus();
+        AuditStatus auditStatus = findTop().getAuditStatus();
 
         if (auditStatus.equals(AuditStatus.IN_PROGRESS)){
             throw new AuditInProgressException();
@@ -92,5 +92,10 @@ public class AuditService implements IAuditService {
         return audit.getOrders().stream()
                 .mapToDouble(Order::getTotal)
                 .sum();
+    }
+
+    @Override
+    public Audit findTop (){
+        return auditRepository.findTopByOrderByIdDesc().get();
     }
 }
