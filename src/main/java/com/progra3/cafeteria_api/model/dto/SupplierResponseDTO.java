@@ -4,10 +4,12 @@ import lombok.*;
 
 @Builder
 public record SupplierResponseDTO(
-    String name,
-    String lastName,
-    String dni,
+    Long id,
+    String legalName,
+    String tradeName,
+    String cuit,
     String phoneNumber,
     String email,
-    String address
+    String address,
+    Boolean deleted
 ){}

@@ -9,23 +9,26 @@ import org.springframework.stereotype.Component;
 public class SupplierMapper {
     public SupplierResponseDTO toDTO (Supplier supplier){
         return SupplierResponseDTO.builder()
-                .name(supplier.getName())
-                .lastName(supplier.getLastName())
-                .dni(supplier.getDni())
+                .legalName(supplier.getLegalName())
+                .tradeName(supplier.getTradeName())
+                .cuit(supplier.getCuit())
                 .phoneNumber(supplier.getPhoneNumber())
                 .email(supplier.getEmail())
                 .address(supplier.getAddress())
+                .deleted(supplier.getDeleted())
                 .build();
     }
 
     public Supplier toEntity (SupplierRequestDTO dto){
         return Supplier.builder()
-                .name(dto.name())
-                .lastName(dto.lastName())
-                .dni(dto.dni())
+                .id(id)
+                .legalName(dto.legalName())
+                .tradeName(dto.tradeName())
+                .cuit(dto.cuit())
                 .email(dto.email())
                 .address(dto.address())
                 .phoneNumber(dto.phoneNumber())
+                .deleted(dto.deleted())
                 .build();
     }
 }

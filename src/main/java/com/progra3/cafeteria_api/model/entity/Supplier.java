@@ -1,11 +1,17 @@
 package com.progra3.cafeteria_api.model.entity;
 
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 
 @AllArgsConstructor
 @Data
-@SuperBuilder
-public class Supplier extends Person{
+@Builder
+public class Supplier{
+    private Long id;
+    private String legalName;
+    private String tradeName;
+    private String cuit;
+    private String phoneNumber;
+    private String email;
     private String address;
+    private Boolean deleted;
 }

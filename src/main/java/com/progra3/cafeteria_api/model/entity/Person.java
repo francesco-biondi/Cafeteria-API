@@ -13,4 +13,5 @@ public class Person {
     private String dni;
     private String phoneNumber;
     private String email;
+    private Boolean deleted;
 }
