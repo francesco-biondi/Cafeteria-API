@@ -35,4 +35,7 @@ public class Product {
 
     @Column
     private Integer stock;
+
+    @Column
+    private Boolean deleted;
 }

@@ -26,6 +26,7 @@ public class ProductMapper {
                 .cost(product.getCost())
                 .stock(product.getStock())
                 .categoryName(product.getCategory() != null ? product.getCategory().getName() : null)
+                .deleted(product.getDeleted())
                 .build();
     }
 

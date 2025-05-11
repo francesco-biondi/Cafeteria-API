@@ -32,7 +32,7 @@ public class ProductService implements IProductService {
     @Override
     public ProductResponseDTO getProductById(Long id) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException("Product not found with ID: " + id));
+                .orElseThrow(() -> new ProductNotFoundException(id));
         return productMapper.toDTO(product);
     }
 
@@ -45,7 +45,7 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public ProductResponseDTO updateProduct(Long id, ProductRequestDTO productRequestDTO) {
+    public ProductResponseDTO updateProduct(ProductRequestDTO productRequestDTO) {
         Category category = categoryService.getEntityById(productRequestDTO.categoryId());
         Product updatedProduct = productMapper.toEntity(productRequestDTO, category);
 
@@ -53,10 +53,15 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public void deleteProduct(Long id) {
-        if (!productRepository.existsById(id)) {
-            throw new ProductNotFoundException("Product not found with ID: " + id);
-        }
-        productRepository.deleteById(id);
+    public ProductResponseDTO deleteProduct(Long id) {
+        Product product = getEntityById(id);
+        product.setDeleted(true);
+
+        return productMapper.toDTO(productRepository.save(product));
+    }
+
+    @Override
+    public Product getEntityById (Long productId){
+        return productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException(productId));
     }
 }

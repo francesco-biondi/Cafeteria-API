@@ -102,7 +102,7 @@ public class ProductController {
                     )
             )
             @RequestBody ProductRequestDTO productRequestDTO) {
-        return new ResponseEntity<>(productService.updateProduct(id, productRequestDTO), HttpStatus.OK);
+        return new ResponseEntity<>(productService.updateProduct(productRequestDTO), HttpStatus.OK);
     }
 
     @Operation(summary = "Delete a product", description = "Deletes a product by its ID")
@@ -111,9 +111,9 @@ public class ProductController {
             @ApiResponse(responseCode = "404", description = "Product not found", content = @Content)
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(
+    public ResponseEntity<ProductResponseDTO> deleteProduct(
             @Parameter(description = "ID of the product to delete") @PathVariable Long id) {
-        productService.deleteProduct(id);
-        return ResponseEntity.noContent().build();
+        ProductResponseDTO response = productService.deleteProduct(id);
+        return ResponseEntity.ok(response);
     }
 }
