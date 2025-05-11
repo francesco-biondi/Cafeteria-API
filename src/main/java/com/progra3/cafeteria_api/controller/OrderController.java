@@ -61,7 +61,7 @@ public class OrderController {
     @ApiResponse(responseCode = "200", description = "Order updated successfully")
     @PutMapping("/{id}")
     public ResponseEntity<OrderResponseDTO> update(@PathVariable Long id, @RequestBody @Valid OrderRequestDTO dto) {
-        return ResponseEntity.ok(orderService.update(id, dto));
+        return ResponseEntity.ok(orderService.update(dto));
     }
 
     @Operation(summary = "Update the discount of an order", description = "Updates the discount value of an order")
@@ -103,7 +103,7 @@ public class OrderController {
             @PathVariable Long orderId,
             @PathVariable Long itemId,
             @RequestBody @Valid ItemRequestDTO dto) {
-        return ResponseEntity.ok(orderService.updateItem(orderId, itemId, dto));
+        return ResponseEntity.ok(orderService.updateItem(orderId, dto));
     }
 
     @Operation(summary = "Remove an item from an order", description = "Performs a logical delete of the item from the order. It will no longer affect the total.")

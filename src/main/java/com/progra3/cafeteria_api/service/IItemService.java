@@ -13,7 +13,7 @@ public interface IItemService {
 
     Item getItemById(Order order, Long itemId);
 
-    Item updateItem(Order order, Long itemId, ItemRequestDTO itemDTO);
+    Item updateItem(Order order, ItemRequestDTO itemDTO);
 
     List<ItemResponseDTO> getItemsByOrder(Order order);
 

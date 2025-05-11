@@ -6,6 +6,7 @@ import com.progra3.cafeteria_api.model.dto.ItemResponseDTO;
 import com.progra3.cafeteria_api.model.dto.mapper.ItemMapper;
 import com.progra3.cafeteria_api.model.entity.Item;
 import com.progra3.cafeteria_api.model.entity.Order;
+import com.progra3.cafeteria_api.model.entity.Product;
 import com.progra3.cafeteria_api.service.IItemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -34,14 +35,14 @@ public class ItemService implements IItemService {
                 .orElseThrow(() -> new ItemNotFoundException(itemId));
     }
 
-
+    //TODO ver si se puede mejorar con mapper
     @Override
-    public Item updateItem(Order order, Long itemId, ItemRequestDTO itemDTO) {
-        Item itemToUpdate = getItemById(order, itemId);
+    public Item updateItem(Order order, ItemRequestDTO itemDTO) {
+        Item itemToUpdate = getItemById(order, itemDTO.id());
 
         itemToUpdate.setComment(itemDTO.comment());
         itemToUpdate.setQuantity(itemDTO.quantity());
-        itemToUpdate.setTotalPrice(itemToUpdate.getUnitPrice() * itemDTO.quantity());
+        itemToUpdate.setTotalPrice(itemToUpdate.getUnitPrice() * itemToUpdate.getQuantity());
 
         return itemToUpdate;
     }

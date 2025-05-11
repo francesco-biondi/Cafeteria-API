@@ -23,7 +23,7 @@ public interface IOrderService {
     List<OrderResponseDTO> getBySeating(Long seatingId);
     List<OrderResponseDTO> getAll();
     List<Order> getByDateTimeBetween(LocalDateTime start, LocalDateTime end);
-    OrderResponseDTO update(Long orderId, OrderRequestDTO dto) throws OrderNotFoundException, OrderModificationNotAllowedException;
+    OrderResponseDTO update(OrderRequestDTO dto) throws OrderNotFoundException, OrderModificationNotAllowedException;
     OrderResponseDTO updateDiscount(Long orderId, Integer discount) throws OrderNotFoundException, OrderModificationNotAllowedException;
     OrderResponseDTO updateStatus(Long orderId, OrderStatus status) throws OrderNotFoundException, OrderModificationNotAllowedException;
 
@@ -32,5 +32,5 @@ public interface IOrderService {
     ItemResponseDTO addItem(Long orderId, ItemRequestDTO itemDTO) throws OrderNotFoundException, OrderModificationNotAllowedException;
     List<ItemResponseDTO> getItems(Long orderId) throws OrderNotFoundException;
     ItemResponseDTO removeItem(Long orderId, Long itemId) throws OrderNotFoundException, ItemNotFoundException, OrderModificationNotAllowedException;
-    ItemResponseDTO updateItem(Long orderId, Long itemId, ItemRequestDTO itemDTO) throws OrderNotFoundException, ItemNotFoundException, OrderModificationNotAllowedException;
+    ItemResponseDTO updateItem(Long orderId, ItemRequestDTO itemDTO) throws OrderNotFoundException, ItemNotFoundException, OrderModificationNotAllowedException;
 }
