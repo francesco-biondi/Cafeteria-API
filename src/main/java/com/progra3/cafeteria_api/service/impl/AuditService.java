@@ -7,36 +7,40 @@ import com.progra3.cafeteria_api.model.dto.AuditResponseDTO;
 import com.progra3.cafeteria_api.model.dto.mapper.AuditMapper;
 import com.progra3.cafeteria_api.model.entity.Audit;
 import com.progra3.cafeteria_api.model.entity.Expense;
+import com.progra3.cafeteria_api.model.entity.Order;
 import com.progra3.cafeteria_api.model.enums.AuditStatus;
 import com.progra3.cafeteria_api.repository.AuditRepository;
 import com.progra3.cafeteria_api.service.IAuditService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class AuditService implements IAuditService {
-    private AuditRepository auditRepository;
 
-    private ExpenseService expenseService;
-    private OrderService orderService;
+    private final AuditRepository auditRepository;
 
-    private AuditMapper auditMapper;
+    private final ExpenseService expenseService;
+    private final OrderService orderService;
+
+    private final AuditMapper auditMapper;
+
+    private final Clock clock;
 
     @Override
     public AuditResponseDTO createAudit(AuditRequestDTO dto) {
         AuditStatus auditStatus = findTop().getAuditStatus();
 
-        if (auditStatus.equals(AuditStatus.IN_PROGRESS)){
+        if (auditStatus.equals(AuditStatus.IN_PROGRESS)) {
             throw new AuditInProgressException();
         }
 
         Audit audit = auditMapper.toEntity(dto);
-        audit.setStartTime(LocalDateTime.now());
+        audit.setStartTime(LocalDateTime.now(clock));
 
         return auditMapper.toDTO(auditRepository.save(audit));
     }
@@ -52,10 +56,10 @@ public class AuditService implements IAuditService {
     @Override
     public AuditResponseDTO finalizeAudit(Long auditId) {
         Audit audit = getEntityById(auditId);
-        audit.setCloseTime(LocalDateTime.now());
+        audit.setCloseTime(LocalDateTime.now(clock));
 
-        List<Expense> expenses = expenseService.findByDateBetween(audit.getStartTime(), audit.getStartTime());
-        List<Order> orders = orderService.findDateBetween(audit.getStartTime(), audit.getCloseTime());
+        List<Expense> expenses = expenseService.getByDateTimeBetween(audit.getStartTime(), audit.getStartTime());
+        List<Order> orders = orderService.getByDateTimeBetween(audit.getStartTime(), audit.getCloseTime());
 
         audit.setExpenses(expenses);
         audit.setOrders(orders);
@@ -64,7 +68,8 @@ public class AuditService implements IAuditService {
         audit.setTotal(calculateTotal(audit));
 
         audit.setAuditStatus(AuditStatus.FINALIZED);
-        return null;
+
+        return auditMapper.toDTO(auditRepository.save(audit));
     }
 
     @Override
@@ -76,26 +81,24 @@ public class AuditService implements IAuditService {
     }
 
     @Override
-    public Audit getEntityById (Long auditId) {
+    public Audit getEntityById(Long auditId) {
         return auditRepository.findById(auditId).orElseThrow(() -> new AuditNotFoundException(auditId));
     }
 
     @Override
-    public Double calculateExpenseTotal (Audit audit){
+    public Audit findTop() {
+        return auditRepository.findTopByOrderByIdDesc();
+    }
+
+    private Double calculateExpenseTotal(Audit audit) {
         return audit.getExpenses().stream()
                 .mapToDouble(Expense::getAmount)
                 .sum();
     }
 
-    @Override
-    public Double calculateTotal (Audit audit){
+    private Double calculateTotal(Audit audit) {
         return audit.getOrders().stream()
                 .mapToDouble(Order::getTotal)
                 .sum();
-    }
-
-    @Override
-    public Audit findTop (){
-        return auditRepository.findTopByOrderByIdDesc().get();
     }
 }

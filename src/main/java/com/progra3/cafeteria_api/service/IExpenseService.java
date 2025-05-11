@@ -2,7 +2,6 @@ package com.progra3.cafeteria_api.service;
 
 import com.progra3.cafeteria_api.model.dto.ExpenseRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ExpenseResponseDTO;
-import com.progra3.cafeteria_api.model.entity.Audit;
 import com.progra3.cafeteria_api.model.entity.Expense;
 
 import java.time.LocalDateTime;
@@ -15,5 +14,5 @@ public interface IExpenseService {
     ExpenseResponseDTO deleteExpense (Long expenseId);
 
     Expense getEntityById (Long expenseId);
-    List<Expense> findByDateBetween (LocalDateTime start, LocalDateTime end);
+    List<Expense> getByDateTimeBetween(LocalDateTime start, LocalDateTime end);
 }

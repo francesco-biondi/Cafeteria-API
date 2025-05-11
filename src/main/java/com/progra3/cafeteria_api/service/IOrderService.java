@@ -7,8 +7,10 @@ import com.progra3.cafeteria_api.model.dto.ItemRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ItemResponseDTO;
 import com.progra3.cafeteria_api.model.dto.OrderRequestDTO;
 import com.progra3.cafeteria_api.model.dto.OrderResponseDTO;
+import com.progra3.cafeteria_api.model.entity.Order;
 import com.progra3.cafeteria_api.model.enums.OrderStatus;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +22,7 @@ public interface IOrderService {
     List<OrderResponseDTO> getByCustomer(Long customerId);
     List<OrderResponseDTO> getBySeating(Long seatingId);
     List<OrderResponseDTO> getAll();
+    List<Order> getByDateTimeBetween(LocalDateTime start, LocalDateTime end);
     OrderResponseDTO update(Long orderId, OrderRequestDTO dto) throws OrderNotFoundException, OrderModificationNotAllowedException;
     OrderResponseDTO updateDiscount(Long orderId, Integer discount) throws OrderNotFoundException, OrderModificationNotAllowedException;
     OrderResponseDTO updateStatus(Long orderId, OrderStatus status) throws OrderNotFoundException, OrderModificationNotAllowedException;

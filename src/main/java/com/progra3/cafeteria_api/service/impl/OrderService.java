@@ -1,13 +1,12 @@
 package com.progra3.cafeteria_api.service.impl;
 
+import com.progra3.cafeteria_api.exception.InvalidDateException;
 import com.progra3.cafeteria_api.exception.OrderModificationNotAllowedException;
 import com.progra3.cafeteria_api.exception.OrderNotFoundException;
 import com.progra3.cafeteria_api.model.dto.*;
 import com.progra3.cafeteria_api.model.dto.mapper.ItemMapper;
 import com.progra3.cafeteria_api.model.dto.mapper.OrderMapper;
-import com.progra3.cafeteria_api.model.entity.Item;
-import com.progra3.cafeteria_api.model.entity.Order;
-import com.progra3.cafeteria_api.model.entity.Seating;
+import com.progra3.cafeteria_api.model.entity.*;
 import com.progra3.cafeteria_api.model.enums.OrderStatus;
 import com.progra3.cafeteria_api.model.enums.SeatingStatus;
 import com.progra3.cafeteria_api.repository.OrderRepository;
@@ -15,6 +14,7 @@ import com.progra3.cafeteria_api.service.IOrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -76,6 +76,16 @@ public class OrderService implements IOrderService {
                 .toList();
     }
 
+    @Override
+    public List<Order> getByDateTimeBetween(LocalDateTime start, LocalDateTime end){
+        if (start.isAfter(end)){
+            throw new InvalidDateException("Start should be earlier than end");
+        }
+        return orderRepository.findByDateTimeBetween(start, end);
+    }
+
+
+    //TODO cambiar como el de customer
     @Override
     public OrderResponseDTO update(Long orderId, OrderRequestDTO dto) throws OrderNotFoundException, IllegalStateException {
         Order order = getEntityById(orderId);
@@ -210,8 +220,8 @@ public class OrderService implements IOrderService {
     }
 
     private Order createNewOrder(OrderRequestDTO dto) {
-        Employee employee = employeeService.getEntityById(dto.employeeId()).orElse(null);
-        Customer customer = customerService.getEntityById(dto.customerId()).orElse(null);
+        Employee employee = employeeService.getEntityById(dto.employeeId());
+        Customer customer = customerService.getEntityById(dto.customerId());
         Seating seating = null;
         if (dto.seatingId() != null)
             seating = seatingService.getEntityById(dto.seatingId());

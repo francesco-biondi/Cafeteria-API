@@ -1,8 +1,10 @@
 package com.progra3.cafeteria_api.service.impl;
 
+import com.progra3.cafeteria_api.exception.CustomerNotFoundException;
 import com.progra3.cafeteria_api.model.dto.EmployeeRequestDTO;
 import com.progra3.cafeteria_api.model.dto.EmployeeResponseDTO;
 import com.progra3.cafeteria_api.model.dto.mapper.EmployeeMapper;
+import com.progra3.cafeteria_api.model.entity.Customer;
 import com.progra3.cafeteria_api.model.entity.Employee;
 import com.progra3.cafeteria_api.model.enums.Role;
 import com.progra3.cafeteria_api.repository.EmployeeRepository;
@@ -41,7 +43,11 @@ public class EmployeeService implements IEmployeeService{
         return EmployeeMapper.toDTO(admin);
     }
 
-
+    @Override
+    public Employee getEntityById (Long employeeId) {
+        if (employeeId == null) return null;
+        return employeeRepository.findById(employeeId).orElseThrow(() -> new EmployeeNotFoundException(employeeId));
+    }
 
     @Override
     @Transactional

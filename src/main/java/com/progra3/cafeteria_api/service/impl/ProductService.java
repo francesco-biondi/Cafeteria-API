@@ -6,7 +6,7 @@ import com.progra3.cafeteria_api.model.dto.ProductResponseDTO;
 import com.progra3.cafeteria_api.model.dto.mapper.ProductMapper;
 import com.progra3.cafeteria_api.model.entity.Category;
 import com.progra3.cafeteria_api.model.entity.Product;
-import com.progra3.cafeteria_api.repository.IProductRepository;
+import com.progra3.cafeteria_api.repository.ProductRepository;
 import com.progra3.cafeteria_api.service.IProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ProductService implements IProductService {
 
-    private final IProductRepository productRepository;
+    private final ProductRepository productRepository;
     private final ProductMapper productMapper;
     private final CategoryService categoryService;
 

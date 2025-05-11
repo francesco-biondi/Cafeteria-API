@@ -13,7 +13,5 @@ public interface IAuditService {
     AuditResponseDTO cancelAudit (Long auditId);
 
     Audit getEntityById (Long auditId);
-    Double calculateExpenseTotal (Audit audit);
-    Double calculateTotal (Audit audit);
     Audit findTop ();
 }

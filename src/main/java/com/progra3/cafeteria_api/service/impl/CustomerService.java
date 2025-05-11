@@ -48,9 +48,9 @@ public class CustomerService implements ICustomerService {
     public CustomerResponseDTO updateCustomer(CustomerRequestDTO dto) {
         Customer customer = customerMapper.toEntity(dto);
 
-        if (customerRepository.existByDni(customer.getDni())){
+        if (customerRepository.existsById(customer.getId())){
             customerRepository.save(customer);
-        }else throw new SupplierNotFoundException(customer.getId());
+        }else throw new CustomerNotFoundException(customer.getId());
 
         return customerMapper.toDTO(customer);
     }
@@ -64,12 +64,13 @@ public class CustomerService implements ICustomerService {
     }
 
     @Override
-    public Customer getEntityById (Long supplierId) {
-        return customerRepository.findById(supplierId).orElseThrow(() -> new CustomerNotFoundException(supplierId));
+    public Customer getEntityById (Long customerId) {
+        if (customerId == null) return null;
+        return customerRepository.findById(customerId).orElseThrow(() -> new CustomerNotFoundException(customerId));
     }
 
     @Override
-    public CustomerResponseDTO getDtoById (Long supplierId){
-        return customerMapper.toDTO(getEntityById(supplierId));
+    public CustomerResponseDTO getDtoById (Long id){
+        return customerMapper.toDTO(getEntityById(id));
     }
 }

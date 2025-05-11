@@ -20,12 +20,12 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ExpenseService implements IExpenseService {
-    private ExpenseRepository expenseRepository;
+    private final ExpenseRepository expenseRepository;
 
-    private SupplierService supplierService;
-    private AuditService auditService;
+    private final SupplierService supplierService;
+    private final AuditService auditService;
 
-    private ExpenseMapper expenseMapper;
+    private final ExpenseMapper expenseMapper;
 
     @Override
     public ExpenseResponseDTO createExpense(ExpenseRequestDTO dto) {
@@ -72,10 +72,10 @@ public class ExpenseService implements IExpenseService {
     }
 
     @Override
-    public List<Expense> findByDateBetween (LocalDateTime start, LocalDateTime end){
+    public List<Expense> getByDateTimeBetween(LocalDateTime start, LocalDateTime end){
         if (start.isAfter(end)){
             throw new InvalidDateException("Start should be earlier than end");
         }
-        return expenseRepository.findByDateBetween(start, end);
+        return expenseRepository.findByDateTimeBetween(start, end);
     }
 }

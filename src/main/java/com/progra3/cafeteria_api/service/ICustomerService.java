@@ -5,6 +5,7 @@ import com.progra3.cafeteria_api.model.dto.CustomerResponseDTO;
 import com.progra3.cafeteria_api.model.entity.Customer;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ICustomerService {
     CustomerResponseDTO createCustomer (CustomerRequestDTO dto);
@@ -12,6 +13,6 @@ public interface ICustomerService {
     CustomerResponseDTO updateCustomer (CustomerRequestDTO dto);
     CustomerResponseDTO deleteCustomer (Long customerId);
 
-    Customer getEntityById (Long supplierId);
-    CustomerResponseDTO getDtoById (Long supplierId);
+    Customer getEntityById (Long customerId);
+    CustomerResponseDTO getDtoById (Long customerId);
 }
