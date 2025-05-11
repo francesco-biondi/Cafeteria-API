@@ -5,11 +5,10 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Data
+@Builder
 @Schema(description = "Response message containing error details")
 public class ResponseMessage {
 
