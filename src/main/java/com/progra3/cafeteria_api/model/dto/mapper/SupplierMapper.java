@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 public class SupplierMapper {
     public SupplierResponseDTO toDTO (Supplier supplier){
         return SupplierResponseDTO.builder()
+                .id(supplier.getId())
                 .legalName(supplier.getLegalName())
                 .tradeName(supplier.getTradeName())
                 .cuit(supplier.getCuit())
@@ -21,14 +22,13 @@ public class SupplierMapper {
 
     public Supplier toEntity (SupplierRequestDTO dto){
         return Supplier.builder()
-                .id(id)
+                .id(dto.id())
                 .legalName(dto.legalName())
                 .tradeName(dto.tradeName())
                 .cuit(dto.cuit())
                 .email(dto.email())
                 .address(dto.address())
                 .phoneNumber(dto.phoneNumber())
-                .deleted(dto.deleted())
                 .build();
     }
 }

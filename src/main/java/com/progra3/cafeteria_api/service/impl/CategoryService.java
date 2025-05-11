@@ -28,6 +28,12 @@ public class CategoryService implements ICategoryService {
     }
 
     @Override
+    public Category getEntityById(Long id) {
+        return categoryRepository.findById(id)
+                .orElseThrow(() -> new CategoryNotFoundException("Category not found with ID: " + id));
+    }
+
+    @Override
     public CategoryResponseDTO getCategoryById(Long id) {
         return categoryRepository.findById(id)
                 .map(categoryMapper::toDTO)
@@ -46,7 +52,9 @@ public class CategoryService implements ICategoryService {
     public CategoryResponseDTO updateCategory(Long id, CategoryRequestDTO categoryRequestDTO) {
         Category existingCategory = categoryRepository.findById(id)
                 .orElseThrow(() -> new CategoryNotFoundException("Category not found with ID: " + id));
-        Category updatedCategory = categoryMapper.updateEntityFromDTO(existingCategory, categoryRequestDTO);
+
+        Category updatedCategory = categoryMapper.toEntity(categoryRequestDTO);
+        updatedCategory.setName(categoryRequestDTO.name());
         return categoryMapper.toDTO(categoryRepository.save(updatedCategory));
     }
 

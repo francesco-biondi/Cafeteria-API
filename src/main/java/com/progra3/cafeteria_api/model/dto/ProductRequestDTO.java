@@ -7,6 +7,9 @@ import lombok.Builder;
 public record ProductRequestDTO(
         Long id,
 
+        @NotNull(message = "Category id cannot be null")
+        Long categoryId,
+
         @NotNull(message = "Name cannot be null")
         @Size(min = 1, max = 100, message = "Name must be between 1 and 100 characters")
         String name,
@@ -22,8 +25,5 @@ public record ProductRequestDTO(
         Double cost,
 
         @PositiveOrZero(message = "Stock can't be less than 0")
-        Integer stock,
-
-        @NotNull(message = "Category id cannot be null")
-        Long categoryId
+        Integer stock
 ) { }

@@ -2,6 +2,8 @@ package com.progra3.cafeteria_api.model.dto.mapper;
 
 import com.progra3.cafeteria_api.model.dto.OrderRequestDTO;
 import com.progra3.cafeteria_api.model.dto.OrderResponseDTO;
+import com.progra3.cafeteria_api.model.entity.Customer;
+import com.progra3.cafeteria_api.model.entity.Employee;
 import com.progra3.cafeteria_api.model.entity.Order;
 import com.progra3.cafeteria_api.model.entity.Seating;
 import com.progra3.cafeteria_api.model.enums.OrderStatus;
@@ -24,7 +26,7 @@ public class OrderMapper {
                 .id(order.getId())
                 .employeeName(order.getEmployee() != null ? order.getEmployee().getName() : null)
                 .customerName(order.getCustomer() != null ? order.getCustomer().getName() : null)
-                .table(order.getSeating().getNumber())
+                .seatingNumber(order.getSeating().getNumber())
                 .items(order.getItems()
                         .stream()
                         .map(itemMapper::toDTO)
@@ -46,7 +48,7 @@ public class OrderMapper {
                 .seating(seating)
                 .type(dto.orderType())
                 .peopleCount(dto.peopleCount())
-                .discount(customer.getDiscount().orElse(Order.NO_DISCOUNT))
+                .discount(customer.getDiscount())
                 .status(OrderStatus.ACTIVE)
                 .date(LocalDate.now(clock))
                 .time(LocalTime.now(clock))

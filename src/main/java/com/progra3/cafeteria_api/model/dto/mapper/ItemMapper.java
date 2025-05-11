@@ -4,6 +4,7 @@ import com.progra3.cafeteria_api.model.dto.ItemRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ItemResponseDTO;
 import com.progra3.cafeteria_api.model.entity.Item;
 import com.progra3.cafeteria_api.model.entity.Order;
+import com.progra3.cafeteria_api.model.entity.Product;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -12,7 +13,7 @@ public class ItemMapper {
         return ItemResponseDTO.builder()
                 .id(item.getId())
                 .orderId(item.getOrder().getId())
-                .productName(item.getProduct().getName())
+                .productId(item.getProduct().getId())
                 .unitPrice(item.getUnitPrice())
                 .quantity(item.getQuantity())
                 .totalPrice(item.getTotalPrice())

@@ -4,6 +4,7 @@ import com.progra3.cafeteria_api.exception.ProductNotFoundException;
 import com.progra3.cafeteria_api.model.dto.ProductRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ProductResponseDTO;
 import com.progra3.cafeteria_api.model.dto.mapper.ProductMapper;
+import com.progra3.cafeteria_api.model.entity.Category;
 import com.progra3.cafeteria_api.model.entity.Product;
 import com.progra3.cafeteria_api.repository.IProductRepository;
 import com.progra3.cafeteria_api.service.IProductService;
@@ -19,10 +20,12 @@ public class ProductService implements IProductService {
 
     private final IProductRepository productRepository;
     private final ProductMapper productMapper;
+    private final CategoryService categoryService;
 
     @Override
     public ProductResponseDTO createProduct(ProductRequestDTO productRequestDTO) {
-        Product product = productMapper.toEntity(productRequestDTO);
+        Category category = categoryService.getEntityById(productRequestDTO.categoryId());
+        Product product = productMapper.toEntity(productRequestDTO, category);
         return productMapper.toDTO(productRepository.save(product));
     }
 
@@ -43,9 +46,9 @@ public class ProductService implements IProductService {
 
     @Override
     public ProductResponseDTO updateProduct(Long id, ProductRequestDTO productRequestDTO) {
-        Product existingProduct = productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException("Product not found with ID: " + id));
-        Product updatedProduct = productMapper.updateEntityFromDTO(existingProduct, productRequestDTO);
+        Category category = categoryService.getEntityById(productRequestDTO.categoryId());
+        Product updatedProduct = productMapper.toEntity(productRequestDTO, category);
+
         return productMapper.toDTO(productRepository.save(updatedProduct));
     }
 

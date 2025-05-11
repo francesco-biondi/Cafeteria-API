@@ -18,19 +18,6 @@ public class ProductMapper {
 
     private final ICategoryRepository categoryRepository;
 
-    public Product toEntity(ProductRequestDTO dto) {
-        Product product = new Product();
-        product.setName(dto.name());
-        product.setDescription(dto.description());
-        product.setPrice(dto.price());
-        product.setCost(dto.cost());
-        product.setStock(dto.stock());
-        Category category = categoryRepository.findById(dto.categoryId())
-                .orElseThrow(() -> new CategoryNotFoundException("Category not found with ID: " + dto.categoryId()));
-        product.setCategory(category);
-        return product;
-    }
-
     public ProductResponseDTO toDTO(Product product) {
         return ProductResponseDTO.builder()
                 .id(product.getId())
@@ -43,16 +30,16 @@ public class ProductMapper {
                 .build();
     }
 
-    public Product updateEntityFromDTO(Product product, ProductRequestDTO dto) {
-        product.setName(dto.name());
-        product.setDescription(dto.description());
-        product.setPrice(dto.price());
-        product.setCost(dto.cost());
-        product.setStock(dto.stock());
-        Category category = categoryRepository.findById(dto.categoryId())
-                .orElseThrow(() -> new CategoryNotFoundException("Category not found with ID: " + dto.categoryId()));
-        product.setCategory(category);
-        return product;
+    public Product toEntity(ProductRequestDTO dto, Category category) {
+        return Product.builder()
+                .id(dto.id())
+                .name(dto.name())
+                .description(dto.description())
+                .price(dto.price())
+                .cost(dto.cost())
+                .stock(dto.stock())
+                .category(category)
+                .build();
     }
 
     public List<ProductResponseDTO> toDTOList(List<Product> products) {

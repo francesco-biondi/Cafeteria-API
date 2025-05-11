@@ -8,18 +8,16 @@ import com.progra3.cafeteria_api.model.enums.Role;
 import com.progra3.cafeteria_api.repository.EmployeeRepository;
 import com.progra3.cafeteria_api.service.IEmployeeService;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class EmployeeService implements IEmployeeService{
 
+    private final EmployeeMapper EmployeeMapper;
     private final EmployeeRepository employeeRepository;
-
-    @Autowired
-    public EmployeeService(EmployeeRepository employeeRepository){
-        this.employeeRepository = employeeRepository;
-    }
 
     @Override
     @Transactional
@@ -40,7 +38,7 @@ public class EmployeeService implements IEmployeeService{
         admin.setActive(true);
 
         admin = employeeRepository.save(admin);
-        return EmployeeMapper.toResponseDTO(admin);
+        return EmployeeMapper.toDTO(admin);
     }
 
 
@@ -61,7 +59,7 @@ public class EmployeeService implements IEmployeeService{
         }
 
         LoggedUser.set(employee);
-        return EmployeeMapper.toResponseDTO(employee);
+        return EmployeeMapper.toDTO(employee);
 
     }
 
@@ -84,7 +82,7 @@ public class EmployeeService implements IEmployeeService{
         employee.setActive(true);
 
         Employee saved = employeeRepository.save(employee);
-        return EmployeeMapper.toResponseDTO(saved);
+        return EmployeeMapper.toDTO(saved);
     }
 
     @Override
@@ -104,7 +102,7 @@ public class EmployeeService implements IEmployeeService{
 
         employee.setActive(false);
         Employee updated = employeeRepository.save(employee);
-        return EmployeeMapper.toResponseDTO(updated);
+        return EmployeeMapper.toDTO(updated);
     }
 
 }
