@@ -9,5 +9,5 @@ import java.util.List;
 
 @Repository
 public interface ExpenseRepository extends JpaRepository<Expense, Long> {
-    List<Expense> findByDateBetween (LocalDateTime start, LocalDateTime end);
+    List<Expense> findByDateTimeBetween(LocalDateTime start, LocalDateTime end);
 }

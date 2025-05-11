@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -43,11 +44,8 @@ public class Order {
     @Column(nullable = false)
     private OrderType type;
 
-    @Column(nullable = false)
-    private LocalDate date;
-
-    @Column(nullable = false)
-    private LocalTime time;
+    @Column(name = "date_time", nullable = false)
+    private LocalDateTime dateTime;
 
     @Column(nullable = false)
     private Integer discount = NO_DISCOUNT;

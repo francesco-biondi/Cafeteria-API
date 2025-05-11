@@ -2,8 +2,7 @@ package com.progra3.cafeteria_api.model.dto;
 
 import lombok.Builder;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Builder
@@ -13,8 +12,7 @@ public record OrderResponseDTO (
     String customerName,
     Integer seatingNumber,
     List<ItemResponseDTO> items,
-    LocalDate date,
-    LocalTime time,
+    LocalDateTime dateTime,
     Integer peopleCount,
     Integer discount,
     String status,
