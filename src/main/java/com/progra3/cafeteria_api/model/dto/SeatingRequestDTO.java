@@ -5,6 +5,8 @@ import lombok.Builder;
 
 @Builder
 public record SeatingRequestDTO(
+        Long id,
+
         @NotNull(message = "Number cannot be null")
         @PositiveOrZero(message = "Number must be positive or zero")
         Integer number

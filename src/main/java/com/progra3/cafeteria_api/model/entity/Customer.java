@@ -15,6 +15,8 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @SuperBuilder
 public class Customer extends Person {
+    public static final Integer NO_DISCOUNT = 0;
+
     @Column
-    private Double discount;
+    private Integer discount = NO_DISCOUNT;
 }

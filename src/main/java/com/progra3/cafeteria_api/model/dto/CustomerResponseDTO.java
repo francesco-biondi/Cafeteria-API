@@ -10,5 +10,5 @@ public record CustomerResponseDTO (
     String dni,
     String phoneNumber,
     String email,
-    Double discount
+    Integer discount
 ){}

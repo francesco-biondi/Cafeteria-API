@@ -10,11 +10,10 @@ public record ExpenseRequestDTO (
 
      Long id,
 
-     @NotBlank(message = "Each expense must have a supplier")
-     @Positive(message = "Id must be positive")
+     @NotNull(message = "Each expense must have a supplier")
      Long supplierId,
 
-     @NotBlank(message = "Ammount cannot be null")
+     @NotNull(message = "Ammount cannot be null")
      @Positive(message = "Ammount must be positive")
      Double amount,
 

@@ -3,16 +3,18 @@ package com.progra3.cafeteria_api.model.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 @Builder
 public record SupplierRequestDTO(
     Long id,
 
-    @NotBlank(message = "Legal name cannot be null")
+    @Size(min = 1, max = 50, message = "Name must be between 1 and 50 characters")
     String legalName,
 
     @NotBlank(message = "Trade name cannot be null")
+    @Size(min = 1, max = 50, message = "Name must be between 1 and 50 characters")
     String tradeName,
 
     @Pattern(
@@ -21,12 +23,10 @@ public record SupplierRequestDTO(
     )
     String cuit,
 
-    @NotBlank(message = "Phone number cannot be null")
     @Pattern(regexp = "^\\d{10,13}$", message = "Phone number must be between 10 and 13 numeric digits.")
     String phoneNumber,
 
-    @NotBlank(message = "Email cannot be null")
-    @Email(message = "Invalid mail")
+    @Email(message = "Invalid email format. Expected format: example@domain.com")
     String email,
 
     //TODO change String with an actual Adress class
