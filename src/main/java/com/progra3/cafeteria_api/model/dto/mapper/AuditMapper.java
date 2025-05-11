@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Component
 public class AuditMapper {
-    private ExpenseMapper expenseMapper;
-    private OrderMapper orderMapper;
+    private final ExpenseMapper expenseMapper;
+    private final OrderMapper orderMapper;
 
     public AuditResponseDTO toDTO (Audit audit){
         return AuditResponseDTO.builder()

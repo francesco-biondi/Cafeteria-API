@@ -7,13 +7,11 @@ import com.progra3.cafeteria_api.model.entity.Employee;
 import com.progra3.cafeteria_api.model.entity.Order;
 import com.progra3.cafeteria_api.model.entity.Seating;
 import com.progra3.cafeteria_api.model.enums.OrderStatus;
-import com.progra3.cafeteria_api.model.enums.OrderType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.Clock;
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
 @Component
 @RequiredArgsConstructor
@@ -31,8 +29,7 @@ public class OrderMapper {
                         .stream()
                         .map(itemMapper::toDTO)
                         .toList())
-                .date(order.getDate())
-                .time(order.getTime())
+                .dateTime(order.getDateTime())
                 .peopleCount(order.getPeopleCount())
                 .discount(order.getDiscount())
                 .status(order.getStatus().getName())
@@ -50,8 +47,7 @@ public class OrderMapper {
                 .peopleCount(dto.peopleCount())
                 .discount(customer.getDiscount())
                 .status(OrderStatus.ACTIVE)
-                .date(LocalDate.now(clock))
-                .time(LocalTime.now(clock))
+                .dateTime(LocalDateTime.now(clock))
                 .build();
     }
 }
