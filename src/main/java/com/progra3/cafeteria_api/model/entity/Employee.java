@@ -7,14 +7,11 @@ import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "employees")
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
-@ToString(callSuper = true)
-@EqualsAndHashCode(callSuper = true)
 @SuperBuilder
-@NoArgsConstructor
-@AllArgsConstructor
-
 public class Employee extends Person{
 
     @Column(nullable = false)

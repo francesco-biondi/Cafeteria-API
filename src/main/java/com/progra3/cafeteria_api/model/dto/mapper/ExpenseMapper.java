@@ -20,7 +20,7 @@ public class ExpenseMapper {
                 .supplier(supplierMapper.toDTO(expense.getSupplier()))
                 .amount(expense.getAmount())
                 .comment(expense.getComment())
-                .date(expense.getDate())
+                .date(expense.getDateTime())
                 .build();
     }
 
@@ -30,7 +30,7 @@ public class ExpenseMapper {
                 .supplier(supplier)
                 .amount(dto.amount())
                 .comment(dto.comment())
-                .date(dateTime)
+                .dateTime(dateTime)
                 .build();
     }
 }

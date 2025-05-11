@@ -1,8 +1,8 @@
 package com.progra3.cafeteria_api.service.impl;
 
-import com.progra3.cafeteria_api.model.DTO.EmployeeRequestDTO;
-import com.progra3.cafeteria_api.model.DTO.EmployeeResponseDTO;
-import com.progra3.cafeteria_api.model.DTO.mapper.EmployeeMapper;
+import com.progra3.cafeteria_api.model.dto.EmployeeRequestDTO;
+import com.progra3.cafeteria_api.model.dto.EmployeeResponseDTO;
+import com.progra3.cafeteria_api.model.dto.mapper.EmployeeMapper;
 import com.progra3.cafeteria_api.model.entity.Employee;
 import com.progra3.cafeteria_api.model.enums.Role;
 import com.progra3.cafeteria_api.repository.EmployeeRepository;

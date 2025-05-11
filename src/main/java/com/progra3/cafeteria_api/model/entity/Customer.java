@@ -9,10 +9,12 @@ import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "customer")
-@Data
-@EqualsAndHashCode(callSuper = true)
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 @SuperBuilder
 public class Customer extends Person {
-    @Column()
+    @Column
     private Double discount;
 }

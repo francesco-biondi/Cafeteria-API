@@ -8,7 +8,9 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "expense")
 @AllArgsConstructor
-@Data
+@NoArgsConstructor
+@Getter
+@Setter
 @Builder
 public class Expense {
     @Id
@@ -16,21 +18,22 @@ public class Expense {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "audit_id", nullable = true)
+    @JoinColumn(name = "audit_id")
     private Audit audit;
 
-    @Column(name = "supplier", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "supplier_id", nullable = false)
     private Supplier supplier;
 
     @Column(name = "amount", nullable = false)
     private Double amount;
 
-    @Column(name = "comment")
+    @Column
     private String comment;
 
-    @Column(name = "date", nullable = false)
-    private LocalDateTime date;
+    @Column(name = "date_time", nullable = false)
+    private LocalDateTime dateTime;
 
-    @Column(name = "deleted", nullable = false)
+    @Column(nullable = false)
     private Boolean deleted;
 }

@@ -1,36 +1,36 @@
 package com.progra3.cafeteria_api.model.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
 @Table(name = "supplier")
 @AllArgsConstructor
-@Data
+@NoArgsConstructor
+@Getter
+@Setter
 @Builder
 public class Supplier{
     @Id
+    @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "legal_name", nullable = false)
+    @Column(name = "legal_name")
     private String legalName;
 
     @Column(name = "trade_name", nullable = false)
     private String tradeName;
 
-    @Column(name = "cuit", nullable = false)
+    @Column(name = "cuit")
     private String cuit;
 
-    @Column(name = "phone_number", nullable = false)
+    @Column(name = "phone_number")
     private String phoneNumber;
 
-    @Column(name = "email", nullable = false)
+    @Column(name = "email")
     private String email;
 
-    @Column(name = "address", nullable = false)
+    @Column(name = "address")
     private String address;
 
     @Column(name = "deleted", nullable = false)

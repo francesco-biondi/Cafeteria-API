@@ -2,7 +2,6 @@ package com.progra3.cafeteria_api.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import jakarta.validation.constraints.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,31 +17,22 @@ public class Product {
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false)
-    @NotNull
-    @Size(min = 1, max = 100)
+    @Column(unique = true, nullable = false)
     private String name;
 
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    @Column(name = "description", nullable = false)
-    @NotNull
-    @Size(min = 1, max = 255)
+    @Column
     private String description;
 
-    @Column(name = "price", nullable = false)
-    @NotNull
-    @Positive
+    @Column(nullable = false)
     private Double price;
 
-    @Column(name = "cost", nullable = false)
-    @NotNull
-    @Positive
+    @Column
     private Double cost;
 
-    @Column(name = "stock", nullable = false)
-    @NotNull
-    @Min(0)
+    @Column
     private Integer stock;
 }

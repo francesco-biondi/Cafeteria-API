@@ -12,7 +12,6 @@ public record ProductRequestDTO(
         @Size(min = 1, max = 100, message = "El nombre debe tener entre 1 y 100 caracteres")
         String name,
 
-        @NotNull(message = "La descripción no puede ser nula")
         @Size(min = 1, max = 255, message = "La descripción debe tener entre 1 y 255 caracteres")
         String description,
 
@@ -20,11 +19,9 @@ public record ProductRequestDTO(
         @Positive(message = "El precio debe ser un valor positivo")
         Double price,
 
-        @NotNull(message = "El costo no puede ser nulo")
         @Positive(message = "El costo debe ser un valor positivo")
         Double cost,
 
-        @NotNull(message = "El stock no puede ser nulo")
         @Min(value = 0, message = "El stock no puede ser negativo")
         Integer stock,
 

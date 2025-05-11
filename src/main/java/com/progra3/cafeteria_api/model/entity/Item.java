@@ -5,10 +5,10 @@ import lombok.*;
 
 @Entity
 @Table(name = "items")
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
 public class Item {
     @Id
@@ -23,18 +23,18 @@ public class Item {
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
-    @Column(name = "comment")
+    @Column
     private String comment;
 
     @Column(name = "unit_price", nullable = false)
     private Double unitPrice;
 
-    @Column(name = "quantity", nullable = false)
+    @Column(nullable = false)
     private Integer quantity;
 
     @Column(name = "total_price", nullable = false)
     private Double totalPrice;
 
-    @Column(name = "deleted", nullable = false)
+    @Column(nullable = false)
     private Boolean deleted = false;
 }

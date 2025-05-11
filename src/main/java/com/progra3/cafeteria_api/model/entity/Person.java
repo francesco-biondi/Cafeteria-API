@@ -4,35 +4,33 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-@MappedSuperclass
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
-@ToString
-@EqualsAndHashCode
+@MappedSuperclass
 @SuperBuilder
-@NoArgsConstructor
-@AllArgsConstructor
 public abstract class Person {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false)
+    @Column(nullable = false)
     private String name;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @Column(name = "dni", nullable = false)
+    @Column(unique = true, nullable = false)
     private String dni;
 
-    @Column(name = "phone_number", nullable = false)
+    @Column(unique = true, name = "phone_number", nullable = false)
     private String phoneNumber;
 
-    @Column(name = "email", nullable = false)
+    @Column(unique = true, nullable = false)
     private String email;
 
-    @Column(name = "deleted", nullable = false)
+    @Column(nullable = false)
     private Boolean deleted;
 }

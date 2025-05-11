@@ -11,10 +11,10 @@ import java.util.List;
 
 @Entity
 @Table(name = "orders")
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
 public class Order {
     public static final Integer NO_DISCOUNT = 0;

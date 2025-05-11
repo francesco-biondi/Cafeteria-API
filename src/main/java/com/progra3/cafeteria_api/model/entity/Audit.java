@@ -10,7 +10,9 @@ import java.util.List;
 @Entity
 @Table(name = "audits")
 @AllArgsConstructor
-@Data
+@NoArgsConstructor
+@Getter
+@Setter
 @Builder
 public class Audit{
     @Id
@@ -38,12 +40,12 @@ public class Audit{
     @Column(name = "total_expensed")
     private Double totalExpensed;
 
-    @Column(name = "total")
+    @Column
     private Double total;
 
     @Column(name = "balance_gap")
     private Double balanceGap;
 
-    @Column(name = "deleted", nullable = false)
+    @Column(nullable = false)
     private Boolean deleted;
 }

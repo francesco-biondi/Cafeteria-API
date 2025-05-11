@@ -8,10 +8,10 @@ import java.util.List;
 
 @Entity
 @Table(name = "seating")
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
 public class Seating {
     @Id
@@ -28,6 +28,6 @@ public class Seating {
     @Column(nullable = false)
     private SeatingStatus status;
 
-    @Column(name = "deleted", nullable = false)
+    @Column(nullable = false)
     private Boolean deleted = false;
 }
