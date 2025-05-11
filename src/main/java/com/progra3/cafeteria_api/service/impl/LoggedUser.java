@@ -1,7 +1,6 @@
 package com.progra3.cafeteria_api.service.impl;
 
 import com.progra3.cafeteria_api.model.entity.Employee;
-import org.springframework.util.comparator.NullSafeComparator;
 
 public class LoggedUser {
 

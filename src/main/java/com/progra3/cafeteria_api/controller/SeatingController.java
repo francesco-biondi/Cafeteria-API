@@ -37,7 +37,7 @@ public class SeatingController {
 
     @PutMapping("/{id}")
     public ResponseEntity<SeatingResponseDTO> updateSeating(@RequestBody SeatingRequestDTO dto, @PathVariable Long id) {
-        SeatingResponseDTO seatingResponseDTO = seatingService.updateNumber(id, dto);
+        SeatingResponseDTO seatingResponseDTO = seatingService.updateNumber(id, dto.number());
         return ResponseEntity.ok(seatingResponseDTO);
     }
 

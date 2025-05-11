@@ -1,24 +1,21 @@
 package com.progra3.cafeteria_api.service.impl;
 
-import com.progra3.cafeteria_api.exception.CustomerNotFoundException;
 import com.progra3.cafeteria_api.model.dto.EmployeeRequestDTO;
 import com.progra3.cafeteria_api.model.dto.EmployeeResponseDTO;
 import com.progra3.cafeteria_api.model.dto.mapper.EmployeeMapper;
-import com.progra3.cafeteria_api.model.entity.Customer;
 import com.progra3.cafeteria_api.model.entity.Employee;
 import com.progra3.cafeteria_api.model.enums.Role;
 import com.progra3.cafeteria_api.repository.EmployeeRepository;
 import com.progra3.cafeteria_api.service.IEmployeeService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class EmployeeService implements IEmployeeService{
 
-    private final EmployeeMapper EmployeeMapper;
+    private final EmployeeMapper employeeMapper;
     private final EmployeeRepository employeeRepository;
 
     @Override
@@ -29,24 +26,19 @@ public class EmployeeService implements IEmployeeService{
             throw new RuntimeException("An admin already exists.");
         }
 
-        Employee admin = new Employee();
-        admin.setName(dto.name());
-        admin.setLastName(dto.lastName());
-        admin.setDni(dto.dni());
-        admin.setEmail(dto.email());
-        admin.setPhoneNumber(dto.phoneNumber());
-        admin.setPassword(dto.password());
+        Employee admin = employeeMapper.toEntity(dto);
+
         admin.setRole(Role.ADMIN);
+
         admin.setActive(true);
 
-        admin = employeeRepository.save(admin);
-        return EmployeeMapper.toDTO(admin);
+        return employeeMapper.toDTO(employeeRepository.save(admin));
     }
 
     @Override
     public Employee getEntityById (Long employeeId) {
         if (employeeId == null) return null;
-        return employeeRepository.findById(employeeId).orElseThrow(() -> new EmployeeNotFoundException(employeeId));
+        return employeeRepository.findById(employeeId).orElseThrow(() -> new RuntimeException("employeeId"));
     }
 
     @Override
@@ -65,30 +57,22 @@ public class EmployeeService implements IEmployeeService{
         }
 
         LoggedUser.set(employee);
-        return EmployeeMapper.toDTO(employee);
-
+        return employeeMapper.toDTO(employee);
     }
 
     @Override
     @Transactional
-    public EmployeeResponseDTO createEmployee(EmployeeRequestDTO requestDTO){
+    public EmployeeResponseDTO createEmployee(EmployeeRequestDTO dto){
         Employee loggedUser = LoggedUser.get();
         if(loggedUser == null || loggedUser.getRole() != Role.ADMIN){
             throw new RuntimeException("Only ADMIN can create employees.");
         }
 
-        Employee employee = new Employee();
-        employee.setName(requestDTO.name());
-        employee.setLastName(requestDTO.lastName());
-        employee.setDni(requestDTO.dni());
-        employee.setEmail(requestDTO.email());
-        employee.setPhoneNumber(requestDTO.phoneNumber());
-        employee.setPassword(requestDTO.password());
-        employee.setRole(requestDTO.role());
+        Employee employee = employeeMapper.toEntity(dto);
+
         employee.setActive(true);
 
-        Employee saved = employeeRepository.save(employee);
-        return EmployeeMapper.toDTO(saved);
+        return employeeMapper.toDTO(employeeRepository.save(employee));
     }
 
     @Override
@@ -107,8 +91,7 @@ public class EmployeeService implements IEmployeeService{
         }
 
         employee.setActive(false);
-        Employee updated = employeeRepository.save(employee);
-        return EmployeeMapper.toDTO(updated);
-    }
 
+        return employeeMapper.toDTO(employeeRepository.save(employee));
+    }
 }

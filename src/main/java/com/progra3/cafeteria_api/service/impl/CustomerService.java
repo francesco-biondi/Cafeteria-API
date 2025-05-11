@@ -24,7 +24,7 @@ public class CustomerService implements ICustomerService {
     public CustomerResponseDTO createCustomer(CustomerRequestDTO dto) {
          Customer customer = customerMapper.toEntity(dto);
 
-        if (customerRepository.existByDni(customer.getDni())){
+        if (customerRepository.existsById(customer.getId())){
             customer = getEntityById(customer.getId());
             customer.setDeleted(false);
             customerRepository.save(customer);

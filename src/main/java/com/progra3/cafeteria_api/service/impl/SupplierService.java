@@ -23,7 +23,7 @@ public class SupplierService implements ISupplierService {
     public SupplierResponseDTO createSupplier(SupplierRequestDTO dto) {
         Supplier supplier = supplierMapper.toEntity(dto);
 
-        if (supplierRepository.existByCuit(supplier.getCuit())){
+        if (supplierRepository.existsById(supplier.getId())){
             supplier = getEntityById(supplier.getId());
             supplier.setDeleted(false);
             supplierRepository.save(supplier);
@@ -46,7 +46,7 @@ public class SupplierService implements ISupplierService {
     public SupplierResponseDTO updateSupplier (SupplierRequestDTO dto){
         Supplier supplier = supplierMapper.toEntity(dto);
 
-        if (supplierRepository.existByCuit(supplier.getCuit())){
+        if (supplierRepository.existsById(supplier.getId())){
             supplierRepository.save(supplier);
         }else throw new SupplierNotFoundException(supplier.getId());
 

@@ -12,9 +12,9 @@ public interface ISeatingService {
     SeatingResponseDTO getById(Long id);
     Seating getEntityById(Long id);
     List<SeatingResponseDTO> getAll();
-    SeatingResponseDTO updateNumber(Long id, SeatingRequestDTO seatingRequestDTO);
+    SeatingResponseDTO updateNumber(Long id, Integer number);
 
-    void updateStatus(Long id, SeatingStatus status);
+    SeatingResponseDTO updateStatus(Long id, SeatingStatus status);
     void delete(Long id);
     SeatingResponseDTO getByNumber(Integer number);
 }

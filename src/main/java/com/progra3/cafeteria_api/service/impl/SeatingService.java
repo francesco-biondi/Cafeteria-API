@@ -50,18 +50,19 @@ public class SeatingService implements ISeatingService {
     }
 
     @Override
-    public SeatingResponseDTO updateNumber(Long id, SeatingRequestDTO seatingRequestDTO) {
+    public SeatingResponseDTO updateNumber(Long id, Integer number) {
         Seating seating = getEntityById(id);
-        seating.setNumber(seatingRequestDTO.number());
+        seating.setNumber(number);
 
         return seatingMapper.toDTO(seatingRepository.save(seating));
     }
 
     @Override
-    public void updateStatus(Long id, SeatingStatus status) {
+    public SeatingResponseDTO updateStatus(Long id, SeatingStatus status) {
         Seating seating = getEntityById(id);
         seating.setStatus(status);
-        seatingRepository.save(seating);
+
+        return seatingMapper.toDTO(seatingRepository.save(seating));
     }
 
     @Override
@@ -77,6 +78,4 @@ public class SeatingService implements ISeatingService {
         return seatingMapper.toDTO(seatingRepository.findByNumber(number)
                 .orElseThrow(() -> new SeatingNotFoundException(number)));
     }
-
-
 }
