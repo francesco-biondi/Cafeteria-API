@@ -1,11 +1,8 @@
-package com.progra3.cafeteria_api.model.DTO;
+package com.progra3.cafeteria_api.model.dto;
 
 import com.progra3.cafeteria_api.model.enums.*;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
 
 @Builder
 public record EmployeeRequestDTO (

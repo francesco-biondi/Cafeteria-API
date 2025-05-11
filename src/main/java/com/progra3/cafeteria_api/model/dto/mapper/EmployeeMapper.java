@@ -1,7 +1,7 @@
-package com.progra3.cafeteria_api.model.DTO.mapper;
+package com.progra3.cafeteria_api.model.dto.mapper;
 
-import com.progra3.cafeteria_api.model.DTO.EmployeeRequestDTO;
-import com.progra3.cafeteria_api.model.DTO.EmployeeResponseDTO;
+import com.progra3.cafeteria_api.model.dto.EmployeeRequestDTO;
+import com.progra3.cafeteria_api.model.dto.EmployeeResponseDTO;
 import com.progra3.cafeteria_api.model.entity.Employee;
 
 public class EmployeeMapper {

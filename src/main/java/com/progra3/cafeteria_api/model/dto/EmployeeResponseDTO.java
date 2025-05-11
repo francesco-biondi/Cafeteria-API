@@ -1,7 +1,4 @@
-package com.progra3.cafeteria_api.model.DTO;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
+package com.progra3.cafeteria_api.model.dto;
 
 public record EmployeeResponseDTO(
         Long id,
