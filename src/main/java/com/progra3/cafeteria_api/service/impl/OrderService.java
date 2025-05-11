@@ -84,18 +84,12 @@ public class OrderService implements IOrderService {
         return orderRepository.findByDateTimeBetween(start, end);
     }
 
-
-    //TODO cambiar como el de customer
     @Override
-    public OrderResponseDTO update(Long orderId, OrderRequestDTO dto) throws OrderNotFoundException, IllegalStateException {
-        Order order = getEntityById(orderId);
-
-        validateOrderStatus(order);
-
-        order.setEmployee(employeeService.getEntityById(dto.employeeId()).orElse(null));
-        order.setCustomer(customerService.getEntityById(dto.customerId()).orElse(null));
-        order.setSeating(seatingService.getEntityById(dto.seatingId()));
-        order.setPeopleCount(dto.peopleCount());
+    public OrderResponseDTO update(OrderRequestDTO dto) throws OrderNotFoundException, IllegalStateException {
+        Order order = orderMapper.toEntity(dto,
+                employeeService.getEntityById(dto.employeeId()),
+                customerService.getEntityById(dto.customerId()),
+                seatingService.getEntityById(dto.seatingId()));
 
         recalculate(order);
 
@@ -106,7 +100,7 @@ public class OrderService implements IOrderService {
     public OrderResponseDTO updateDiscount(Long orderId, Integer discount) {
         Order order = getEntityById(orderId);
 
-        validateOrderStatus(order);
+        validateOrderStatus(order.getStatus());
 
         applyDiscount(order, discount);
 
@@ -122,7 +116,7 @@ public class OrderService implements IOrderService {
         else
             seatingService.updateStatus(order.getSeating().getId(), SeatingStatus.FREE);
 
-        validateOrderStatus(order);
+        validateOrderStatus(order.getStatus());
 
         order.setStatus(status);
 
@@ -133,7 +127,7 @@ public class OrderService implements IOrderService {
     public List<OrderResponseDTO> splitOrder(Long originalOrderId, OrderRequestDTO dto, Map<Long, Integer> itemsToMove) {
 
         Order originalOrder = getEntityById(originalOrderId);
-        validateOrderStatus(originalOrder);
+        validateOrderStatus(originalOrder.getStatus());
 
         if (itemsToMove == null || itemsToMove.isEmpty())
             throw new IllegalArgumentException("Items to move cannot be null or empty.");
@@ -143,6 +137,8 @@ public class OrderService implements IOrderService {
         Order destinationOrder = orderRepository.findBySeatingId(dto.seatingId())
                 .orElseGet(() -> createNewOrder(dto));
 
+        //TODO Fran revisa trasferItems pide Map<Long, Integer> itemsToMove, pero desde controller viene Map<Long, ItemRequestDTO>
+        //TODO Lo que te quiero decir que es diferente el formato, por eso tira error
         List<Item> itemsToTransfer = itemService.transferItems(originalOrder, destinationOrder, itemsToMove);
         destinationOrder.setItems(itemsToTransfer);
 
@@ -160,7 +156,7 @@ public class OrderService implements IOrderService {
     public ItemResponseDTO addItem(Long orderId, ItemRequestDTO itemDTO) {
         Order order = getEntityById(orderId);
 
-        validateOrderStatus(order);
+        validateOrderStatus(order.getStatus());
 
         Item newItem = itemService.createItem(order, itemDTO);
 
@@ -176,7 +172,7 @@ public class OrderService implements IOrderService {
     public ItemResponseDTO removeItem(Long orderId, Long itemId) {
         Order order = getEntityById(orderId);
 
-        validateOrderStatus(order);
+        validateOrderStatus(order.getStatus());
 
         Item itemToRemove = itemService.getItemById(order, itemId);
         itemToRemove.setDeleted(true);
@@ -188,12 +184,12 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public ItemResponseDTO updateItem(Long orderId, Long itemId, ItemRequestDTO itemDTO) {
+    public ItemResponseDTO updateItem(Long orderId, ItemRequestDTO itemDTO) {
         Order order = getEntityById(orderId);
 
-        validateOrderStatus(order);
+        validateOrderStatus(order.getStatus());
 
-        Item itemToUpdate = itemService.updateItem(order, itemId, itemDTO);
+        Item itemToUpdate = itemService.updateItem(order, itemDTO);
 
         recalculate(order);
 
@@ -213,9 +209,9 @@ public class OrderService implements IOrderService {
                 .orElseThrow(() -> new OrderNotFoundException(orderId));
     }
 
-    private void validateOrderStatus(Order order) {
-        if (order.getStatus() != OrderStatus.ACTIVE) {
-            throw new OrderModificationNotAllowedException(order.getId(), order.getStatus().getName());
+    private void validateOrderStatus(OrderStatus orderStatus) {
+        if (orderStatus != OrderStatus.ACTIVE) {
+            throw new OrderModificationNotAllowedException(orderStatus.getName());
         }
     }
 
