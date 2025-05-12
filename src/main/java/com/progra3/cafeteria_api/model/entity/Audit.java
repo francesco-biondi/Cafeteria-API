@@ -28,10 +28,12 @@ public class Audit{
     @Column(name = "initial_cash", nullable = false)
     private Double initialCash;
 
-    @OneToMany(mappedBy = "audit", cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "audit_id")
     private List<Order> orders;
 
-    @OneToMany(mappedBy = "audit", cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "audit_id")
     private List<Expense> expenses;
 
     @Column(name = "audit_status", nullable = false)
