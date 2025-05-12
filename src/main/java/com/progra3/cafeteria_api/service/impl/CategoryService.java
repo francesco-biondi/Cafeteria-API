@@ -50,12 +50,11 @@ public class CategoryService implements ICategoryService {
 
     @Override
     public CategoryResponseDTO updateCategory(Long id, CategoryRequestDTO categoryRequestDTO) {
-        Category existingCategory = categoryRepository.findById(id)
+        Category categoryToUpdate = categoryRepository.findById(id)
                 .orElseThrow(() -> new CategoryNotFoundException("Category not found with ID: " + id));
 
-        Category updatedCategory = categoryMapper.toEntity(categoryRequestDTO);
-        updatedCategory.setName(categoryRequestDTO.name());
-        return categoryMapper.toDTO(categoryRepository.save(updatedCategory));
+        categoryToUpdate.setName(categoryRequestDTO.name());
+        return categoryMapper.toDTO(categoryRepository.save(categoryToUpdate));
     }
 
     @Override
