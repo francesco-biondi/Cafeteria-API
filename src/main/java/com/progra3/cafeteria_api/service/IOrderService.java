@@ -3,10 +3,7 @@ package com.progra3.cafeteria_api.service;
 import com.progra3.cafeteria_api.exception.ItemNotFoundException;
 import com.progra3.cafeteria_api.exception.OrderModificationNotAllowedException;
 import com.progra3.cafeteria_api.exception.OrderNotFoundException;
-import com.progra3.cafeteria_api.model.dto.ItemRequestDTO;
-import com.progra3.cafeteria_api.model.dto.ItemResponseDTO;
-import com.progra3.cafeteria_api.model.dto.OrderRequestDTO;
-import com.progra3.cafeteria_api.model.dto.OrderResponseDTO;
+import com.progra3.cafeteria_api.model.dto.*;
 import com.progra3.cafeteria_api.model.entity.Order;
 import com.progra3.cafeteria_api.model.enums.OrderStatus;
 
@@ -27,7 +24,7 @@ public interface IOrderService {
     OrderResponseDTO updateDiscount(Long orderId, Integer discount);
     OrderResponseDTO updateStatus(Long orderId, OrderStatus status);
 
-    List<OrderResponseDTO> splitOrder(Long originalOrderId, OrderRequestDTO dto, List<ItemRequestDTO> itemsToMove);
+    List<OrderResponseDTO> splitOrder(Long originalOrderId, OrderSplitRequestDTO dto) ;
 
     ItemResponseDTO addItem(Long orderId, ItemRequestDTO itemDTO);
     List<ItemResponseDTO> getItems(Long orderId);

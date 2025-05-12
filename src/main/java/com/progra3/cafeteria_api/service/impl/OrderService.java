@@ -8,7 +8,6 @@ import com.progra3.cafeteria_api.model.dto.mapper.ItemMapper;
 import com.progra3.cafeteria_api.model.dto.mapper.OrderMapper;
 import com.progra3.cafeteria_api.model.entity.*;
 import com.progra3.cafeteria_api.model.enums.OrderStatus;
-import com.progra3.cafeteria_api.model.enums.SeatingStatus;
 import com.progra3.cafeteria_api.repository.OrderRepository;
 import com.progra3.cafeteria_api.service.IOrderService;
 import lombok.RequiredArgsConstructor;
@@ -132,18 +131,21 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public List<OrderResponseDTO> splitOrder(Long originalOrderId, OrderRequestDTO dto, List<ItemRequestDTO> itemsToMove) {
+    public List<OrderResponseDTO> splitOrder(Long originalOrderId, OrderSplitRequestDTO dto) {
 
         Order originalOrder = getEntityById(originalOrderId);
         validateOrderStatus(originalOrder.getStatus());
 
+        OrderRequestDTO destinationOrderDto = dto.order();
+        List<ItemRequestDTO> itemsToMove = dto.itemsToMove();
+
         if (itemsToMove == null || itemsToMove.isEmpty())
             throw new IllegalArgumentException("Items to move cannot be null or empty.");
-        if (originalOrder.getPeopleCount() < 1 || originalOrder.getPeopleCount() < dto.peopleCount())
+        if (originalOrder.getPeopleCount() < 1 || originalOrder.getPeopleCount() < destinationOrderDto.peopleCount())
             throw new IllegalArgumentException("Invalid number of people to move.");
 
-        Order destinationOrder = orderRepository.findBySeatingId(dto.seatingId())
-                .orElseGet(() -> createNewOrder(dto));
+        Order destinationOrder = orderRepository.findBySeatingId(destinationOrderDto.seatingId())
+                .orElseGet(() -> createNewOrder(destinationOrderDto));
 
         List<Item> itemsToTransfer = itemService.transferItems(originalOrder, destinationOrder, itemsToMove);
         destinationOrder.setItems(itemsToTransfer);

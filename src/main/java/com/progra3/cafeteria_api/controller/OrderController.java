@@ -1,9 +1,6 @@
 package com.progra3.cafeteria_api.controller;
 
-import com.progra3.cafeteria_api.model.dto.ItemRequestDTO;
-import com.progra3.cafeteria_api.model.dto.ItemResponseDTO;
-import com.progra3.cafeteria_api.model.dto.OrderRequestDTO;
-import com.progra3.cafeteria_api.model.dto.OrderResponseDTO;
+import com.progra3.cafeteria_api.model.dto.*;
 import com.progra3.cafeteria_api.model.enums.OrderStatus;
 import com.progra3.cafeteria_api.service.impl.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -115,9 +112,8 @@ public class OrderController {
     @PatchMapping("/{orderId}/split")
     public ResponseEntity<List<OrderResponseDTO>> splitOrder(
             @PathVariable @NotNull Long orderId,
-            @RequestBody @Valid OrderRequestDTO dto,
-            @RequestBody @Valid List<ItemRequestDTO> itemsToMove) {
-        return ResponseEntity.ok(orderService.splitOrder(orderId, dto, itemsToMove));
+            @RequestBody @Valid OrderSplitRequestDTO dto) {
+        return ResponseEntity.ok(orderService.splitOrder(orderId, dto));
     }
 
     @Operation(summary = "Finalize an order", description = "Marks the order as finalized, preventing further changes")
