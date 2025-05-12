@@ -23,7 +23,7 @@ public interface IOrderService {
     List<OrderResponseDTO> getBySeating(Long seatingId);
     List<OrderResponseDTO> getAll();
     List<Order> getByDateTimeBetween(LocalDateTime start, LocalDateTime end);
-    OrderResponseDTO update(OrderRequestDTO dto);
+    OrderResponseDTO update(Long orderId, OrderRequestDTO dto);
     OrderResponseDTO updateDiscount(Long orderId, Integer discount);
     OrderResponseDTO updateStatus(Long orderId, OrderStatus status);
 
@@ -32,5 +32,5 @@ public interface IOrderService {
     ItemResponseDTO addItem(Long orderId, ItemRequestDTO itemDTO);
     List<ItemResponseDTO> getItems(Long orderId);
     ItemResponseDTO removeItem(Long orderId, Long itemId);
-    ItemResponseDTO updateItem(Long orderId, ItemRequestDTO itemDTO);
+    ItemResponseDTO updateItem(Long orderId, Long itemId, ItemRequestDTO itemDTO);
 }

@@ -5,6 +5,7 @@ import com.progra3.cafeteria_api.model.dto.SeatingRequestDTO;
 import com.progra3.cafeteria_api.model.dto.SeatingResponseDTO;
 import com.progra3.cafeteria_api.model.dto.mapper.SeatingMapper;
 import com.progra3.cafeteria_api.model.entity.Seating;
+import com.progra3.cafeteria_api.model.enums.OrderStatus;
 import com.progra3.cafeteria_api.model.enums.SeatingStatus;
 import com.progra3.cafeteria_api.repository.SeatingRepository;
 import com.progra3.cafeteria_api.service.ISeatingService;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -37,8 +39,10 @@ public class SeatingService implements ISeatingService {
 
     @Override
     public Seating getEntityById(Long id) {
-        return seatingRepository.findById(id)
-                .orElseThrow(() -> new SeatingNotFoundException(id));
+        return Optional.ofNullable(id)
+                .map(customer -> seatingRepository.findById(id)
+                        .orElseThrow(() -> new SeatingNotFoundException(id)))
+                .orElse(null);
     }
 
     @Override
@@ -58,9 +62,14 @@ public class SeatingService implements ISeatingService {
     }
 
     @Override
-    public SeatingResponseDTO updateStatus(Long id, SeatingStatus status) {
-        Seating seating = getEntityById(id);
-        seating.setStatus(status);
+    public SeatingResponseDTO updateStatus(Seating seating, OrderStatus status) {
+        SeatingStatus newSeatingStatus = switch (status) {
+            case BILLED -> SeatingStatus.BILLING;
+            case FINALIZED, CANCELED -> SeatingStatus.FREE;
+            default -> null;
+        };
+
+        seating.setStatus(newSeatingStatus);
 
         return seatingMapper.toDTO(seatingRepository.save(seating));
     }

@@ -9,8 +9,6 @@ import lombok.Builder;
 @Builder
 @ValidOrderRequest
 public record OrderRequestDTO(
-        Long id,
-
         Long seatingId,
 
         Long employeeId,
@@ -21,8 +19,5 @@ public record OrderRequestDTO(
         OrderType orderType,
 
         @Min(value = 1, message = "It must be at least 1 person")
-        Integer peopleCount,
-
-        @Size(max = 100, message = "Discount must be between 0 and 100")
-        Integer discount
+        Integer peopleCount
 ) {}

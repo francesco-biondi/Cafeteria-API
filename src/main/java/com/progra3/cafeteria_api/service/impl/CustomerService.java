@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -65,8 +66,10 @@ public class CustomerService implements ICustomerService {
 
     @Override
     public Customer getEntityById (Long customerId) {
-        if (customerId == null) return null;
-        return customerRepository.findById(customerId).orElseThrow(() -> new CustomerNotFoundException(customerId));
+        return Optional.ofNullable(customerId)
+                .map(customer -> customerRepository.findById(customerId)
+                        .orElseThrow(() -> new CustomerNotFoundException(customerId)))
+                .orElse(null);
     }
 
     @Override

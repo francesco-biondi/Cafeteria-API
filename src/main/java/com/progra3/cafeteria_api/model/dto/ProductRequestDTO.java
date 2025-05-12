@@ -5,8 +5,6 @@ import lombok.Builder;
 
 @Builder
 public record ProductRequestDTO(
-        Long id,
-
         @NotNull(message = "Category id cannot be null")
         Long categoryId,
 

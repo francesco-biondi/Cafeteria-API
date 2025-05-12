@@ -1,5 +1,6 @@
 package com.progra3.cafeteria_api.model.dto;
 
+import com.progra3.cafeteria_api.model.enums.OrderType;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
@@ -11,6 +12,7 @@ public record OrderResponseDTO (
     String employeeName,
     String customerName,
     Integer seatingNumber,
+    OrderType orderType,
     List<ItemResponseDTO> items,
     LocalDateTime dateTime,
     Integer peopleCount,
