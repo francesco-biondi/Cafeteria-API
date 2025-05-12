@@ -38,6 +38,7 @@ public class ProductMapper {
                 .cost(dto.cost())
                 .stock(dto.stock())
                 .category(category)
+                .deleted(false)
                 .build();
     }
 
