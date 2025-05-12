@@ -1,7 +1,5 @@
 package com.progra3.cafeteria_api.controller;
 
-import com.progra3.cafeteria_api.exception.OrderModificationNotAllowedException;
-import com.progra3.cafeteria_api.exception.OrderNotFoundException;
 import com.progra3.cafeteria_api.model.dto.ItemRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ItemResponseDTO;
 import com.progra3.cafeteria_api.model.dto.OrderRequestDTO;
@@ -14,14 +12,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import com.progra3.cafeteria_api.exception.ItemNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -101,7 +96,6 @@ public class OrderController {
     @PutMapping("/{orderId}/items/{itemId}")
     public ResponseEntity<ItemResponseDTO> updateItem(
             @PathVariable Long orderId,
-            @PathVariable Long itemId,
             @RequestBody @Valid ItemRequestDTO dto) {
         return ResponseEntity.ok(orderService.updateItem(orderId, dto));
     }
@@ -121,7 +115,7 @@ public class OrderController {
     public ResponseEntity<List<OrderResponseDTO>> splitOrder(
             @PathVariable Long id,
             @RequestBody @Valid OrderRequestDTO dto,
-            @RequestParam Map<Long, ItemRequestDTO> itemsToMove) {
+            @RequestParam List<ItemRequestDTO> itemsToMove) {
         return ResponseEntity.ok(orderService.splitOrder(id, dto, itemsToMove));
     }
 
@@ -144,29 +138,6 @@ public class OrderController {
     @DeleteMapping("/{id}/cancel")
     public ResponseEntity<OrderResponseDTO> cancelOrder(@PathVariable Long id) {
         return ResponseEntity.ok(orderService.updateStatus(id, OrderStatus.CANCELED));
-    }
-
-    // ====== Exception Handlers ======
-
-    @ExceptionHandler(ItemNotFoundException.class)
-    public ResponseEntity<String> handleItemNotFound(ItemNotFoundException e) {
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(e.getMessage());
-    }
-
-    @ExceptionHandler(OrderNotFoundException.class)
-    public ResponseEntity<String> handleItemNotFound(OrderNotFoundException e) {
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(e.getMessage());
-    }
-
-    @ExceptionHandler(OrderModificationNotAllowedException.class)
-    public ResponseEntity<String> handleOrderModificationNotAllowed(OrderModificationNotAllowedException e) {
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(e.getMessage());
     }
 
 }

@@ -56,39 +56,51 @@ public class ItemService implements IItemService {
     }
 
     @Override
-    public List<Item> transferItems(Order fromOrder, Order toOrder, Map<Long, Integer> itemsToMove) {
-        return itemsToMove.entrySet().stream()
-                .map(entry -> {
-                    Long itemId = entry.getKey();
-                    int quantityToMove = entry.getValue();
-
-                    Item originalItem = fromOrder.getItems().stream()
-                            .filter(i -> i.getId().equals(itemId) && !i.getDeleted())
-                            .findFirst()
-                            .orElseThrow(() -> new ItemNotFoundException(itemId));
-
-                    if (quantityToMove <= 0 || quantityToMove > originalItem.getQuantity()) {
-                        throw new IllegalArgumentException("Invalid quantity for item ID: " + itemId);
-                    }
-
-                    if (quantityToMove == originalItem.getQuantity()) {
-                        fromOrder.getItems().remove(originalItem);
-                        originalItem.setOrder(toOrder);
-                        return originalItem;
-                    } else {
-                        originalItem.setQuantity(originalItem.getQuantity() - quantityToMove);
-                        return Item.builder()
-                                .product(originalItem.getProduct())
-                                .order(toOrder)
-                                .comment(originalItem.getComment())
-                                .unitPrice(originalItem.getUnitPrice())
-                                .quantity(quantityToMove)
-                                .totalPrice(originalItem.getUnitPrice() * quantityToMove)
-                                .deleted(false)
-                                .build();
-                    }
-                })
+    public List<Item> transferItems(Order fromOrder, Order toOrder, List<ItemRequestDTO> itemsToMove) {
+        return itemsToMove.stream()
+                .map(dto -> transferItem(fromOrder, toOrder, dto))
                 .toList();
     }
-    
+
+
+    private Item findItemInOrder(Order order, Long itemId) {
+        return order.getItems().stream()
+                .filter(item -> item.getId().equals(itemId) && !item.getDeleted())
+                .findFirst()
+                .orElseThrow(() -> new ItemNotFoundException(itemId));
+    }
+
+    private void validateTransferQuantity(Long itemId, int quantityToMove, int availableQuantity) {
+        if (quantityToMove < 1 || quantityToMove > availableQuantity) {
+            throw new IllegalArgumentException("Invalid quantity for item ID: " + itemId);
+        }
+    }
+
+    private Item transferItem(Order fromOrder, Order toOrder, ItemRequestDTO dto) {
+        Long itemId = dto.id();
+        int quantityToMove = dto.quantity();
+
+        Item originalItem = findItemInOrder(fromOrder, itemId);
+        validateTransferQuantity(itemId, quantityToMove, originalItem.getQuantity());
+
+        if (quantityToMove == originalItem.getQuantity()) {
+            fromOrder.getItems().remove(originalItem);
+            originalItem.setOrder(toOrder);
+            return originalItem;
+        }
+
+        originalItem.setQuantity(originalItem.getQuantity() - quantityToMove);
+
+        return Item.builder()
+                .product(originalItem.getProduct())
+                .order(toOrder)
+                .comment(originalItem.getComment())
+                .unitPrice(originalItem.getUnitPrice())
+                .quantity(quantityToMove)
+                .totalPrice(originalItem.getUnitPrice() * quantityToMove)
+                .build();
+    }
+
+
+
 }

@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -77,16 +78,20 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public List<Order> getByDateTimeBetween(LocalDateTime start, LocalDateTime end){
-        if (start.isAfter(end)){
+    public List<Order> getByDateTimeBetween(LocalDateTime start, LocalDateTime end) {
+        if (start.isAfter(end)) {
             throw new InvalidDateException("Start should be earlier than end");
         }
         return orderRepository.findByDateTimeBetween(start, end);
     }
 
     @Override
-    public OrderResponseDTO update(OrderRequestDTO dto) throws OrderNotFoundException, IllegalStateException {
-        Order order = orderMapper.toEntity(dto,
+    public OrderResponseDTO update(OrderRequestDTO dto) {
+        Order order = getEntityById(dto.id());
+
+        validateOrderStatus(order.getStatus());
+
+        order = orderMapper.toEntity(dto,
                 employeeService.getEntityById(dto.employeeId()),
                 customerService.getEntityById(dto.customerId()),
                 seatingService.getEntityById(dto.seatingId()));
@@ -108,37 +113,33 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public OrderResponseDTO updateStatus(Long id, OrderStatus status){
+    public OrderResponseDTO updateStatus(Long id, OrderStatus newStatus) {
         Order order = getEntityById(id);
-
-        if (status.equals(OrderStatus.BILLED))
-            seatingService.updateStatus(order.getSeating().getId(), SeatingStatus.BILLING);
-        else
-            seatingService.updateStatus(order.getSeating().getId(), SeatingStatus.FREE);
 
         validateOrderStatus(order.getStatus());
 
-        order.setStatus(status);
+        updateSeatingStatus(order.getSeating().getId(), newStatus);
 
-        return orderMapper.toDTO(orderRepository.save(order));
+        order.setStatus(newStatus);
+
+        Order savedOrder = orderRepository.save(order);
+        return orderMapper.toDTO(savedOrder);
     }
 
     @Override
-    public List<OrderResponseDTO> splitOrder(Long originalOrderId, OrderRequestDTO dto, Map<Long, Integer> itemsToMove) {
+    public List<OrderResponseDTO> splitOrder(Long originalOrderId, OrderRequestDTO dto, List<ItemRequestDTO> itemsToMove) {
 
         Order originalOrder = getEntityById(originalOrderId);
         validateOrderStatus(originalOrder.getStatus());
 
         if (itemsToMove == null || itemsToMove.isEmpty())
             throw new IllegalArgumentException("Items to move cannot be null or empty.");
-        if (originalOrder.getPeopleCount() < dto.peopleCount())
+        if (originalOrder.getPeopleCount() < 1 || originalOrder.getPeopleCount() < dto.peopleCount())
             throw new IllegalArgumentException("Invalid number of people to move.");
 
         Order destinationOrder = orderRepository.findBySeatingId(dto.seatingId())
                 .orElseGet(() -> createNewOrder(dto));
 
-        //TODO Fran revisa trasferItems pide Map<Long, Integer> itemsToMove, pero desde controller viene Map<Long, ItemRequestDTO>
-        //TODO Lo que te quiero decir que es diferente el formato, por eso tira error
         List<Item> itemsToTransfer = itemService.transferItems(originalOrder, destinationOrder, itemsToMove);
         destinationOrder.setItems(itemsToTransfer);
 
@@ -204,6 +205,27 @@ public class OrderService implements IOrderService {
         return itemService.getItemsByOrder(order);
     }
 
+    private Order createNewOrder(OrderRequestDTO dto) {
+        Employee employee = Optional.ofNullable(dto.employeeId())
+                .map(employeeService::getEntityById)
+                .orElse(null);
+
+        Customer customer = Optional.ofNullable(dto.customerId())
+                .map(customerService::getEntityById)
+                .orElse(null);
+
+        Seating seating = Optional.ofNullable(dto.seatingId())
+                .map(seatingService::getEntityById)
+                .orElse(null);
+
+        return orderMapper.toEntity(dto, employee, customer, seating);
+    }
+
+    private void applyDiscount(Order order, Integer discount) {
+        order.setDiscount(discount);
+        recalculate(order);
+    }
+
     private Order getEntityById(Long orderId) {
         return orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderNotFoundException(orderId));
@@ -215,19 +237,16 @@ public class OrderService implements IOrderService {
         }
     }
 
-    private Order createNewOrder(OrderRequestDTO dto) {
-        Employee employee = employeeService.getEntityById(dto.employeeId());
-        Customer customer = customerService.getEntityById(dto.customerId());
-        Seating seating = null;
-        if (dto.seatingId() != null)
-            seating = seatingService.getEntityById(dto.seatingId());
+    private void updateSeatingStatus(Long seatingId, OrderStatus status) {
+        SeatingStatus newSeatingStatus = switch (status) {
+            case BILLED -> SeatingStatus.BILLING;
+            case FINALIZED, CANCELED -> SeatingStatus.FREE;
+            default -> null;
+        };
 
-        return orderMapper.toEntity(dto, employee, customer, seating);
-    }
-
-    private void applyDiscount(Order order, Integer discount) {
-        order.setDiscount(discount);
-        recalculate(order);
+        if (newSeatingStatus != null) {
+            seatingService.updateStatus(seatingId, newSeatingStatus);
+        }
     }
 
     private void calculateSubtotal(Order order) {

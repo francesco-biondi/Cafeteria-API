@@ -23,14 +23,14 @@ public interface IOrderService {
     List<OrderResponseDTO> getBySeating(Long seatingId);
     List<OrderResponseDTO> getAll();
     List<Order> getByDateTimeBetween(LocalDateTime start, LocalDateTime end);
-    OrderResponseDTO update(OrderRequestDTO dto) throws OrderNotFoundException, OrderModificationNotAllowedException;
-    OrderResponseDTO updateDiscount(Long orderId, Integer discount) throws OrderNotFoundException, OrderModificationNotAllowedException;
-    OrderResponseDTO updateStatus(Long orderId, OrderStatus status) throws OrderNotFoundException, OrderModificationNotAllowedException;
+    OrderResponseDTO update(OrderRequestDTO dto);
+    OrderResponseDTO updateDiscount(Long orderId, Integer discount);
+    OrderResponseDTO updateStatus(Long orderId, OrderStatus status);
 
-    List<OrderResponseDTO> splitOrder(Long originalOrderId, OrderRequestDTO dto, Map<Long, Integer> itemsToMove) throws OrderNotFoundException, OrderModificationNotAllowedException;
+    List<OrderResponseDTO> splitOrder(Long originalOrderId, OrderRequestDTO dto, List<ItemRequestDTO> itemsToMove);
 
-    ItemResponseDTO addItem(Long orderId, ItemRequestDTO itemDTO) throws OrderNotFoundException, OrderModificationNotAllowedException;
-    List<ItemResponseDTO> getItems(Long orderId) throws OrderNotFoundException;
-    ItemResponseDTO removeItem(Long orderId, Long itemId) throws OrderNotFoundException, ItemNotFoundException, OrderModificationNotAllowedException;
-    ItemResponseDTO updateItem(Long orderId, ItemRequestDTO itemDTO) throws OrderNotFoundException, ItemNotFoundException, OrderModificationNotAllowedException;
+    ItemResponseDTO addItem(Long orderId, ItemRequestDTO itemDTO);
+    List<ItemResponseDTO> getItems(Long orderId);
+    ItemResponseDTO removeItem(Long orderId, Long itemId);
+    ItemResponseDTO updateItem(Long orderId, ItemRequestDTO itemDTO);
 }

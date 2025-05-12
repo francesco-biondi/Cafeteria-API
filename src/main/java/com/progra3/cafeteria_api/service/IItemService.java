@@ -17,6 +17,6 @@ public interface IItemService {
 
     List<ItemResponseDTO> getItemsByOrder(Order order);
 
-    List<Item> transferItems(Order fromOrder, Order toOrder, Map<Long, Integer> itemsToMove);
+    List<Item> transferItems(Order fromOrder, Order toOrder, List<ItemRequestDTO> itemsToMove);
 
 }
