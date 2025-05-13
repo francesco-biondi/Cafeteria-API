@@ -8,8 +8,6 @@ import lombok.*;
 
 @Builder
 public record SupplierRequestDTO(
-    Long id,
-
     @Size(min = 1, max = 50, message = "Name must be between 1 and 50 characters")
     String legalName,
 

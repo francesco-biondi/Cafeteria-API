@@ -12,8 +12,6 @@ import java.time.LocalDateTime;
 
 @Builder
 public record AuditRequestDTO(
-        Long id,
-
         @NotBlank(message = "Initial cash cannot be null")
         @PositiveOrZero(message = "Initial cash cannot be negative")
         Double initialCash

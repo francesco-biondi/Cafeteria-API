@@ -22,7 +22,6 @@ public class SupplierMapper {
 
     public Supplier toEntity (SupplierRequestDTO dto){
         return Supplier.builder()
-                .id(dto.id())
                 .legalName(dto.legalName())
                 .tradeName(dto.tradeName())
                 .cuit(dto.cuit())
