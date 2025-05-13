@@ -6,6 +6,7 @@ import com.progra3.cafeteria_api.model.dto.CategoryRequestDTO;
 import com.progra3.cafeteria_api.model.dto.CategoryResponseDTO;
 import com.progra3.cafeteria_api.model.dto.mapper.CategoryMapper;
 import com.progra3.cafeteria_api.model.entity.Category;
+import com.progra3.cafeteria_api.model.entity.Product;
 import com.progra3.cafeteria_api.repository.CategoryRepository;
 import com.progra3.cafeteria_api.service.ICategoryService;
 import lombok.RequiredArgsConstructor;
@@ -50,19 +51,18 @@ public class CategoryService implements ICategoryService {
 
     @Override
     public CategoryResponseDTO updateCategory(Long id, CategoryRequestDTO categoryRequestDTO) {
-        Category existingCategory = categoryRepository.findById(id)
+        Category categoryToUpdate = categoryRepository.findById(id)
                 .orElseThrow(() -> new CategoryNotFoundException("Category not found with ID: " + id));
 
-        Category updatedCategory = categoryMapper.toEntity(categoryRequestDTO);
-        updatedCategory.setName(categoryRequestDTO.name());
-        return categoryMapper.toDTO(categoryRepository.save(updatedCategory));
+        categoryToUpdate.setName(categoryRequestDTO.name());
+        return categoryMapper.toDTO(categoryRepository.save(categoryToUpdate));
     }
 
     @Override
     public void deleteCategory(Long id) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new CategoryNotFoundException("Category not found with ID: " + id));
-        if (!category.getProducts().isEmpty()) {
+        if (category.getProducts().stream().anyMatch(product -> !product.getDeleted())) {
             throw new CannotDeleteCategoryException("Cannot delete category with associated products.");
         }
         categoryRepository.delete(category);

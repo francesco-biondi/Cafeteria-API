@@ -32,13 +32,13 @@ public class ProductMapper {
 
     public Product toEntity(ProductRequestDTO dto, Category category) {
         return Product.builder()
-                .id(dto.id())
                 .name(dto.name())
                 .description(dto.description())
                 .price(dto.price())
                 .cost(dto.cost())
                 .stock(dto.stock())
                 .category(category)
+                .deleted(false)
                 .build();
     }
 

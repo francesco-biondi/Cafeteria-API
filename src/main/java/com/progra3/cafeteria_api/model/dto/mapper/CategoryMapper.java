@@ -6,6 +6,9 @@ import com.progra3.cafeteria_api.model.entity.Category;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.Optional;
+
 @Component
 @RequiredArgsConstructor
 public class CategoryMapper {
@@ -16,7 +19,9 @@ public class CategoryMapper {
         return CategoryResponseDTO.builder()
                 .id(category.getId())
                 .name(category.getName())
-                .products(productMapper.toDTOList(category.getProducts()))
+                .products(Optional.ofNullable(category.getProducts())
+                        .map(productMapper::toDTOList)
+                        .orElse(List.of()))
                 .build();
     }
 

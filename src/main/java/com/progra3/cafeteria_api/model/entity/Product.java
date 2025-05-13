@@ -37,5 +37,5 @@ public class Product {
     private Integer stock;
 
     @Column
-    private Boolean deleted;
+    private Boolean deleted = false;
 }

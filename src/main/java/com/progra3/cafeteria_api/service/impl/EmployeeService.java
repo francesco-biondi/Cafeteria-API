@@ -1,5 +1,6 @@
 package com.progra3.cafeteria_api.service.impl;
 
+import com.progra3.cafeteria_api.exception.CustomerNotFoundException;
 import com.progra3.cafeteria_api.model.dto.EmployeeRequestDTO;
 import com.progra3.cafeteria_api.model.dto.EmployeeResponseDTO;
 import com.progra3.cafeteria_api.model.dto.mapper.EmployeeMapper;
@@ -10,6 +11,8 @@ import com.progra3.cafeteria_api.service.IEmployeeService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -37,8 +40,10 @@ public class EmployeeService implements IEmployeeService{
 
     @Override
     public Employee getEntityById (Long employeeId) {
-        if (employeeId == null) return null;
-        return employeeRepository.findById(employeeId).orElseThrow(() -> new RuntimeException("employeeId"));
+        return Optional.ofNullable(employeeId)
+                .map(customer -> employeeRepository.findById(employeeId)
+                        .orElseThrow(() -> new CustomerNotFoundException(employeeId)))
+                .orElse(null);
     }
 
     @Override

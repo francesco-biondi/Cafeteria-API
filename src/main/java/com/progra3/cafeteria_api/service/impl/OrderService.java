@@ -8,7 +8,6 @@ import com.progra3.cafeteria_api.model.dto.mapper.ItemMapper;
 import com.progra3.cafeteria_api.model.dto.mapper.OrderMapper;
 import com.progra3.cafeteria_api.model.entity.*;
 import com.progra3.cafeteria_api.model.enums.OrderStatus;
-import com.progra3.cafeteria_api.model.enums.SeatingStatus;
 import com.progra3.cafeteria_api.repository.OrderRepository;
 import com.progra3.cafeteria_api.service.IOrderService;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -36,6 +34,8 @@ public class OrderService implements IOrderService {
     @Override
     public OrderResponseDTO create(OrderRequestDTO dto) {
         Order order = createNewOrder(dto);
+
+        recalculate(order);
 
         return orderMapper.toDTO(orderRepository.save(order));
     }
@@ -86,15 +86,19 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public OrderResponseDTO update(OrderRequestDTO dto) {
-        Order order = getEntityById(dto.id());
+    public OrderResponseDTO update(Long orderId, OrderRequestDTO dto) {
+        Order order = getEntityById(orderId);
 
         validateOrderStatus(order.getStatus());
 
-        order = orderMapper.toEntity(dto,
-                employeeService.getEntityById(dto.employeeId()),
-                customerService.getEntityById(dto.customerId()),
-                seatingService.getEntityById(dto.seatingId()));
+        order.setEmployee(employeeService.getEntityById(dto.employeeId()));
+        order.setCustomer(customerService.getEntityById(dto.customerId()));
+        order.setSeating(seatingService.getEntityById(dto.seatingId()));
+        order.setPeopleCount(dto.peopleCount());
+        order.setType(dto.orderType());
+        order.setDiscount(Optional.ofNullable(order.getCustomer())
+                .map(Customer::getDiscount)
+                .orElse(order.getDiscount()));
 
         recalculate(order);
 
@@ -113,12 +117,12 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public OrderResponseDTO updateStatus(Long id, OrderStatus newStatus) {
-        Order order = getEntityById(id);
+    public OrderResponseDTO updateStatus(Long orderId, OrderStatus newStatus) {
+        Order order = getEntityById(orderId);
 
         validateOrderStatus(order.getStatus());
 
-        updateSeatingStatus(order.getSeating().getId(), newStatus);
+        seatingService.updateStatus(order.getSeating(), newStatus);
 
         order.setStatus(newStatus);
 
@@ -127,18 +131,21 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public List<OrderResponseDTO> splitOrder(Long originalOrderId, OrderRequestDTO dto, List<ItemRequestDTO> itemsToMove) {
+    public List<OrderResponseDTO> splitOrder(Long originalOrderId, OrderSplitRequestDTO dto) {
 
         Order originalOrder = getEntityById(originalOrderId);
         validateOrderStatus(originalOrder.getStatus());
 
+        OrderRequestDTO destinationOrderDto = dto.order();
+        List<ItemRequestDTO> itemsToMove = dto.itemsToMove();
+
         if (itemsToMove == null || itemsToMove.isEmpty())
             throw new IllegalArgumentException("Items to move cannot be null or empty.");
-        if (originalOrder.getPeopleCount() < 1 || originalOrder.getPeopleCount() < dto.peopleCount())
+        if (originalOrder.getPeopleCount() < 1 || originalOrder.getPeopleCount() < destinationOrderDto.peopleCount())
             throw new IllegalArgumentException("Invalid number of people to move.");
 
-        Order destinationOrder = orderRepository.findBySeatingId(dto.seatingId())
-                .orElseGet(() -> createNewOrder(dto));
+        Order destinationOrder = orderRepository.findBySeatingId(destinationOrderDto.seatingId())
+                .orElseGet(() -> createNewOrder(destinationOrderDto));
 
         List<Item> itemsToTransfer = itemService.transferItems(originalOrder, destinationOrder, itemsToMove);
         destinationOrder.setItems(itemsToTransfer);
@@ -175,7 +182,7 @@ public class OrderService implements IOrderService {
 
         validateOrderStatus(order.getStatus());
 
-        Item itemToRemove = itemService.getItemById(order, itemId);
+        Item itemToRemove = itemService.getEntityById(itemId);
         itemToRemove.setDeleted(true);
 
         recalculate(order);
@@ -185,12 +192,12 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public ItemResponseDTO updateItem(Long orderId, ItemRequestDTO itemDTO) {
+    public ItemResponseDTO updateItem(Long orderId, Long itemId, ItemRequestDTO itemDTO) {
         Order order = getEntityById(orderId);
 
         validateOrderStatus(order.getStatus());
 
-        Item itemToUpdate = itemService.updateItem(order, itemDTO);
+        Item itemToUpdate = itemService.updateItem(itemId, itemDTO);
 
         recalculate(order);
 
@@ -201,18 +208,13 @@ public class OrderService implements IOrderService {
 
     @Override
     public List<ItemResponseDTO> getItems(Long orderId) {
-        Order order = getEntityById(orderId);
-        return itemService.getItemsByOrder(order);
+        return itemService.getItemsByOrder(orderId);
     }
 
     private Order createNewOrder(OrderRequestDTO dto) {
-        Employee employee = Optional.ofNullable(dto.employeeId())
-                .map(employeeService::getEntityById)
-                .orElse(null);
+        Employee employee = employeeService.getEntityById(dto.employeeId());
 
-        Customer customer = Optional.ofNullable(dto.customerId())
-                .map(customerService::getEntityById)
-                .orElse(null);
+        Customer customer = customerService.getEntityById(dto.customerId());
 
         Seating seating = Optional.ofNullable(dto.seatingId())
                 .map(seatingService::getEntityById)
@@ -237,21 +239,11 @@ public class OrderService implements IOrderService {
         }
     }
 
-    private void updateSeatingStatus(Long seatingId, OrderStatus status) {
-        SeatingStatus newSeatingStatus = switch (status) {
-            case BILLED -> SeatingStatus.BILLING;
-            case FINALIZED, CANCELED -> SeatingStatus.FREE;
-            default -> null;
-        };
-
-        if (newSeatingStatus != null) {
-            seatingService.updateStatus(seatingId, newSeatingStatus);
-        }
-    }
-
     private void calculateSubtotal(Order order) {
         order.setSubtotal(
-                order.getItems().stream()
+                Optional.ofNullable(order.getItems())
+                        .orElse(List.of())
+                        .stream()
                         .filter(item -> !item.getDeleted())
                         .mapToDouble(Item::getTotalPrice)
                         .sum()

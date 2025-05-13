@@ -1,15 +1,15 @@
 package com.progra3.cafeteria_api.controller;
 
-import com.progra3.cafeteria_api.model.dto.ItemRequestDTO;
-import com.progra3.cafeteria_api.model.dto.ItemResponseDTO;
-import com.progra3.cafeteria_api.model.dto.OrderRequestDTO;
-import com.progra3.cafeteria_api.model.dto.OrderResponseDTO;
+import com.progra3.cafeteria_api.model.dto.*;
 import com.progra3.cafeteria_api.model.enums.OrderStatus;
 import com.progra3.cafeteria_api.service.impl.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
@@ -48,26 +48,23 @@ public class OrderController {
     @ApiResponse(responseCode = "200", description = "Order found and returned")
     @ApiResponse(responseCode = "404", description = "Order not found")
     @GetMapping("/{id}")
-    public ResponseEntity<OrderResponseDTO> getById(@PathVariable Long id) {
+    public ResponseEntity<OrderResponseDTO> getById(@PathVariable @NotNull Long id) {
         return ResponseEntity.ok(orderService.getById(id));
     }
 
     @Operation(summary = "Update an order", description = "Updates basic fields of an existing order")
     @ApiResponse(responseCode = "200", description = "Order updated successfully")
     @PutMapping("/{id}")
-    public ResponseEntity<OrderResponseDTO> update(@PathVariable Long id, @RequestBody @Valid OrderRequestDTO dto) {
-        return ResponseEntity.ok(orderService.update(dto));
+    public ResponseEntity<OrderResponseDTO> update(@PathVariable @NotNull Long id, @RequestBody @Valid OrderRequestDTO dto) {
+        return ResponseEntity.ok(orderService.update(id, dto));
     }
 
     @Operation(summary = "Update the discount of an order", description = "Updates the discount value of an order")
     @ApiResponse(responseCode = "200", description = "Discount updated successfully")
     @PatchMapping("/{id}")
     public ResponseEntity<OrderResponseDTO> updateDiscount(
-            @PathVariable Long id,
-            @RequestParam Integer discount) {
-        if (discount == null || discount < 0 || discount > 100) {
-            throw new IllegalArgumentException("Discount must be between 0 and 100");
-        }
+            @PathVariable @NotNull Long id,
+            @RequestParam @Min(0) @Max(100) Integer discount) {
 
         return ResponseEntity.ok(orderService.updateDiscount(id, discount));
     }
@@ -75,7 +72,7 @@ public class OrderController {
     @Operation(summary = "Get items from an order", description = "Returns all items associated with a given order ID")
     @ApiResponse(responseCode = "200", description = "List of items returned successfully")
     @GetMapping("/{id}/items")
-    public ResponseEntity<List<ItemResponseDTO>> getItems(@PathVariable Long id) {
+    public ResponseEntity<List<ItemResponseDTO>> getItems(@PathVariable @NotNull Long id) {
         return ResponseEntity.ok(orderService.getItems(id));
     }
 
@@ -83,7 +80,7 @@ public class OrderController {
     @ApiResponse(responseCode = "201", description = "Item successfully added to order")
     @PostMapping("/{id}/items")
     public ResponseEntity<ItemResponseDTO> addItem(
-            @PathVariable Long id,
+            @PathVariable @NotNull Long id,
             @RequestBody @Valid ItemRequestDTO dto) {
         ItemResponseDTO itemResponseDTO = orderService.addItem(id, dto);
         return ResponseEntity
@@ -95,48 +92,48 @@ public class OrderController {
     @ApiResponse(responseCode = "200", description = "Item updated successfully")
     @PutMapping("/{orderId}/items/{itemId}")
     public ResponseEntity<ItemResponseDTO> updateItem(
-            @PathVariable Long orderId,
+            @PathVariable @NotNull Long orderId,
+            @PathVariable @NotNull Long itemId,
             @RequestBody @Valid ItemRequestDTO dto) {
-        return ResponseEntity.ok(orderService.updateItem(orderId, dto));
+        return ResponseEntity.ok(orderService.updateItem(orderId, itemId, dto));
     }
 
     @Operation(summary = "Remove an item from an order", description = "Performs a logical delete of the item from the order. It will no longer affect the total.")
     @ApiResponse(responseCode = "200", description = "Item marked as deleted")
     @DeleteMapping("/{orderId}/items/{itemId}")
     public ResponseEntity<ItemResponseDTO> removeItem(
-            @PathVariable Long orderId,
-            @PathVariable Long itemId) {
+            @PathVariable @NotNull Long orderId,
+            @PathVariable @NotNull Long itemId) {
         return ResponseEntity.ok(orderService.removeItem(orderId, itemId));
     }
 
     @Operation(summary = "Split an order", description = "Splits an order into two separate orders based on the provided items")
     @ApiResponse(responseCode = "200", description = "Order split successfully")
-    @PatchMapping("/{id}/split")
+    @PatchMapping("/{orderId}/split")
     public ResponseEntity<List<OrderResponseDTO>> splitOrder(
-            @PathVariable Long id,
-            @RequestBody @Valid OrderRequestDTO dto,
-            @RequestParam List<ItemRequestDTO> itemsToMove) {
-        return ResponseEntity.ok(orderService.splitOrder(id, dto, itemsToMove));
+            @PathVariable @NotNull Long orderId,
+            @RequestBody @Valid OrderSplitRequestDTO dto) {
+        return ResponseEntity.ok(orderService.splitOrder(orderId, dto));
     }
 
     @Operation(summary = "Finalize an order", description = "Marks the order as finalized, preventing further changes")
     @ApiResponse(responseCode = "200", description = "Order finalized successfully")
     @PatchMapping("/{id}/finalize")
-    public ResponseEntity<OrderResponseDTO> finalizeOrder(@PathVariable Long id) {
+    public ResponseEntity<OrderResponseDTO> finalizeOrder(@PathVariable @NotNull Long id) {
         return ResponseEntity.ok(orderService.updateStatus(id, OrderStatus.FINALIZED));
     }
 
     @Operation(summary = "Mark an order as billed", description = "Updates the order status to BILLED, indicating the bill was printed")
     @ApiResponse(responseCode = "200", description = "Order status updated to BILLED")
     @PatchMapping("/{id}/bill")
-    public ResponseEntity<OrderResponseDTO> billOrder(@PathVariable Long id) {
+    public ResponseEntity<OrderResponseDTO> billOrder(@PathVariable @NotNull Long id) {
         return ResponseEntity.ok(orderService.updateStatus(id, OrderStatus.BILLED));
     }
 
     @Operation(summary = "Cancel an order", description = "Marks the order as CANCELED and excludes it from further operations")
     @ApiResponse(responseCode = "200", description = "Order canceled successfully")
     @DeleteMapping("/{id}/cancel")
-    public ResponseEntity<OrderResponseDTO> cancelOrder(@PathVariable Long id) {
+    public ResponseEntity<OrderResponseDTO> cancelOrder(@PathVariable @NotNull Long id) {
         return ResponseEntity.ok(orderService.updateStatus(id, OrderStatus.CANCELED));
     }
 
