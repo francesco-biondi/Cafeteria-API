@@ -146,7 +146,12 @@ public class OrderService implements IOrderService {
         Order destinationOrder = orderRepository.findBySeatingIdAndStatus(
                         Optional.ofNullable(dto.destinationOrder().seatingId())
                                 .orElseThrow(() -> new IllegalArgumentException("Seating ID is required")), OrderStatus.ACTIVE)
-                .orElseGet(() -> createNewOrder(dto.destinationOrder()));
+                .orElseGet(() -> {
+                    Order dest = createNewOrder(dto.destinationOrder());
+                    dest.setPeopleCount(0);
+                    return dest;
+                });
+
 
         if (originalOrder.equals(destinationOrder))
             throw new IllegalArgumentException("Original and destination orders cannot be the same.");
@@ -221,11 +226,14 @@ public class OrderService implements IOrderService {
         Customer customer = customerService.getEntityById(dto.customerId());
 
         Seating seating = Optional.ofNullable(dto.seatingId())
-                .map(seatingId -> {
-                    Seating availableSeating = seatingService.getEntityById(seatingId);
-                    validateSeatingStatus(availableSeating);
-                    return availableSeating;
-                })
+                .map(seatingService::getEntityById)
+                .map(
+                        availableSeating -> {
+                            validateSeatingStatus(availableSeating);
+                            availableSeating.setStatus(SeatingStatus.OCCUPIED);
+                            return availableSeating;
+                        }
+                )
                 .orElse(null);
 
         return orderMapper.toEntity(dto, employee, customer, seating);
