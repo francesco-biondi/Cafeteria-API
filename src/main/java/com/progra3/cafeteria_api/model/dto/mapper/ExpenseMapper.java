@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Component
@@ -26,11 +28,16 @@ public class ExpenseMapper {
 
     public Expense toEntity (ExpenseRequestDTO dto, Supplier supplier, LocalDateTime dateTime){
         return Expense.builder()
-                .id(dto.id())
                 .supplier(supplier)
                 .amount(dto.amount())
                 .comment(dto.comment())
                 .dateTime(dateTime)
                 .build();
+    }
+
+    public List<ExpenseResponseDTO> toDTOList (List<Expense> expenses){
+        return expenses.stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
     }
 }

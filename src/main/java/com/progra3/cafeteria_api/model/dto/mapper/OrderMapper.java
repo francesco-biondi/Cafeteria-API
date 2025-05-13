@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -49,5 +51,11 @@ public class OrderMapper {
                 .status(OrderStatus.ACTIVE)
                 .dateTime(LocalDateTime.now(clock))
                 .build();
+    }
+
+    public List<OrderResponseDTO> toDTOList (List<Order> orders){
+        return orders.stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
     }
 }
