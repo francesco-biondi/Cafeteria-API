@@ -10,7 +10,7 @@ import java.lang.annotation.*;
 @Constraint(validatedBy = ValidOrderRequestValidator.class)
 @Documented
 public @interface ValidOrderRequest {
-    String message() default "Invalid order request based on order type";
+    String message() default "Invalid destinationOrder request based on destinationOrder type";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

@@ -1,7 +1,5 @@
 package com.progra3.cafeteria_api.service;
 
-import com.progra3.cafeteria_api.exception.ItemNotFoundException;
-import com.progra3.cafeteria_api.exception.OrderModificationNotAllowedException;
 import com.progra3.cafeteria_api.exception.OrderNotFoundException;
 import com.progra3.cafeteria_api.model.dto.*;
 import com.progra3.cafeteria_api.model.entity.Order;
@@ -9,7 +7,6 @@ import com.progra3.cafeteria_api.model.enums.OrderStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 public interface IOrderService {
 
@@ -17,14 +14,14 @@ public interface IOrderService {
     OrderResponseDTO getById(Long orderId) throws OrderNotFoundException;
     List<OrderResponseDTO> getByEmployee(Long employeeId);
     List<OrderResponseDTO> getByCustomer(Long customerId);
-    List<OrderResponseDTO> getBySeating(Long seatingId);
+    OrderResponseDTO getActiveOrderBySeating(Long seatingId);
     List<OrderResponseDTO> getAll();
     List<Order> getByDateTimeBetween(LocalDateTime start, LocalDateTime end);
     OrderResponseDTO update(Long orderId, OrderRequestDTO dto);
     OrderResponseDTO updateDiscount(Long orderId, Integer discount);
     OrderResponseDTO updateStatus(Long orderId, OrderStatus status);
 
-    List<OrderResponseDTO> splitOrder(Long originalOrderId, OrderSplitRequestDTO dto) ;
+    List<OrderResponseDTO> transferItemsBetweenOrders(Long originalOrderId, OrderSplitRequestDTO dto) ;
 
     ItemResponseDTO addItem(Long orderId, ItemRequestDTO itemDTO);
     List<ItemResponseDTO> getItems(Long orderId);

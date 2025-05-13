@@ -9,10 +9,12 @@ import com.progra3.cafeteria_api.model.entity.Order;
 import com.progra3.cafeteria_api.model.entity.Product;
 import com.progra3.cafeteria_api.repository.ItemRepository;
 import com.progra3.cafeteria_api.service.IItemService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +23,7 @@ public class ItemService implements IItemService {
     private final ItemMapper itemMapper;
     private final ProductService productService;
 
+    @Transactional
     @Override
     public Item createItem(Order order, ItemRequestDTO itemDTO) {
         Product product = productService.getEntityById(itemDTO.productId());
@@ -67,31 +70,51 @@ public class ItemService implements IItemService {
         }
     }
 
+    //TODO ARREGLAR
     private Item transferItem(Order fromOrder, Order toOrder, ItemRequestDTO dto) {
-        int quantityToMove = dto.quantity();
+        int quantityToTransfer = dto.quantity();
 
         Item originalItem = itemRepository.findByOrderIdAndProductId(fromOrder.getId(), dto.productId())
-                .orElseThrow(() -> new ItemNotFoundException("Item not found in the order " + fromOrder.getId() + " for product ID: " + dto.productId()));
-        validateTransferQuantity(quantityToMove, originalItem.getQuantity());
+                .orElseThrow(() -> new ItemNotFoundException(
+                        "Item not found in order " + fromOrder.getId() + " for product ID: " + dto.productId()));
 
-        if (quantityToMove == originalItem.getQuantity()) {
+        validateTransferQuantity(quantityToTransfer, originalItem.getQuantity());
+
+        return itemRepository.findByOrderIdAndProductId(toOrder.getId(), dto.productId())
+                .map(destinationItem -> updateExistingDestinationItem(destinationItem, originalItem, quantityToTransfer, fromOrder))
+                .orElseGet(() -> transferOrSplitItem(originalItem, toOrder, quantityToTransfer, fromOrder));
+    }
+
+    private void moveItem(Item originalItem, int quantityToTransfer, Order fromOrder) {
+        if (quantityToTransfer == originalItem.getQuantity()) {
             fromOrder.getItems().remove(originalItem);
-            originalItem.setOrder(toOrder);
-            return originalItem;
+            itemRepository.delete(originalItem);
+        } else {
+            originalItem.setQuantity(originalItem.getQuantity() - quantityToTransfer);
+            originalItem.setTotalPrice(originalItem.getUnitPrice() * originalItem.getQuantity());
         }
+    }
 
-        originalItem.setQuantity(originalItem.getQuantity() - quantityToMove);
+    private Item updateExistingDestinationItem(Item destinationItem, Item originalItem, int quantityToTransfer, Order fromOrder) {
+        moveItem(originalItem, quantityToTransfer, fromOrder);
+
+        destinationItem.setQuantity(destinationItem.getQuantity() + quantityToTransfer);
+        destinationItem.setTotalPrice(destinationItem.getUnitPrice() * destinationItem.getQuantity());
+        return destinationItem;
+    }
+
+    private Item transferOrSplitItem(Item originalItem, Order toOrder, int quantityToTransfer, Order fromOrder) {
+
+        moveItem(originalItem, quantityToTransfer, fromOrder);
 
         return Item.builder()
                 .product(originalItem.getProduct())
                 .order(toOrder)
                 .comment(originalItem.getComment())
                 .unitPrice(originalItem.getUnitPrice())
-                .quantity(quantityToMove)
-                .totalPrice(originalItem.getUnitPrice() * quantityToMove)
+                .quantity(quantityToTransfer)
+                .totalPrice(originalItem.getUnitPrice() * quantityToTransfer)
+                .deleted(false)
                 .build();
     }
-
-
-
 }
