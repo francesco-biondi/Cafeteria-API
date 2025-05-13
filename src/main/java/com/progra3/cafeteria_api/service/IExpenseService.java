@@ -8,10 +8,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface IExpenseService {
-    ExpenseResponseDTO createExpense (ExpenseRequestDTO dto);
-    List<ExpenseResponseDTO> listExpenses ();
-    ExpenseResponseDTO updateExpenseAmount (Long expenseId, Double amount);
-    ExpenseResponseDTO deleteExpense (Long expenseId);
+    ExpenseResponseDTO create(ExpenseRequestDTO dto);
+    List<ExpenseResponseDTO> getAll();
+    ExpenseResponseDTO update(Long expenseId, Double amount);
+    ExpenseResponseDTO delete(Long expenseId);
 
     Expense getEntityById (Long expenseId);
     List<Expense> getByDateTimeBetween(LocalDateTime start, LocalDateTime end);

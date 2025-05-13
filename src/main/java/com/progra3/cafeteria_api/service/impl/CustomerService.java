@@ -21,7 +21,7 @@ public class CustomerService implements ICustomerService {
     private final CustomerMapper customerMapper;
 
     @Override
-    public CustomerResponseDTO createCustomer(CustomerRequestDTO dto) {
+    public CustomerResponseDTO create(CustomerRequestDTO dto) {
          Customer customer = customerMapper.toEntity(dto);
 
         if (customerRepository.existsById(customer.getId())){
@@ -37,7 +37,7 @@ public class CustomerService implements ICustomerService {
 
 
     @Override
-    public List<CustomerResponseDTO> listCustomers() {
+    public List<CustomerResponseDTO> getAll() {
         return customerRepository.findAll()
                 .stream()
                 .map(customerMapper::toDTO)
@@ -45,7 +45,7 @@ public class CustomerService implements ICustomerService {
     }
 
     @Override
-    public CustomerResponseDTO updateCustomer(CustomerRequestDTO dto) {
+    public CustomerResponseDTO update(CustomerRequestDTO dto) {
         Customer customer = customerMapper.toEntity(dto);
 
         if (customerRepository.existsById(customer.getId())){
@@ -56,7 +56,7 @@ public class CustomerService implements ICustomerService {
     }
 
     @Override
-    public CustomerResponseDTO deleteCustomer(Long customerId) {
+    public CustomerResponseDTO delete(Long customerId) {
         Customer customer = getEntityById(customerId);
         customer.setDeleted(true);
 

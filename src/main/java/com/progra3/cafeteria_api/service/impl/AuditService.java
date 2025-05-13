@@ -32,7 +32,7 @@ public class AuditService implements IAuditService {
     private final Clock clock;
 
     @Override
-    public AuditResponseDTO createAudit(AuditRequestDTO dto) {
+    public AuditResponseDTO create(AuditRequestDTO dto) {
         AuditStatus auditStatus = findTop().getAuditStatus();
 
         if (auditStatus.equals(AuditStatus.IN_PROGRESS)) {
@@ -46,7 +46,7 @@ public class AuditService implements IAuditService {
     }
 
     @Override
-    public List<AuditResponseDTO> listAudits() {
+    public List<AuditResponseDTO> getAll() {
         return auditRepository.findAll()
                 .stream()
                 .map(auditMapper::toDTO)
@@ -54,7 +54,7 @@ public class AuditService implements IAuditService {
     }
 
     @Override
-    public AuditResponseDTO finalizeAudit(Long auditId) {
+    public AuditResponseDTO finalize(Long auditId) {
         Audit audit = getEntityById(auditId);
         audit.setCloseTime(LocalDateTime.now(clock));
 
@@ -73,7 +73,7 @@ public class AuditService implements IAuditService {
     }
 
     @Override
-    public AuditResponseDTO cancelAudit(Long auditId) {
+    public AuditResponseDTO cancel(Long auditId) {
         Audit audit = getEntityById(auditId);
         audit.setDeleted(true);
         audit.setAuditStatus(AuditStatus.CANCELED);

@@ -20,7 +20,7 @@ public class SupplierService implements ISupplierService {
     private final SupplierMapper supplierMapper;
 
     @Override
-    public SupplierResponseDTO createSupplier(SupplierRequestDTO dto) {
+    public SupplierResponseDTO create(SupplierRequestDTO dto) {
         Supplier supplier = supplierMapper.toEntity(dto);
 
         if (supplierRepository.existsById(supplier.getId())){
@@ -35,7 +35,7 @@ public class SupplierService implements ISupplierService {
     }
 
     @Override
-    public List<SupplierResponseDTO> listSuppliers() {
+    public List<SupplierResponseDTO> getAll() {
         return supplierRepository.findAll()
                 .stream()
                 .map(supplierMapper::toDTO)
@@ -43,7 +43,7 @@ public class SupplierService implements ISupplierService {
     }
 
     @Override
-    public SupplierResponseDTO updateSupplier (SupplierRequestDTO dto){
+    public SupplierResponseDTO update(SupplierRequestDTO dto){
         Supplier supplier = supplierMapper.toEntity(dto);
 
         if (supplierRepository.existsById(supplier.getId())){
@@ -54,7 +54,7 @@ public class SupplierService implements ISupplierService {
     }
 
     @Override
-    public SupplierResponseDTO deleteSupplier(Long supplierId){
+    public SupplierResponseDTO delete(Long supplierId){
         Supplier supplier = getEntityById(supplierId);
         supplier.setDeleted(true);
 

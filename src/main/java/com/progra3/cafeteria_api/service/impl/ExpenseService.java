@@ -25,7 +25,7 @@ public class ExpenseService implements IExpenseService {
     private final ExpenseMapper expenseMapper;
 
     @Override
-    public ExpenseResponseDTO createExpense(ExpenseRequestDTO dto) {
+    public ExpenseResponseDTO create(ExpenseRequestDTO dto) {
         Supplier supplier = supplierService.getEntityById(dto.supplierId());
 
         Expense expense = expenseMapper.toEntity(dto, supplier, LocalDateTime.now());
@@ -34,7 +34,7 @@ public class ExpenseService implements IExpenseService {
     }
 
     @Override
-    public List<ExpenseResponseDTO> listExpenses() {
+    public List<ExpenseResponseDTO> getAll() {
         return expenseRepository.findAll()
                 .stream()
                 .map(expenseMapper::toDTO)
@@ -42,7 +42,7 @@ public class ExpenseService implements IExpenseService {
     }
 
     @Override
-    public ExpenseResponseDTO updateExpenseAmount (Long expenseId, Double amount) {
+    public ExpenseResponseDTO update(Long expenseId, Double amount) {
         Expense expense = getEntityById(expenseId);
         expense.setAmount(amount);
 
@@ -50,7 +50,7 @@ public class ExpenseService implements IExpenseService {
     }
 
     @Override
-    public ExpenseResponseDTO deleteExpense(Long expenseId) {
+    public ExpenseResponseDTO delete(Long expenseId) {
         Expense expense = getEntityById(expenseId);
         expense.setDeleted(true);
 
