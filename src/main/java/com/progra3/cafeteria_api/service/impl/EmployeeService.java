@@ -30,7 +30,7 @@ public class EmployeeService implements IEmployeeService{
 
         admin.setRole(Role.ADMIN);
 
-        admin.setActive(true);
+        admin.setDeleted(false);
 
         return employeeMapper.toDTO(employeeRepository.save(admin));
     }
@@ -52,8 +52,8 @@ public class EmployeeService implements IEmployeeService{
             throw new RuntimeException("Invalid password");
         }
 
-        if(!employee.getActive()){
-            throw new RuntimeException("Employee is not active");
+        if(employee.getDeleted()){
+            throw new RuntimeException("Employee is deleted");
         }
 
         LoggedUser.set(employee);
@@ -70,7 +70,7 @@ public class EmployeeService implements IEmployeeService{
 
         Employee employee = employeeMapper.toEntity(dto);
 
-        employee.setActive(true);
+        employee.setDeleted(false);
 
         return employeeMapper.toDTO(employeeRepository.save(employee));
     }
@@ -90,7 +90,7 @@ public class EmployeeService implements IEmployeeService{
             throw new RuntimeException("Cannot delete ADMIN.");
         }
 
-        employee.setActive(false);
+        employee.setDeleted(true);
 
         return employeeMapper.toDTO(employeeRepository.save(employee));
     }

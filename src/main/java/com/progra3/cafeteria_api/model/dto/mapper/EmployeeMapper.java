@@ -19,7 +19,7 @@ public class EmployeeMapper {
                 .email(employee.getEmail())
                 .phoneNumber(employee.getPhoneNumber())
                 .role(employee.getRole().name())
-                .active(employee.getActive())
+                .deleted(employee.getDeleted())
                 .build();
     }
 

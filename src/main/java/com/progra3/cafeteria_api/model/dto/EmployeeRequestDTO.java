@@ -35,8 +35,8 @@ public record EmployeeRequestDTO(
         @NotNull(message = "Role is required")
         Role role,
 
-        @NotNull(message = "Active is required")
-        Boolean active
+        @NotNull(message = "Deleted is required")
+        Boolean deleted
 
 ) {
 }
