@@ -143,25 +143,15 @@ public class OrderService implements IOrderService {
         Order originalOrder = getEntityById(originalOrderId);
         validateOrderStatus(originalOrder.getStatus());
 
-        Order destinationOrder = orderRepository.findBySeatingIdAndStatus(
-                        Optional.ofNullable(dto.destinationOrder().seatingId())
-                                .orElseThrow(() -> new IllegalArgumentException("Seating ID is required")), OrderStatus.ACTIVE)
-                .orElseGet(() -> {
-                    Order dest = createNewOrder(dto.destinationOrder());
-                    dest.setPeopleCount(0);
-                    return dest;
-                });
+        Order destinationOrder = getOrCreateDestinationOrder(dto.destinationOrder());
 
-
-        if (originalOrder.equals(destinationOrder))
-            throw new IllegalArgumentException("Original and destination orders cannot be the same.");
+        validateDifferentOrders(originalOrder, destinationOrder);
 
         updatePeopleCount(originalOrder, destinationOrder, dto.destinationOrder().peopleCount());
 
         transferItems(originalOrder, destinationOrder, dto.itemsToMove());
 
-        originalOrder = orderRepository.save(originalOrder);
-        destinationOrder = orderRepository.save(destinationOrder);
+        saveOrders(originalOrder, destinationOrder);
 
         return List.of(orderMapper.toDTO(originalOrder), orderMapper.toDTO(destinationOrder));
     }
@@ -239,6 +229,18 @@ public class OrderService implements IOrderService {
         return orderMapper.toEntity(dto, employee, customer, seating);
     }
 
+    private Order getOrCreateDestinationOrder(OrderRequestDTO destinationDto) {
+        return orderRepository.findBySeatingIdAndStatus(
+                        Optional.ofNullable(destinationDto.seatingId())
+                                .orElseThrow(() -> new IllegalArgumentException("Seating ID is required")),
+                        OrderStatus.ACTIVE)
+                .orElseGet(() -> {
+                    Order newOrder = createNewOrder(destinationDto);
+                    newOrder.setPeopleCount(0);
+                    return newOrder;
+                });
+    }
+
     private void applyDiscount(Order order, Integer discount) {
         order.setDiscount(discount);
         recalculate(order);
@@ -247,6 +249,12 @@ public class OrderService implements IOrderService {
     private Order getEntityById(Long orderId) {
         return orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderNotFoundException(orderId));
+    }
+
+    private void validateDifferentOrders(Order originalOrder, Order destinationOrder) {
+        if (originalOrder.equals(destinationOrder)) {
+            throw new IllegalArgumentException("Original and destination orders cannot be the same.");
+        }
     }
 
     private void validateSeatingStatus(Seating seating) {
@@ -259,6 +267,13 @@ public class OrderService implements IOrderService {
         if (orderStatus != OrderStatus.ACTIVE) {
             throw new OrderModificationNotAllowedException(orderStatus.getName());
         }
+    }
+
+    private void saveOrders(Order originalOrder, Order destinationOrder) {
+        recalculate(originalOrder);
+        recalculate(destinationOrder);
+        orderRepository.save(originalOrder);
+        orderRepository.save(destinationOrder);
     }
 
     private void updatePeopleCount(Order originalOrder, Order destinationOrder, Integer peopleCount) {
