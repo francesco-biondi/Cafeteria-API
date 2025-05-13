@@ -32,6 +32,7 @@ public class ItemMapper {
                 .unitPrice(unitPrice)
                 .quantity(quantity)
                 .totalPrice(totalPrice)
+                .deleted(false)
                 .build();
     }
 }

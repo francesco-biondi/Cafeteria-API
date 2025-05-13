@@ -251,7 +251,7 @@ public class OrderService implements IOrderService {
     }
 
     private void calculateTotal(Order order) {
-        order.setTotal(order.getSubtotal() * (1 - order.getDiscount() / 100));
+        order.setTotal(order.getSubtotal() * (1 - order.getDiscount() / 100.0));
     }
 
     private void recalculate(Order order) {

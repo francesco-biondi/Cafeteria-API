@@ -25,7 +25,7 @@ public class ItemService implements IItemService {
     public Item createItem(Order order, ItemRequestDTO itemDTO) {
         Product product = productService.getEntityById(itemDTO.productId());
 
-        return itemMapper.toEntity(itemDTO, product, order);
+        return itemRepository.save(itemMapper.toEntity(itemDTO, product, order));
     }
 
     @Override

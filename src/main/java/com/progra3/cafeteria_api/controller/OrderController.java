@@ -84,7 +84,7 @@ public class OrderController {
             @RequestBody @Valid ItemRequestDTO dto) {
         ItemResponseDTO itemResponseDTO = orderService.addItem(id, dto);
         return ResponseEntity
-                .created(URI.create("/api/orders/{id}/items/" + itemResponseDTO.id()))
+                .created(URI.create("/api/orders/" + id + "/items/" + itemResponseDTO.id()))
                 .body(itemResponseDTO);
     }
 
