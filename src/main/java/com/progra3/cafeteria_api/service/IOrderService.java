@@ -14,7 +14,6 @@ public interface IOrderService {
     OrderResponseDTO getById(Long orderId) throws OrderNotFoundException;
     List<OrderResponseDTO> getByEmployee(Long employeeId);
     List<OrderResponseDTO> getByCustomer(Long customerId);
-    OrderResponseDTO getActiveOrderBySeating(Long seatingId);
     List<OrderResponseDTO> getAll();
     List<Order> getByDateTimeBetween(LocalDateTime start, LocalDateTime end);
     OrderResponseDTO update(Long orderId, OrderRequestDTO dto);

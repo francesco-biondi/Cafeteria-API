@@ -11,6 +11,6 @@ public record OrderSplitRequestDTO(
 
         @Valid
         @NotNull
-        List<ItemRequestDTO> itemsToMove
+        List<ItemTransferRequestDTO> itemsToMove
 ) {
 }

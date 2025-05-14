@@ -2,6 +2,7 @@ package com.progra3.cafeteria_api.service;
 
 import com.progra3.cafeteria_api.model.dto.ItemRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ItemResponseDTO;
+import com.progra3.cafeteria_api.model.dto.ItemTransferRequestDTO;
 import com.progra3.cafeteria_api.model.entity.Item;
 import com.progra3.cafeteria_api.model.entity.Order;
 
@@ -16,6 +17,6 @@ public interface IItemService {
 
     List<ItemResponseDTO> getItemsByOrder(Long orderId);
 
-    List<Item> transferItems(Order fromOrder, Order toOrder, List<ItemRequestDTO> itemsToMove);
+    List<Item> transferItems(Order fromOrder, Order toOrder, List<ItemTransferRequestDTO> itemsToMove);
 
 }

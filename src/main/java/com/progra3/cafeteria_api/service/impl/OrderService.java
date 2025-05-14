@@ -63,17 +63,6 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public OrderResponseDTO getActiveOrderBySeating(Long seatingId) {
-        return orderRepository.findBySeatingId(seatingId)
-                .orElseThrow(() -> new OrderNotFoundException("No orders found for seating ID: ", seatingId))
-                .stream()
-                .filter(order -> order.getStatus().equals(OrderStatus.ACTIVE))
-                .findFirst()
-                .map(orderMapper::toDTO)
-                .orElseThrow(() -> new OrderNotFoundException("No active order found for seating ID: ", seatingId));
-    }
-
-    @Override
     public List<OrderResponseDTO> getAll() {
         return orderRepository.findAll()
                 .stream()
@@ -303,7 +292,7 @@ public class OrderService implements IOrderService {
         }
     }
 
-    private void transferItems(Order originalOrder, Order destinationOrder, List<ItemRequestDTO> itemsToMove) {
+    private void transferItems(Order originalOrder, Order destinationOrder, List<ItemTransferRequestDTO> itemsToMove) {
         List<Item> transferred = itemService.transferItems(originalOrder, destinationOrder, itemsToMove);
         destinationOrder.getItems().addAll(transferred);
 

@@ -3,6 +3,7 @@ package com.progra3.cafeteria_api.service.impl;
 import com.progra3.cafeteria_api.exception.ItemNotFoundException;
 import com.progra3.cafeteria_api.model.dto.ItemRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ItemResponseDTO;
+import com.progra3.cafeteria_api.model.dto.ItemTransferRequestDTO;
 import com.progra3.cafeteria_api.model.dto.mapper.ItemMapper;
 import com.progra3.cafeteria_api.model.entity.Item;
 import com.progra3.cafeteria_api.model.entity.Order;
@@ -28,16 +29,7 @@ public class ItemService implements IItemService {
     public Item createItem(Order order, ItemRequestDTO itemDTO) {
         Product product = productService.getEntityById(itemDTO.productId());
 
-        return itemRepository.findByOrderIdAndProductId(order.getId(), product.getId())
-                .map(existingItem -> {
-                    existingItem.setQuantity(existingItem.getQuantity() + itemDTO.quantity());
-                    existingItem.setTotalPrice(existingItem.getUnitPrice() * existingItem.getQuantity());
-                    return itemRepository.save(existingItem);
-                })
-                .orElseGet(() -> {
-                    Item newItem = itemMapper.toEntity(itemDTO, product, order);
-                    return itemRepository.save(newItem);
-                });
+        return itemRepository.save(itemMapper.toEntity(itemDTO, product, order));
     }
 
     @Override
@@ -67,7 +59,7 @@ public class ItemService implements IItemService {
     }
 
     @Override
-    public List<Item> transferItems(Order fromOrder, Order toOrder, List<ItemRequestDTO> itemsToMove) {
+    public List<Item> transferItems(Order fromOrder, Order toOrder, List<ItemTransferRequestDTO> itemsToMove) {
         return itemsToMove.stream()
                 .map(dto -> transferItem(fromOrder, toOrder, dto))
                 .toList();
@@ -79,21 +71,19 @@ public class ItemService implements IItemService {
         }
     }
 
-    private Item transferItem(Order fromOrder, Order toOrder, ItemRequestDTO dto) {
+    private Item transferItem(Order fromOrder, Order toOrder, ItemTransferRequestDTO dto) {
         int quantityToTransfer = dto.quantity();
 
-        Item originalItem = itemRepository.findByOrderIdAndProductId(fromOrder.getId(), dto.productId())
-                .orElseThrow(() -> new ItemNotFoundException(
-                        "Item not found in order " + fromOrder.getId() + " for product ID: " + dto.productId()));
+        Item originalItem = itemRepository.findById(dto.itemId())
+                .orElseThrow(() -> new ItemNotFoundException(dto.itemId()));
 
         validateTransferQuantity(quantityToTransfer, originalItem.getQuantity());
 
-        return itemRepository.findByOrderIdAndProductId(toOrder.getId(), dto.productId())
-                .map(destinationItem -> updateExistingDestinationItem(destinationItem, originalItem, quantityToTransfer, fromOrder))
-                .orElseGet(() -> transferOrSplitItem(originalItem, toOrder, quantityToTransfer, fromOrder));
+        return transferOrSplitItem(originalItem, toOrder, quantityToTransfer, fromOrder);
     }
 
-    private void moveItem(Item originalItem, int quantityToTransfer, Order fromOrder) {
+    private Item transferOrSplitItem(Item originalItem, Order toOrder, int quantityToTransfer, Order fromOrder) {
+
         if (quantityToTransfer == originalItem.getQuantity()) {
             fromOrder.getItems().remove(originalItem);
             itemRepository.delete(originalItem);
@@ -101,19 +91,6 @@ public class ItemService implements IItemService {
             originalItem.setQuantity(originalItem.getQuantity() - quantityToTransfer);
             originalItem.setTotalPrice(originalItem.getUnitPrice() * originalItem.getQuantity());
         }
-    }
-
-    private Item updateExistingDestinationItem(Item destinationItem, Item originalItem, int quantityToTransfer, Order fromOrder) {
-        moveItem(originalItem, quantityToTransfer, fromOrder);
-
-        destinationItem.setQuantity(destinationItem.getQuantity() + quantityToTransfer);
-        destinationItem.setTotalPrice(destinationItem.getUnitPrice() * destinationItem.getQuantity());
-        return destinationItem;
-    }
-
-    private Item transferOrSplitItem(Item originalItem, Order toOrder, int quantityToTransfer, Order fromOrder) {
-
-        moveItem(originalItem, quantityToTransfer, fromOrder);
 
         return Item.builder()
                 .product(originalItem.getProduct())
