@@ -3,16 +3,19 @@ package com.progra3.cafeteria_api.service.impl;
 import com.progra3.cafeteria_api.exception.ItemNotFoundException;
 import com.progra3.cafeteria_api.model.dto.ItemRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ItemResponseDTO;
+import com.progra3.cafeteria_api.model.dto.ItemTransferRequestDTO;
 import com.progra3.cafeteria_api.model.dto.mapper.ItemMapper;
 import com.progra3.cafeteria_api.model.entity.Item;
 import com.progra3.cafeteria_api.model.entity.Order;
 import com.progra3.cafeteria_api.model.entity.Product;
 import com.progra3.cafeteria_api.repository.ItemRepository;
 import com.progra3.cafeteria_api.service.IItemService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +24,7 @@ public class ItemService implements IItemService {
     private final ItemMapper itemMapper;
     private final ProductService productService;
 
+    @Transactional
     @Override
     public Item createItem(Order order, ItemRequestDTO itemDTO) {
         Product product = productService.getEntityById(itemDTO.productId());
@@ -55,7 +59,7 @@ public class ItemService implements IItemService {
     }
 
     @Override
-    public List<Item> transferItems(Order fromOrder, Order toOrder, List<ItemRequestDTO> itemsToMove) {
+    public List<Item> transferItems(Order fromOrder, Order toOrder, List<ItemTransferRequestDTO> itemsToMove) {
         return itemsToMove.stream()
                 .map(dto -> transferItem(fromOrder, toOrder, dto))
                 .toList();
@@ -67,31 +71,35 @@ public class ItemService implements IItemService {
         }
     }
 
-    private Item transferItem(Order fromOrder, Order toOrder, ItemRequestDTO dto) {
-        int quantityToMove = dto.quantity();
+    private Item transferItem(Order fromOrder, Order toOrder, ItemTransferRequestDTO dto) {
+        int quantityToTransfer = dto.quantity();
 
-        Item originalItem = itemRepository.findByOrderIdAndProductId(fromOrder.getId(), dto.productId())
-                .orElseThrow(() -> new ItemNotFoundException("Item not found in the order " + fromOrder.getId() + " for product ID: " + dto.productId()));
-        validateTransferQuantity(quantityToMove, originalItem.getQuantity());
+        Item originalItem = itemRepository.findById(dto.itemId())
+                .orElseThrow(() -> new ItemNotFoundException(dto.itemId()));
 
-        if (quantityToMove == originalItem.getQuantity()) {
+        validateTransferQuantity(quantityToTransfer, originalItem.getQuantity());
+
+        return transferOrSplitItem(originalItem, toOrder, quantityToTransfer, fromOrder);
+    }
+
+    private Item transferOrSplitItem(Item originalItem, Order toOrder, int quantityToTransfer, Order fromOrder) {
+
+        if (quantityToTransfer == originalItem.getQuantity()) {
             fromOrder.getItems().remove(originalItem);
-            originalItem.setOrder(toOrder);
-            return originalItem;
+            itemRepository.delete(originalItem);
+        } else {
+            originalItem.setQuantity(originalItem.getQuantity() - quantityToTransfer);
+            originalItem.setTotalPrice(originalItem.getUnitPrice() * originalItem.getQuantity());
         }
-
-        originalItem.setQuantity(originalItem.getQuantity() - quantityToMove);
 
         return Item.builder()
                 .product(originalItem.getProduct())
                 .order(toOrder)
                 .comment(originalItem.getComment())
                 .unitPrice(originalItem.getUnitPrice())
-                .quantity(quantityToMove)
-                .totalPrice(originalItem.getUnitPrice() * quantityToMove)
+                .quantity(quantityToTransfer)
+                .totalPrice(originalItem.getUnitPrice() * quantityToTransfer)
+                .deleted(false)
                 .build();
     }
-
-
-
 }

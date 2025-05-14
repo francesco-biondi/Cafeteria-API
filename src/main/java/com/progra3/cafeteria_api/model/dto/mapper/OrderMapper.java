@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,6 +61,9 @@ public class OrderMapper {
                         .orElse(Order.NO_DISCOUNT))
                 .status(OrderStatus.ACTIVE)
                 .dateTime(LocalDateTime.now(clock))
+                .items(new ArrayList<>())
+                .subtotal(Order.ZERO_AMOUNT)
+                .total(Order.ZERO_AMOUNT)
                 .build();
     }
 }

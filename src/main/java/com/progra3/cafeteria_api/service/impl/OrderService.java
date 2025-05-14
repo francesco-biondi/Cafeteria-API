@@ -8,8 +8,10 @@ import com.progra3.cafeteria_api.model.dto.mapper.ItemMapper;
 import com.progra3.cafeteria_api.model.dto.mapper.OrderMapper;
 import com.progra3.cafeteria_api.model.entity.*;
 import com.progra3.cafeteria_api.model.enums.OrderStatus;
+import com.progra3.cafeteria_api.model.enums.SeatingStatus;
 import com.progra3.cafeteria_api.repository.OrderRepository;
 import com.progra3.cafeteria_api.service.IOrderService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -31,11 +33,10 @@ public class OrderService implements IOrderService {
     private final OrderMapper orderMapper;
     private final ItemMapper itemMapper;
 
+    @Transactional
     @Override
     public OrderResponseDTO create(OrderRequestDTO dto) {
         Order order = createNewOrder(dto);
-
-        recalculate(order);
 
         return orderMapper.toDTO(orderRepository.save(order));
     }
@@ -62,14 +63,6 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public List<OrderResponseDTO> getBySeating(Long seatingId) {
-        return orderRepository.findBySeatingId(seatingId)
-                .stream()
-                .map(orderMapper::toDTO)
-                .toList();
-    }
-
-    @Override
     public List<OrderResponseDTO> getAll() {
         return orderRepository.findAll()
                 .stream()
@@ -85,6 +78,7 @@ public class OrderService implements IOrderService {
         return orderRepository.findByDateTimeBetween(start, end);
     }
 
+    @Transactional
     @Override
     public OrderResponseDTO update(Long orderId, OrderRequestDTO dto) {
         Order order = getEntityById(orderId);
@@ -105,6 +99,7 @@ public class OrderService implements IOrderService {
         return orderMapper.toDTO(orderRepository.save(order));
     }
 
+    @Transactional
     @Override
     public OrderResponseDTO updateDiscount(Long orderId, Integer discount) {
         Order order = getEntityById(orderId);
@@ -116,6 +111,7 @@ public class OrderService implements IOrderService {
         return orderMapper.toDTO(orderRepository.save(order));
     }
 
+    @Transactional
     @Override
     public OrderResponseDTO updateStatus(Long orderId, OrderStatus newStatus) {
         Order order = getEntityById(orderId);
@@ -130,52 +126,50 @@ public class OrderService implements IOrderService {
         return orderMapper.toDTO(savedOrder);
     }
 
+    @Transactional
     @Override
-    public List<OrderResponseDTO> splitOrder(Long originalOrderId, OrderSplitRequestDTO dto) {
-
+    public List<OrderResponseDTO> transferItemsBetweenOrders(Long originalOrderId, OrderSplitRequestDTO dto) {
         Order originalOrder = getEntityById(originalOrderId);
         validateOrderStatus(originalOrder.getStatus());
 
-        OrderRequestDTO destinationOrderDto = dto.order();
-        List<ItemRequestDTO> itemsToMove = dto.itemsToMove();
+        Order destinationOrder = getOrCreateDestinationOrder(dto.destinationOrder());
 
-        if (itemsToMove == null || itemsToMove.isEmpty())
-            throw new IllegalArgumentException("Items to move cannot be null or empty.");
-        if (originalOrder.getPeopleCount() < 1 || originalOrder.getPeopleCount() < destinationOrderDto.peopleCount())
-            throw new IllegalArgumentException("Invalid number of people to move.");
+        validateDifferentOrders(originalOrder, destinationOrder);
 
-        Order destinationOrder = orderRepository.findBySeatingId(destinationOrderDto.seatingId())
-                .orElseGet(() -> createNewOrder(destinationOrderDto));
+        updatePeopleCount(originalOrder, destinationOrder, dto.destinationOrder().peopleCount());
 
-        List<Item> itemsToTransfer = itemService.transferItems(originalOrder, destinationOrder, itemsToMove);
-        destinationOrder.setItems(itemsToTransfer);
+        transferItems(originalOrder, destinationOrder, dto.itemsToMove());
 
-        recalculate(originalOrder);
-        recalculate(destinationOrder);
-
-        originalOrder = orderRepository.save(originalOrder);
-        destinationOrder = orderRepository.save(destinationOrder);
+        saveOrders(originalOrder, destinationOrder);
 
         return List.of(orderMapper.toDTO(originalOrder), orderMapper.toDTO(destinationOrder));
     }
 
-
+    @Transactional
     @Override
-    public ItemResponseDTO addItem(Long orderId, ItemRequestDTO itemDTO) {
+    public List<ItemResponseDTO> addItems(Long orderId, List<ItemRequestDTO> itemRequestDTOList) {
         Order order = getEntityById(orderId);
-
         validateOrderStatus(order.getStatus());
 
+        List<ItemResponseDTO> itemsToAdd = itemRequestDTOList.stream()
+                .map(item -> addItem(order, item))
+                .toList();
+
+        recalculate(order);
+        orderRepository.save(order);
+
+        return itemsToAdd;
+    }
+
+    private ItemResponseDTO addItem(Order order, ItemRequestDTO itemDTO) {
         Item newItem = itemService.createItem(order, itemDTO);
 
         order.getItems().add(newItem);
-        recalculate(order);
-
-        orderRepository.save(order);
 
         return itemMapper.toDTO(newItem);
     }
 
+    @Transactional
     @Override
     public ItemResponseDTO removeItem(Long orderId, Long itemId) {
         Order order = getEntityById(orderId);
@@ -191,6 +185,7 @@ public class OrderService implements IOrderService {
         return itemMapper.toDTO(itemToRemove);
     }
 
+    @Transactional
     @Override
     public ItemResponseDTO updateItem(Long orderId, Long itemId, ItemRequestDTO itemDTO) {
         Order order = getEntityById(orderId);
@@ -218,9 +213,28 @@ public class OrderService implements IOrderService {
 
         Seating seating = Optional.ofNullable(dto.seatingId())
                 .map(seatingService::getEntityById)
+                .map(
+                        availableSeating -> {
+                            validateSeatingStatus(availableSeating);
+                            availableSeating.setStatus(SeatingStatus.OCCUPIED);
+                            return availableSeating;
+                        }
+                )
                 .orElse(null);
 
         return orderMapper.toEntity(dto, employee, customer, seating);
+    }
+
+    private Order getOrCreateDestinationOrder(OrderRequestDTO destinationDto) {
+        return orderRepository.findBySeatingIdAndStatus(
+                        Optional.ofNullable(destinationDto.seatingId())
+                                .orElseThrow(() -> new IllegalArgumentException("Seating ID is required")),
+                        OrderStatus.ACTIVE)
+                .orElseGet(() -> {
+                    Order newOrder = createNewOrder(destinationDto);
+                    newOrder.setPeopleCount(0);
+                    return newOrder;
+                });
     }
 
     private void applyDiscount(Order order, Integer discount) {
@@ -233,16 +247,62 @@ public class OrderService implements IOrderService {
                 .orElseThrow(() -> new OrderNotFoundException(orderId));
     }
 
+    private void validateDifferentOrders(Order originalOrder, Order destinationOrder) {
+        if (originalOrder.equals(destinationOrder)) {
+            throw new IllegalArgumentException("Original and destination orders cannot be the same.");
+        }
+    }
+
+    private void validateSeatingStatus(Seating seating) {
+        if (seating.getStatus() != SeatingStatus.FREE) {
+            throw new IllegalArgumentException("Cannot create order for a occupied seating.");
+        }
+    }
+
     private void validateOrderStatus(OrderStatus orderStatus) {
         if (orderStatus != OrderStatus.ACTIVE) {
             throw new OrderModificationNotAllowedException(orderStatus.getName());
         }
     }
 
+    private void saveOrders(Order originalOrder, Order destinationOrder) {
+        recalculate(originalOrder);
+        recalculate(destinationOrder);
+        orderRepository.save(originalOrder);
+        orderRepository.save(destinationOrder);
+    }
+
+    private void updatePeopleCount(Order originalOrder, Order destinationOrder, Integer peopleCount) {
+        if (peopleCount - destinationOrder.getPeopleCount() > 0) {
+            int peopleToTransfer = peopleCount - destinationOrder.getPeopleCount();
+            validateEnoughPeopleToTransfer(originalOrder, peopleToTransfer);
+            originalOrder.setPeopleCount(originalOrder.getPeopleCount() - peopleToTransfer);
+            destinationOrder.setPeopleCount(destinationOrder.getPeopleCount() + peopleToTransfer);
+        } else {
+            int peopleToTransfer = destinationOrder.getPeopleCount() - peopleCount;
+            validateEnoughPeopleToTransfer(destinationOrder, peopleToTransfer);
+            originalOrder.setPeopleCount(originalOrder.getPeopleCount() + peopleToTransfer);
+            destinationOrder.setPeopleCount(destinationOrder.getPeopleCount() - peopleToTransfer);
+        }
+    }
+
+    private void validateEnoughPeopleToTransfer(Order originalOrder, int amount) {
+        if (amount >= originalOrder.getPeopleCount()) {
+            throw new IllegalArgumentException("Cannot transfer more people than available in original order.");
+        }
+    }
+
+    private void transferItems(Order originalOrder, Order destinationOrder, List<ItemTransferRequestDTO> itemsToMove) {
+        List<Item> transferred = itemService.transferItems(originalOrder, destinationOrder, itemsToMove);
+        destinationOrder.getItems().addAll(transferred);
+
+        recalculate(originalOrder);
+        recalculate(destinationOrder);
+    }
+
     private void calculateSubtotal(Order order) {
         order.setSubtotal(
-                Optional.ofNullable(order.getItems())
-                        .orElse(List.of())
+                order.getItems()
                         .stream()
                         .filter(item -> !item.getDeleted())
                         .mapToDouble(Item::getTotalPrice)
@@ -251,7 +311,8 @@ public class OrderService implements IOrderService {
     }
 
     private void calculateTotal(Order order) {
-        order.setTotal(order.getSubtotal() * (1 - order.getDiscount() / 100.0));
+        double total = order.getSubtotal() * (1 - order.getDiscount() / 100.0);
+        order.setTotal(Math.round(total * 100.0) / 100.0);
     }
 
     private void recalculate(Order order) {
