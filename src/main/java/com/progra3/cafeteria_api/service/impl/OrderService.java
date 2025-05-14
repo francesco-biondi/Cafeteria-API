@@ -158,17 +158,24 @@ public class OrderService implements IOrderService {
 
     @Transactional
     @Override
-    public ItemResponseDTO addItem(Long orderId, ItemRequestDTO itemDTO) {
+    public List<ItemResponseDTO> addItems(Long orderId, List<ItemRequestDTO> itemRequestDTOList) {
         Order order = getEntityById(orderId);
-
         validateOrderStatus(order.getStatus());
 
+        List<ItemResponseDTO> itemsToAdd = itemRequestDTOList.stream()
+                .map(item -> addItem(order, item))
+                .toList();
+
+        recalculate(order);
+        orderRepository.save(order);
+
+        return itemsToAdd;
+    }
+
+    private ItemResponseDTO addItem(Order order, ItemRequestDTO itemDTO) {
         Item newItem = itemService.createItem(order, itemDTO);
 
         order.getItems().add(newItem);
-        recalculate(order);
-
-        orderRepository.save(order);
 
         return itemMapper.toDTO(newItem);
     }
@@ -315,7 +322,8 @@ public class OrderService implements IOrderService {
     }
 
     private void calculateTotal(Order order) {
-        order.setTotal(order.getSubtotal() * (1 - order.getDiscount() / 100.0));
+        double total = order.getSubtotal() * (1 - order.getDiscount() / 100.0);
+        order.setTotal(Math.round(total * 100.0) / 100.0);
     }
 
     private void recalculate(Order order) {

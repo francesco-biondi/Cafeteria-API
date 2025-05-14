@@ -76,16 +76,16 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getItems(id));
     }
 
-    @Operation(summary = "Add a new item to an destinationOrder", description = "Adds a new item to the destinationOrder. The item will be included in the total and subtotal calculations.")
-    @ApiResponse(responseCode = "201", description = "Item successfully added to destinationOrder")
+    @Operation(summary = "Add multiple items to an order", description = "Adds multiple items to the order. The items will be included in the total and subtotal calculations.")
+    @ApiResponse(responseCode = "201", description = "Items successfully added to the order")
     @PostMapping("/{id}/items")
-    public ResponseEntity<ItemResponseDTO> addItem(
+    public ResponseEntity<List<ItemResponseDTO>> addItems(
             @PathVariable @NotNull Long id,
-            @RequestBody @Valid ItemRequestDTO dto) {
-        ItemResponseDTO itemResponseDTO = orderService.addItem(id, dto);
+            @RequestBody @Valid List<ItemRequestDTO> items) {
+        List<ItemResponseDTO> itemResponseDTOs = orderService.addItems(id, items);
         return ResponseEntity
-                .created(URI.create("/api/orders/" + id + "/items/" + itemResponseDTO.id()))
-                .body(itemResponseDTO);
+                .created(URI.create("/api/orders/" + id + "/items"))
+                .body(itemResponseDTOs);
     }
 
     @Operation(summary = "Update an item in an destinationOrder", description = "Modifies the comment and quantity of an existing item within an destinationOrder")

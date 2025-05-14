@@ -28,7 +28,16 @@ public class ItemService implements IItemService {
     public Item createItem(Order order, ItemRequestDTO itemDTO) {
         Product product = productService.getEntityById(itemDTO.productId());
 
-        return itemRepository.save(itemMapper.toEntity(itemDTO, product, order));
+        return itemRepository.findByOrderIdAndProductId(order.getId(), product.getId())
+                .map(existingItem -> {
+                    existingItem.setQuantity(existingItem.getQuantity() + itemDTO.quantity());
+                    existingItem.setTotalPrice(existingItem.getUnitPrice() * existingItem.getQuantity());
+                    return itemRepository.save(existingItem);
+                })
+                .orElseGet(() -> {
+                    Item newItem = itemMapper.toEntity(itemDTO, product, order);
+                    return itemRepository.save(newItem);
+                });
     }
 
     @Override
@@ -70,7 +79,6 @@ public class ItemService implements IItemService {
         }
     }
 
-    //TODO ARREGLAR
     private Item transferItem(Order fromOrder, Order toOrder, ItemRequestDTO dto) {
         int quantityToTransfer = dto.quantity();
 
