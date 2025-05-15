@@ -9,8 +9,9 @@ import java.util.List;
 public interface ICustomerService {
     CustomerResponseDTO create(CustomerRequestDTO dto);
     List<CustomerResponseDTO> getAll();
-    CustomerResponseDTO update(CustomerRequestDTO dto);
-    CustomerResponseDTO delete(Long customerId);
+    CustomerResponseDTO getById(Long auditId);
+    CustomerResponseDTO update(Long customerId, CustomerRequestDTO dto);
+    void delete(Long customerId);
 
     Customer getEntityById (Long customerId);
     CustomerResponseDTO getDtoById (Long customerId);

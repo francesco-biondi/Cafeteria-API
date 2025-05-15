@@ -9,6 +9,7 @@ import java.util.List;
 public interface IAuditService {
     AuditResponseDTO create(AuditRequestDTO dto);
     List<AuditResponseDTO> getAll();
+    AuditResponseDTO getById(Long auditId);
     AuditResponseDTO finalize(Long auditId);
     AuditResponseDTO cancel(Long auditId);
 

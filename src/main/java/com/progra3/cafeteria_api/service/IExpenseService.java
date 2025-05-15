@@ -10,7 +10,8 @@ import java.util.List;
 public interface IExpenseService {
     ExpenseResponseDTO create(ExpenseRequestDTO dto);
     List<ExpenseResponseDTO> getAll();
-    ExpenseResponseDTO update(Long expenseId, Double amount);
+    ExpenseResponseDTO getById(Long expenseId);
+    ExpenseResponseDTO update(Long expenseId, ExpenseRequestDTO expenseRequestDTO);
     ExpenseResponseDTO delete(Long expenseId);
 
     Expense getEntityById (Long expenseId);

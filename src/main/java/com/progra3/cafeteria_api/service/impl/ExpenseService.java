@@ -2,6 +2,8 @@ package com.progra3.cafeteria_api.service.impl;
 
 import com.progra3.cafeteria_api.exception.ExpenseNotFoundException;
 import com.progra3.cafeteria_api.exception.InvalidDateException;
+import com.progra3.cafeteria_api.exception.SupplierInUseException;
+import com.progra3.cafeteria_api.exception.SupplierNotFoundException;
 import com.progra3.cafeteria_api.model.dto.ExpenseRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ExpenseResponseDTO;
 import com.progra3.cafeteria_api.model.dto.mapper.ExpenseMapper;
@@ -12,6 +14,7 @@ import com.progra3.cafeteria_api.service.IExpenseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -24,11 +27,15 @@ public class ExpenseService implements IExpenseService {
 
     private final ExpenseMapper expenseMapper;
 
+    private final Clock clock;
+
     @Override
     public ExpenseResponseDTO create(ExpenseRequestDTO dto) {
         Supplier supplier = supplierService.getEntityById(dto.supplierId());
 
-        Expense expense = expenseMapper.toEntity(dto, supplier, LocalDateTime.now());
+        Expense expense = expenseMapper.toEntity(dto, supplier);
+        expense.setDeleted(false);
+        expense.setDateTime(LocalDateTime.now(clock));
 
         return expenseMapper.toDTO(expenseRepository.save(expense));
     }
@@ -37,14 +44,32 @@ public class ExpenseService implements IExpenseService {
     public List<ExpenseResponseDTO> getAll() {
         return expenseRepository.findAll()
                 .stream()
+                .filter(n -> !n.getDeleted())
                 .map(expenseMapper::toDTO)
                 .toList();
     }
 
     @Override
-    public ExpenseResponseDTO update(Long expenseId, Double amount) {
+    public ExpenseResponseDTO getById(Long expenseId){
         Expense expense = getEntityById(expenseId);
-        expense.setAmount(amount);
+        if (expense.getDeleted()){
+            throw new ExpenseNotFoundException(expenseId);
+        }
+        return expenseMapper.toDTO(expense);
+    }
+
+    @Override
+    public ExpenseResponseDTO update(Long expenseId, ExpenseRequestDTO dto) {
+        if (!expenseRepository.existsById(expenseId)) throw new SupplierNotFoundException(expenseId);
+
+        Supplier supplier = supplierService.getEntityById(dto.supplierId());
+        Expense originExpense = getEntityById(expenseId);
+
+        Expense expense = expenseMapper.toEntity(dto, supplier);
+
+        expense.setId(originExpense.getId());
+        expense.setDateTime(originExpense.getDateTime());
+        expense.setDeleted(false);
 
         return expenseMapper.toDTO(expenseRepository.save(expense));
     }
@@ -52,6 +77,7 @@ public class ExpenseService implements IExpenseService {
     @Override
     public ExpenseResponseDTO delete(Long expenseId) {
         Expense expense = getEntityById(expenseId);
+
         expense.setDeleted(true);
 
         return expenseMapper.toDTO(expenseRepository.save(expense));

@@ -1,11 +1,13 @@
 package com.progra3.cafeteria_api.service.impl;
 
+import com.progra3.cafeteria_api.exception.CustomerActiveException;
 import com.progra3.cafeteria_api.exception.CustomerNotFoundException;
 import com.progra3.cafeteria_api.exception.SupplierNotFoundException;
 import com.progra3.cafeteria_api.model.dto.CustomerRequestDTO;
 import com.progra3.cafeteria_api.model.dto.CustomerResponseDTO;
 import com.progra3.cafeteria_api.model.dto.mapper.CustomerMapper;
 import com.progra3.cafeteria_api.model.entity.Customer;
+import com.progra3.cafeteria_api.model.entity.Supplier;
 import com.progra3.cafeteria_api.repository.CustomerRepository;
 import com.progra3.cafeteria_api.service.ICustomerService;
 import lombok.RequiredArgsConstructor;
@@ -22,15 +24,21 @@ public class CustomerService implements ICustomerService {
 
     @Override
     public CustomerResponseDTO create(CustomerRequestDTO dto) {
-         Customer customer = customerMapper.toEntity(dto);
+        Customer customer = customerMapper.toEntity(dto);
 
-        if (customerRepository.existsById(customer.getId())){
-            customer = getEntityById(customer.getId());
-            customer.setDeleted(false);
-            customerRepository.save(customer);
-        }else {
-            customerRepository.save(customer);
+        if (customerRepository.existsBy()) {
+            if (customerRepository.existsByDni(customer.getDni())) {
+                customer = customerRepository.findByDni(customer.getDni());
+                if (!customer.getDeleted()){
+                    throw new CustomerActiveException(customer.getDni());
+                }
+            }
         }
+        if (dto.discount() == null){
+            customer.setDiscount(0);
+        }
+        customer.setDeleted(false);
+        customerRepository.save(customer);
 
         return customerMapper.toDTO(customer);
     }
@@ -40,27 +48,43 @@ public class CustomerService implements ICustomerService {
     public List<CustomerResponseDTO> getAll() {
         return customerRepository.findAll()
                 .stream()
+                .filter(n -> !n.getDeleted())
                 .map(customerMapper::toDTO)
                 .toList();
     }
 
     @Override
-    public CustomerResponseDTO update(CustomerRequestDTO dto) {
-        Customer customer = customerMapper.toEntity(dto);
+    public CustomerResponseDTO getById(Long customerId){
+        Customer customer = getEntityById(customerId);
+        if (customer.getDeleted()){
+            throw new CustomerNotFoundException(customerId);
+        }
+        return customerMapper.toDTO(customer);
+    }
 
-        if (customerRepository.existsById(customer.getId())){
-            customerRepository.save(customer);
-        }else throw new CustomerNotFoundException(customer.getId());
+
+    @Override
+    public CustomerResponseDTO update(Long customerId, CustomerRequestDTO dto) {
+        if (!customerRepository.existsById(customerId)) throw new CustomerNotFoundException(customerId);
+
+        Customer customer = customerMapper.toEntity(dto);
+        customer.setId(getEntityById(customerId).getId());
+
+        if (dto.discount() == null){
+        customer.setDiscount(0);
+        }
+        customer.setDeleted(false);
+        customerRepository.save(customer);
 
         return customerMapper.toDTO(customer);
     }
 
     @Override
-    public CustomerResponseDTO delete(Long customerId) {
+    public void delete(Long customerId) {
         Customer customer = getEntityById(customerId);
         customer.setDeleted(true);
 
-        return customerMapper.toDTO(customerRepository.save(customer));
+        customerMapper.toDTO(customerRepository.save(customer));
     }
 
     @Override

@@ -9,7 +9,8 @@ import java.util.List;
 public interface ISupplierService {
     SupplierResponseDTO create(SupplierRequestDTO dto);
     List<SupplierResponseDTO> getAll();
-    SupplierResponseDTO update(SupplierRequestDTO dto);
+    SupplierResponseDTO getById(Long supplierId);
+    SupplierResponseDTO update(Long supplierId, SupplierRequestDTO dto);
     SupplierResponseDTO delete(Long supplierId);
 
     Supplier getEntityById (Long supplierId);

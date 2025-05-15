@@ -33,10 +33,10 @@ public class AuditService implements IAuditService {
 
     @Override
     public AuditResponseDTO create(AuditRequestDTO dto) {
-        AuditStatus auditStatus = findTop().getAuditStatus();
-
-        if (auditStatus.equals(AuditStatus.IN_PROGRESS)) {
-            throw new AuditInProgressException();
+        if (auditRepository.existsBy()){
+            if (findTop().getAuditStatus().equals(AuditStatus.IN_PROGRESS)) {
+                throw new AuditInProgressException();
+            }
         }
 
         Audit audit = auditMapper.toEntity(dto);
@@ -51,6 +51,11 @@ public class AuditService implements IAuditService {
                 .stream()
                 .map(auditMapper::toDTO)
                 .toList();
+    }
+
+    @Override
+    public AuditResponseDTO getById(Long auditId){
+        return auditMapper.toDTO(getEntityById(auditId));
     }
 
     @Override
