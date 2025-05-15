@@ -26,12 +26,11 @@ public class ExpenseMapper {
                 .build();
     }
 
-    public Expense toEntity (ExpenseRequestDTO dto, Supplier supplier, LocalDateTime dateTime){
+    public Expense toEntity (ExpenseRequestDTO dto, Supplier supplier){
         return Expense.builder()
                 .supplier(supplier)
                 .amount(dto.amount())
                 .comment(dto.comment())
-                .dateTime(dateTime)
                 .build();
     }
 

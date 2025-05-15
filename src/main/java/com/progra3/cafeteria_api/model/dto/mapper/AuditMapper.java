@@ -18,6 +18,7 @@ public class AuditMapper {
 
     public AuditResponseDTO toDTO (Audit audit){
         return AuditResponseDTO.builder()
+                .id(audit.getId())
                 .startTime(audit.getStartTime())
                 .closeTime(audit.getCloseTime())
                 .initialCash(audit.getInitialCash())
@@ -38,6 +39,7 @@ public class AuditMapper {
         return Audit.builder()
                 .initialCash(dto.initialCash())
                 .auditStatus(AuditStatus.IN_PROGRESS)
+                .deleted(false)
                 .build();
     }
 }

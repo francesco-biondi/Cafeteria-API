@@ -8,8 +8,8 @@ public record ExpenseRequestDTO (
      @NotNull(message = "Each expense must have a supplier")
      Long supplierId,
 
-     @NotNull(message = "Ammount cannot be null")
-     @Positive(message = "Ammount must be positive")
+     @NotNull(message = "Amount cannot be null")
+     @Positive(message = "Amount must be positive")
      Double amount,
 
      String comment
