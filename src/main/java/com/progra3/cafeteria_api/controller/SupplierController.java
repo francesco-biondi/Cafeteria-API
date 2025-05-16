@@ -2,6 +2,7 @@ package com.progra3.cafeteria_api.controller;
 
 import com.progra3.cafeteria_api.model.dto.SupplierRequestDTO;
 import com.progra3.cafeteria_api.model.dto.SupplierResponseDTO;
+import com.progra3.cafeteria_api.model.dto.SupplierUpdateDTO;
 import com.progra3.cafeteria_api.service.ISupplierService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -35,8 +36,8 @@ public class SupplierController {
         return ResponseEntity.ok(supplierService.getById(id));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<SupplierResponseDTO> updateSupplier (@PathVariable Long id, @Valid @RequestBody SupplierRequestDTO dto){
+    @PatchMapping("/{id}")
+    public ResponseEntity<SupplierResponseDTO> updateSupplier (@PathVariable Long id, @Valid @RequestBody SupplierUpdateDTO dto){
         return ResponseEntity.ok(supplierService.update(id, dto));
     }
 

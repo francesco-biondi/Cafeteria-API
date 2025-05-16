@@ -40,7 +40,7 @@ public class AuditController {
         return ResponseEntity.ok(auditService.cancel(id));
     }
 
-    @PostMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<AuditResponseDTO> finalizeAudit (@PathVariable Long id){
         return ResponseEntity.ok(auditService.finalize(id));
     }

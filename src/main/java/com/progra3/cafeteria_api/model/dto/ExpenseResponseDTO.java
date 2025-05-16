@@ -10,5 +10,6 @@ public record ExpenseResponseDTO (
     SupplierResponseDTO supplier,
     Double amount,
     String comment,
-    LocalDateTime date
+    LocalDateTime date,
+    Boolean deleted
 ){}

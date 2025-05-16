@@ -2,6 +2,7 @@ package com.progra3.cafeteria_api.controller;
 
 import com.progra3.cafeteria_api.model.dto.ExpenseRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ExpenseResponseDTO;
+import com.progra3.cafeteria_api.model.dto.ExpenseUpdateDTO;
 import com.progra3.cafeteria_api.service.IExpenseService;
 import com.progra3.cafeteria_api.service.impl.ExpenseService;
 import jakarta.validation.Valid;
@@ -37,8 +38,8 @@ public class ExpenseController {
         return ResponseEntity.ok(expenseService.getById(id));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ExpenseResponseDTO> updateExpense (@PathVariable Long id, @Valid @RequestBody ExpenseRequestDTO dto){
+    @PatchMapping("/{id}")
+    public ResponseEntity<ExpenseResponseDTO> updateExpense (@PathVariable Long id, @Valid @RequestBody ExpenseUpdateDTO dto){
         return ResponseEntity.ok(expenseService.update(id, dto));
     }
 

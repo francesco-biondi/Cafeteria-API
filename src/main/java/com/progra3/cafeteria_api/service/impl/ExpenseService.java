@@ -6,6 +6,7 @@ import com.progra3.cafeteria_api.exception.SupplierInUseException;
 import com.progra3.cafeteria_api.exception.SupplierNotFoundException;
 import com.progra3.cafeteria_api.model.dto.ExpenseRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ExpenseResponseDTO;
+import com.progra3.cafeteria_api.model.dto.ExpenseUpdateDTO;
 import com.progra3.cafeteria_api.model.dto.mapper.ExpenseMapper;
 import com.progra3.cafeteria_api.model.entity.Expense;
 import com.progra3.cafeteria_api.model.entity.Supplier;
@@ -59,17 +60,12 @@ public class ExpenseService implements IExpenseService {
     }
 
     @Override
-    public ExpenseResponseDTO update(Long expenseId, ExpenseRequestDTO dto) {
+    public ExpenseResponseDTO update(Long expenseId, ExpenseUpdateDTO dto) {
         if (!expenseRepository.existsById(expenseId)) throw new SupplierNotFoundException(expenseId);
 
-        Supplier supplier = supplierService.getEntityById(dto.supplierId());
-        Expense originExpense = getEntityById(expenseId);
-
-        Expense expense = expenseMapper.toEntity(dto, supplier);
-
-        expense.setId(originExpense.getId());
-        expense.setDateTime(originExpense.getDateTime());
-        expense.setDeleted(false);
+        Expense expense = getEntityById(expenseId);
+        Supplier supplier = supplierService.getEntityById(expense.getSupplier().getId());
+        expense = expenseMapper.toEntity(dto, supplier, expense);
 
         return expenseMapper.toDTO(expenseRepository.save(expense));
     }

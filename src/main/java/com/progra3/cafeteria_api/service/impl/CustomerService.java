@@ -2,12 +2,11 @@ package com.progra3.cafeteria_api.service.impl;
 
 import com.progra3.cafeteria_api.exception.CustomerActiveException;
 import com.progra3.cafeteria_api.exception.CustomerNotFoundException;
-import com.progra3.cafeteria_api.exception.SupplierNotFoundException;
 import com.progra3.cafeteria_api.model.dto.CustomerRequestDTO;
 import com.progra3.cafeteria_api.model.dto.CustomerResponseDTO;
+import com.progra3.cafeteria_api.model.dto.CustomerUpdateDTO;
 import com.progra3.cafeteria_api.model.dto.mapper.CustomerMapper;
 import com.progra3.cafeteria_api.model.entity.Customer;
-import com.progra3.cafeteria_api.model.entity.Supplier;
 import com.progra3.cafeteria_api.repository.CustomerRepository;
 import com.progra3.cafeteria_api.service.ICustomerService;
 import lombok.RequiredArgsConstructor;
@@ -64,16 +63,11 @@ public class CustomerService implements ICustomerService {
 
 
     @Override
-    public CustomerResponseDTO update(Long customerId, CustomerRequestDTO dto) {
+    public CustomerResponseDTO update(Long customerId, CustomerUpdateDTO dto) {
         if (!customerRepository.existsById(customerId)) throw new CustomerNotFoundException(customerId);
 
-        Customer customer = customerMapper.toEntity(dto);
-        customer.setId(getEntityById(customerId).getId());
-
-        if (dto.discount() == null){
-        customer.setDiscount(0);
-        }
-        customer.setDeleted(false);
+        Customer customer = getEntityById(customerId);
+        customer = customerMapper.toEntity(dto, customer);
         customerRepository.save(customer);
 
         return customerMapper.toDTO(customer);
