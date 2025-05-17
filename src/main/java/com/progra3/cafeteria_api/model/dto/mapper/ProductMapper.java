@@ -4,18 +4,13 @@ import com.progra3.cafeteria_api.model.dto.ProductRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ProductResponseDTO;
 import com.progra3.cafeteria_api.model.entity.Category;
 import com.progra3.cafeteria_api.model.entity.Product;
-import com.progra3.cafeteria_api.repository.CategoryRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-@RequiredArgsConstructor
 public class ProductMapper {
-
-    private final CategoryRepository categoryRepository;
 
     public ProductResponseDTO toDTO(Product product) {
         return ProductResponseDTO.builder()

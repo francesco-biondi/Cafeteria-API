@@ -3,6 +3,9 @@ package com.progra3.cafeteria_api.model.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -38,4 +41,10 @@ public class Product {
 
     @Column
     private Boolean deleted = false;
+
+    @OneToMany(mappedBy = "parentProduct", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProductComponent> components = new ArrayList<>();
+
+    @Column(nullable = false)
+    private Boolean isComposite = false;
 }
