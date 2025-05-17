@@ -12,5 +12,6 @@ public record ExpenseRequestDTO (
      @Positive(message = "Amount must be positive")
      Double amount,
 
+     @Size(max = 255, message = "Comment must have max 255 characters")
      String comment
 ){}

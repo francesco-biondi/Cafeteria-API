@@ -28,8 +28,10 @@ public class SupplierService implements ISupplierService {
     public SupplierResponseDTO create(SupplierRequestDTO dto) {
         Supplier supplier = supplierMapper.toEntity(dto);
 
-        if (supplierRepository.existsByCuit(supplier.getCuit())){
-            supplier = supplierRepository.findByCuit(supplier.getCuit());
+        if (dto.cuit() != null){
+            if (supplierRepository.existsByCuit(supplier.getCuit())){
+                supplier = supplierRepository.findByCuit(supplier.getCuit());
+            }
         }
         supplier.setDeleted(false);
         supplierRepository.save(supplier);

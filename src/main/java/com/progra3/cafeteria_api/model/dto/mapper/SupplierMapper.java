@@ -4,10 +4,16 @@ import com.progra3.cafeteria_api.model.dto.SupplierRequestDTO;
 import com.progra3.cafeteria_api.model.dto.SupplierResponseDTO;
 import com.progra3.cafeteria_api.model.dto.SupplierUpdateDTO;
 import com.progra3.cafeteria_api.model.entity.Supplier;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @Component
+@RequiredArgsConstructor
 public class SupplierMapper {
+    private final AddressMapper addressMapper;
+
     public SupplierResponseDTO toDTO (Supplier supplier){
         return SupplierResponseDTO.builder()
                 .id(supplier.getId())
@@ -16,7 +22,7 @@ public class SupplierMapper {
                 .cuit(supplier.getCuit())
                 .phoneNumber(supplier.getPhoneNumber())
                 .email(supplier.getEmail())
-                .address(supplier.getAddress())
+                .address(supplier.getAddress() != null ? addressMapper.toDTO(supplier.getAddress()) : null)
                 .deleted(supplier.getDeleted())
                 .build();
     }
@@ -28,7 +34,7 @@ public class SupplierMapper {
                 .cuit(dto.cuit())
                 .phoneNumber(dto.phoneNumber())
                 .email(dto.email())
-                .address(dto.address())
+                .address(dto.address() != null ? addressMapper.toEntity(dto.address()) : null)
                 .build();
     }
 
@@ -40,7 +46,7 @@ public class SupplierMapper {
                 .cuit(isNullOrBlank(dto.cuit()) ? existingSupplier.getCuit() : dto.cuit())
                 .phoneNumber(isNullOrBlank(dto.phoneNumber()) ? existingSupplier.getPhoneNumber() : dto.phoneNumber())
                 .email(isNullOrBlank(dto.email()) ? existingSupplier.getEmail() : dto.email())
-                .address(isNullOrBlank(dto.address()) ? existingSupplier.getAddress() : dto.address())
+                .address(dto.address() != null ? addressMapper.toEntity(dto.address(), existingSupplier.getAddress()) : existingSupplier.getAddress())
                 .deleted(false)
                 .build();
     }

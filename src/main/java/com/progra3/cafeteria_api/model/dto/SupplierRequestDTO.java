@@ -1,5 +1,6 @@
 package com.progra3.cafeteria_api.model.dto;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -27,6 +28,6 @@ public record SupplierRequestDTO(
     @Email(message = "Invalid email format. Expected format: example@domain.com")
     String email,
 
-    //TODO change String with an actual Adress class
-    String address
+    @Valid
+    AddressRequestDTO address
 ){}
