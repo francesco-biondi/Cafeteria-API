@@ -2,13 +2,15 @@ package com.progra3.cafeteria_api.controller;
 
 import com.progra3.cafeteria_api.model.dto.EmployeeRequestDTO;
 import com.progra3.cafeteria_api.model.dto.EmployeeResponseDTO;
+import com.progra3.cafeteria_api.model.dto.EmployeeUpdateDTO;
 import com.progra3.cafeteria_api.service.impl.EmployeeService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
+import com.progra3.cafeteria_api.model.enums.Role;
 
 @RestController
 @RequestMapping("/api/employees")
@@ -16,13 +18,6 @@ import org.springframework.web.bind.annotation.*;
 public class EmployeeController {
 
     private final EmployeeService employeeService;
-
-    //TODO Eliminar
-    @PostMapping("/login")
-    public ResponseEntity<EmployeeResponseDTO> login(@NotBlank @RequestBody String email, @NotBlank @RequestBody String password){
-        EmployeeResponseDTO response = employeeService.login(email, password);
-        return ResponseEntity.ok(response);
-    }
 
     @PostMapping
     public ResponseEntity<EmployeeResponseDTO> createEmployee(@RequestBody @Valid EmployeeRequestDTO requestDTO){
@@ -40,5 +35,30 @@ public class EmployeeController {
     public ResponseEntity<EmployeeResponseDTO> createAdmin(@RequestBody @Valid EmployeeRequestDTO requestDTO){
         EmployeeResponseDTO response = employeeService.createAdmin(requestDTO);
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{id}")
+    public ResponseEntity<EmployeeResponseDTO> updateEmployee(@PathVariable Long id, @RequestBody EmployeeUpdateDTO dto){
+        EmployeeResponseDTO response = employeeService.updateEmployee(id, dto);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<EmployeeResponseDTO>> getAllEmployees(){
+        List<EmployeeResponseDTO> employees = employeeService.getAllEmployees();
+        return ResponseEntity.ok(employees);
+    }
+
+    @GetMapping("/employees/filter")
+    public List<EmployeeResponseDTO> filterEmployees(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String lastName,
+            @RequestParam(required = false) String dni,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String phoneNumber,
+            @RequestParam(required = false) Role role,
+            @RequestParam(required = false) Boolean deleted
+    ){
+        return employeeService.filterEmployees(name, lastName, dni, email, phoneNumber, role, deleted);
     }
 }

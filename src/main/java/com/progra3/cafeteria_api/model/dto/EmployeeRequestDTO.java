@@ -6,7 +6,6 @@ import lombok.Builder;
 
 @Builder
 public record EmployeeRequestDTO(
-        Long id,
 
         @NotBlank(message = "Name is required")
         @Size(min = 1, max = 50, message = "Name must be between 1 and 50 characters")
