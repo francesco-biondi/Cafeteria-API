@@ -4,13 +4,17 @@ import com.progra3.cafeteria_api.model.dto.ProductRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ProductResponseDTO;
 import com.progra3.cafeteria_api.model.entity.Category;
 import com.progra3.cafeteria_api.model.entity.Product;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 public class ProductMapper {
+
+    private final ProductComponentMapper productComponentMapper;
 
     public ProductResponseDTO toDTO(Product product) {
         return ProductResponseDTO.builder()
@@ -22,6 +26,12 @@ public class ProductMapper {
                 .stock(product.getStock())
                 .categoryName(product.getCategory() != null ? product.getCategory().getName() : null)
                 .deleted(product.getDeleted())
+                .isComposite(product.getIsComposite())
+                .components(product.getComponents() != null
+                        ? product.getComponents().stream()
+                        .map(productComponentMapper::toDTO)
+                        .collect(Collectors.toList())
+                        : null)
                 .build();
     }
 
@@ -32,6 +42,7 @@ public class ProductMapper {
                 .price(dto.price())
                 .cost(dto.cost())
                 .stock(dto.stock())
+                .isComposite(false)
                 .category(category)
                 .deleted(false)
                 .build();
