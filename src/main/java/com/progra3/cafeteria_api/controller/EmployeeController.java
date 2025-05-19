@@ -20,20 +20,14 @@ public class EmployeeController {
     private final EmployeeService employeeService;
 
     @PostMapping
-    public ResponseEntity<EmployeeResponseDTO> createEmployee(@RequestBody @Valid EmployeeRequestDTO requestDTO){
-        EmployeeResponseDTO response = employeeService.createEmployee(requestDTO);
+    public ResponseEntity<EmployeeResponseDTO> createEmployee(@RequestBody @Valid EmployeeRequestDTO dto) {
+        EmployeeResponseDTO response = employeeService.createEmployeeOrAdmin(dto);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<EmployeeResponseDTO> deleteEmployee(@PathVariable @NotNull Long id){
         EmployeeResponseDTO response = employeeService.deleteEmployee(id);
-        return ResponseEntity.ok(response);
-    }
-
-    @PostMapping("/init-admin")
-    public ResponseEntity<EmployeeResponseDTO> createAdmin(@RequestBody @Valid EmployeeRequestDTO requestDTO){
-        EmployeeResponseDTO response = employeeService.createAdmin(requestDTO);
         return ResponseEntity.ok(response);
     }
 

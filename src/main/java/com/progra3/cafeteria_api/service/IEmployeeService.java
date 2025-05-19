@@ -10,9 +10,8 @@ import java.util.List;
 
 public interface IEmployeeService {
 
-    EmployeeResponseDTO createAdmin(EmployeeRequestDTO requestDTO);
+    EmployeeResponseDTO createEmployeeOrAdmin(EmployeeRequestDTO dto);
     Employee getEntityById (Long employeeId);
-    EmployeeResponseDTO createEmployee(EmployeeRequestDTO requestDTO);
     EmployeeResponseDTO deleteEmployee(Long id);
     EmployeeResponseDTO updateEmployee(Long id, EmployeeUpdateDTO updateDTO);
     List<EmployeeResponseDTO> getAllEmployees();

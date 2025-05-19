@@ -24,42 +24,40 @@ public class EmployeeService implements IEmployeeService{
     private final EmployeeMapper employeeMapper;
     private final EmployeeRepository employeeRepository;
 
+
     @Override
     @Transactional
-    public EmployeeResponseDTO createAdmin(EmployeeRequestDTO dto){
+    public EmployeeResponseDTO createEmployeeOrAdmin(EmployeeRequestDTO dto){
+        boolean adminExists = employeeRepository.existsByRole(Role.ADMIN);
 
-        if (employeeRepository.existsByRole(Role.ADMIN)) {
+        if(!adminExists){
+            Employee newAdmin = employeeMapper.toEntity(dto);
+            newAdmin.setRole(Role.ADMIN);
+            newAdmin.setDeleted(false);
+
+            return employeeMapper.toDTO(employeeRepository.save(newAdmin));
+        }
+
+        Employee loggedUser = LoggedUser.get();
+
+        if(loggedUser == null || loggedUser.getRole() != Role.ADMIN){
+            throw new EmployeePermissionException();
+        }
+
+        if(dto.role() == Role.ADMIN){
             throw new AdminExistsException();
         }
 
-        Employee admin = employeeMapper.toEntity(dto);
+        Employee employee = employeeMapper.toEntity(dto);
+        employee.setDeleted(false);
 
-        admin.setRole(Role.ADMIN);
-
-        admin.setDeleted(false);
-
-        return employeeMapper.toDTO(employeeRepository.save(admin));
+        return employeeMapper.toDTO(employeeRepository.save(employee));
     }
 
     @Override
     public Employee getEntityById (Long employeeId) {
         if (employeeId == null) return null;
         return employeeRepository.findById(employeeId).orElseThrow(() -> new EmployeeNotFoundException(employeeId));
-    }
-
-    @Override
-    @Transactional
-    public EmployeeResponseDTO createEmployee(EmployeeRequestDTO dto){
-        Employee loggedUser = LoggedUser.get();
-        if(loggedUser == null || loggedUser.getRole() != Role.ADMIN){
-            throw new EmployeePermissionException();
-        }
-
-        Employee employee = employeeMapper.toEntity(dto);
-
-        employee.setDeleted(false);
-
-        return employeeMapper.toDTO(employeeRepository.save(employee));
     }
 
     @Override
