@@ -49,7 +49,7 @@ public class EmployeeController {
         return ResponseEntity.ok(employees);
     }
 
-    @GetMapping("/employees/filter")
+    @GetMapping("/filter")
     public List<EmployeeResponseDTO> filterEmployees(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String lastName,

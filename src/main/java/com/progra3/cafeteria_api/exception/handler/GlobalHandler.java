@@ -226,8 +226,8 @@ public class GlobalHandler extends ResponseEntityExceptionHandler {
         );
     }
 
-    @ExceptionHandler(EmployeeCreationPermissionException.class)
-    public ResponseEntity<ResponseMessage> handleEmployeeCreationPermission(EmployeeCreationPermissionException ex){
+    @ExceptionHandler(EmployeePermissionException.class)
+    public ResponseEntity<ResponseMessage> handleEmployeeCreationPermission(EmployeePermissionException ex){
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
                 ResponseMessage.builder()
                         .message(ex.getMessage())

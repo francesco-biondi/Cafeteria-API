@@ -52,7 +52,7 @@ public class EmployeeService implements IEmployeeService{
     public EmployeeResponseDTO createEmployee(EmployeeRequestDTO dto){
         Employee loggedUser = LoggedUser.get();
         if(loggedUser == null || loggedUser.getRole() != Role.ADMIN){
-            throw new EmployeeCreationPermissionException();
+            throw new EmployeePermissionException();
         }
 
         Employee employee = employeeMapper.toEntity(dto);
@@ -87,7 +87,7 @@ public class EmployeeService implements IEmployeeService{
     public EmployeeResponseDTO updateEmployee(Long id, EmployeeUpdateDTO dto){
         Employee loggedUser = LoggedUser.get();
         if(loggedUser == null || loggedUser.getRole() != Role.ADMIN){
-            throw new EmployeeCreationPermissionException();
+            throw new EmployeePermissionException();
         }
 
         Employee employee = employeeRepository.findById(id).
@@ -129,7 +129,7 @@ public class EmployeeService implements IEmployeeService{
     public List<EmployeeResponseDTO> getAllEmployees(){
         Employee loggedUser = LoggedUser.get();
         if(loggedUser == null || loggedUser.getRole() != Role.ADMIN){
-            throw new EmployeeCreationPermissionException();
+            throw new EmployeePermissionException();
         }
 
         List<Employee> employees = employeeRepository.findAll();
@@ -150,7 +150,7 @@ public class EmployeeService implements IEmployeeService{
     ){
         Employee loggedUser = LoggedUser.get();
         if(loggedUser == null || loggedUser.getRole() != Role.ADMIN){
-            throw new EmployeeCreationPermissionException();
+            throw new EmployeePermissionException();
         }
 
         Specification<Employee> spec = EmployeeSpecification.filterBy(name, lastName, dni, email, phoneNumber, role, deleted);

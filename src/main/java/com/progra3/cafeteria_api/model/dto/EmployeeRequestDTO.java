@@ -19,8 +19,8 @@ public record EmployeeRequestDTO(
         @Pattern(regexp = "^\\d{7,8}$", message = "DNI must be between 7 and 8 numeric digits")
         String dni,
 
-        @Email(message = "Invalid email format. Expected format: example@domain.com")
         @NotBlank(message = "Email is required")
+        @Email(message = "Invalid email format. Expected format: example@domain.com")
         String email,
 
         @NotBlank(message = "Phone number is required")
@@ -32,10 +32,6 @@ public record EmployeeRequestDTO(
         String password,
 
         @NotNull(message = "Role is required")
-        Role role,
-
-        @NotNull(message = "Deleted is required")
-        Boolean deleted
-
+        Role role
 ) {
 }
