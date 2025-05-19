@@ -88,36 +88,9 @@ public class EmployeeService implements IEmployeeService{
             throw new EmployeePermissionException();
         }
 
-        Employee employee = employeeRepository.findById(id).
-                orElseThrow(() ->  new EmployeeNotFoundException(id));
+        Employee employee = getEntityById(id);
 
-        if(dto.name() != null){
-            employee.setName(dto.name());
-        }
-
-        if(dto.lastName() != null){
-            employee.setLastName(dto.lastName());
-        }
-
-        if(dto.dni() != null){
-            employee.setDni(dto.dni());
-        }
-
-        if(dto.phoneNumber() != null){
-            employee.setPhoneNumber(dto.phoneNumber());
-        }
-
-        if(dto.email() != null){
-            employee.setEmail(dto.email());
-        }
-
-        if(dto.password() != null){
-            employee.setPassword(dto.password());
-        }
-
-        if(dto.role() != null){
-            employee.setRole(dto.role());
-        }
+        employeeMapper.toEntity(dto, employee);
 
         return employeeMapper.toDTO(employeeRepository.save(employee));
     }
