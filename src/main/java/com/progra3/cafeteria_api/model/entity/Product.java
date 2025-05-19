@@ -18,6 +18,7 @@ public class Product {
 
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
+    @Column(name = "product_id")
     private Long id;
 
     @Column(unique = true, nullable = false)
@@ -42,8 +43,16 @@ public class Product {
     @Column
     private Boolean deleted = false;
 
-    @OneToMany(mappedBy = "parentProduct", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "associatedProduct", cascade = CascadeType.ALL)
     private List<ProductComponent> components = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "groups_by_products",
+            joinColumns = @JoinColumn(name = "product_id"),
+            inverseJoinColumns = @JoinColumn(name = "product_group_id")
+    )
+    private List<ProductGroup> productGroups = new ArrayList<>();
 
     @Column(nullable = false)
     private Boolean isComposite = false;

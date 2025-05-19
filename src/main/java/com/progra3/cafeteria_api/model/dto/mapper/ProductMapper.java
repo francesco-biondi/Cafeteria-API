@@ -14,8 +14,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ProductMapper {
 
-    private final ProductComponentMapper productComponentMapper;
-
     public ProductResponseDTO toDTO(Product product) {
         return ProductResponseDTO.builder()
                 .id(product.getId())
@@ -27,11 +25,6 @@ public class ProductMapper {
                 .categoryName(product.getCategory() != null ? product.getCategory().getName() : null)
                 .deleted(product.getDeleted())
                 .isComposite(product.getIsComposite())
-                .components(product.getComponents() != null
-                        ? product.getComponents().stream()
-                        .map(productComponentMapper::toDTO)
-                        .collect(Collectors.toList())
-                        : null)
                 .build();
     }
 
