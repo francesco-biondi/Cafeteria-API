@@ -1,27 +1,25 @@
 package com.progra3.cafeteria_api.model.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "product_group")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@Table(name = "product_groups")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
 public class ProductGroup {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "product_group_id")
     private Long id;
 
+    @Column(nullable = false, unique = true)
     private String name;
 
     @Column(name = "min_quantity")
@@ -30,15 +28,10 @@ public class ProductGroup {
     @Column(name = "max_quantity")
     private Integer maxQuantity;
 
-    @ManyToMany
-    @JoinTable(
-            name = "products_by_groups",
-            joinColumns = @JoinColumn(name = "product_group_id"),
-            inverseJoinColumns = @JoinColumn(name = "product_id")
-    )
-    private List<Product> products;
+    @OneToMany(mappedBy = "productGroup", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProductGroupOption> options = new ArrayList<>();
 
     @ManyToMany(mappedBy = "productGroups")
-    private List<Product> associatedProducts;
+    private List<Product> usedByProducts;
 }
 

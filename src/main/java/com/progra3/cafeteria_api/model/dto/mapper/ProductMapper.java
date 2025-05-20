@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-@RequiredArgsConstructor
 public class ProductMapper {
 
     public ProductResponseDTO toDTO(Product product) {

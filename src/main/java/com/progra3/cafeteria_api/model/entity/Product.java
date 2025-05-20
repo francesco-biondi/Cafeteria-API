@@ -6,19 +6,17 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity
+@Table(name = "products")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString(exclude = "category")
 @Builder
-@Entity
-@Table(name = "products")
 public class Product {
 
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
-    @Column(name = "product_id")
     private Long id;
 
     @Column(unique = true, nullable = false)
@@ -43,7 +41,7 @@ public class Product {
     @Column
     private Boolean deleted = false;
 
-    @OneToMany(mappedBy = "associatedProduct", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "parentProduct", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductComponent> components = new ArrayList<>();
 
     @ManyToMany

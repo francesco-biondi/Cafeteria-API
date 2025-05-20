@@ -1,33 +1,34 @@
 package com.progra3.cafeteria_api.model.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
 @Entity
-@DiscriminatorValue("FIXED")
+@Table(name = "product_components")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-@SuperBuilder
+@Builder
 public class ProductComponent {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Integer quantity;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
-    private Product associatedProduct;
+    private Product component;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_product_id", nullable = false)
+    private Product parentProduct;
+
+    @Column(nullable = false)
+    private Integer quantity;
 }
 
 
