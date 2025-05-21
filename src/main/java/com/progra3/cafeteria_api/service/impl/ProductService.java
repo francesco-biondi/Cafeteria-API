@@ -1,7 +1,6 @@
 package com.progra3.cafeteria_api.service.impl;
 
 import com.progra3.cafeteria_api.exception.ProductNotFoundException;
-import com.progra3.cafeteria_api.model.dto.ProductGroupResponseDTO;
 import com.progra3.cafeteria_api.model.dto.ProductRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ProductResponseDTO;
 import com.progra3.cafeteria_api.model.dto.mapper.ProductGroupMapper;
@@ -73,14 +72,31 @@ public class ProductService implements IProductService {
 
     @Transactional
     @Override
-    public ProductGroupResponseDTO assignGroupToProduct(Long productId, Long groupId) {
+    public ProductResponseDTO assignGroupToProduct (Long productId, Long groupId) {
         Product product = getEntityById(productId);
         ProductGroup group = productGroupService.getEntityById(groupId);
 
         product.getProductGroups().add(group);
 
-        productRepository.save(product);
+        return productMapper.toDTO(productRepository.save(product));
+    }
 
-        return productGroupMapper.toDTO(group);
+    @Transactional
+    @Override
+    public ProductResponseDTO removeGroupFromProduct(Long productId, Long groupId) {
+        Product product = getEntityById(productId);
+        ProductGroup group = productGroupService.getEntityById(groupId);
+
+        product.getProductGroups().remove(group);
+
+        return productMapper.toDTO(productRepository.save(product));
+    }
+
+    private void adjustComposite (Product product) {
+        if (product.getProductGroups().isEmpty()) {
+            product.setComposite(false);
+        } else {
+            product.setComposite(true);
+        }
     }
 }

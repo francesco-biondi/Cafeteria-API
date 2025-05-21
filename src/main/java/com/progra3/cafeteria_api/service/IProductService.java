@@ -18,5 +18,8 @@ public interface IProductService {
     Product getEntityById (Long productId);
 
     @Transactional
-    ProductGroupResponseDTO assignGroupToProduct(Long productId, Long groupId);
+    ProductResponseDTO assignGroupToProduct(Long productId, Long groupId);
+
+    @Transactional
+    ProductResponseDTO removeGroupFromProduct(Long productId, Long groupId);
 }

@@ -1,7 +1,6 @@
 package com.progra3.cafeteria_api.model.dto;
 
 import lombok.Builder;
-import lombok.Data;
 
 import java.util.List;
 
@@ -15,7 +14,7 @@ public record ProductResponseDTO(
         Integer stock,
         String categoryName,
         Boolean deleted,
-        Boolean isComposite,
+        Boolean composite,
         List<ProductComponentDTO> components,
         List<ProductGroupResponseDTO> productGroups
 ) { }

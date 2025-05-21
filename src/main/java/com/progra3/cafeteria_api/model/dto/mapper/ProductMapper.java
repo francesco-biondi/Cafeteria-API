@@ -15,7 +15,7 @@ public interface ProductMapper {
 
     List<ProductResponseDTO> toDTOList(List<Product> products);
 
-    @Mapping(target = "isComposite", constant = "false")
+    @Mapping(target = "composite", constant = "false")
     @Mapping(target = "deleted", constant = "false")
     Product toEntity(ProductRequestDTO dto, @Context Category category);
 

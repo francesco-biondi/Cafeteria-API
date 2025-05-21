@@ -121,10 +121,18 @@ public class ProductController {
     }
 
     @PutMapping("/{id}/groups/{groupId}")
-    public ResponseEntity<ProductGroupResponseDTO> assignGroupToProduct(
+    public ResponseEntity<ProductResponseDTO> assignGroupToProduct(
             @PathVariable Long id,
             @PathVariable Long groupId) {
-        ProductGroupResponseDTO response = productService.assignGroupToProduct(id, groupId);
+        ProductResponseDTO response = productService.assignGroupToProduct(id, groupId);
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{id}/groups/{groupId}")
+    public ResponseEntity<ProductResponseDTO> removeGroupFromProduct(
+            @PathVariable Long id,
+            @PathVariable Long groupId) {
+        ProductResponseDTO response = productService.removeGroupFromProduct(id, groupId);
         return ResponseEntity.ok(response);
     }
 }
