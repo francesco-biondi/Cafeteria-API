@@ -1,13 +1,17 @@
 package com.progra3.cafeteria_api.service.impl;
 
 import com.progra3.cafeteria_api.exception.ProductNotFoundException;
+import com.progra3.cafeteria_api.model.dto.ProductGroupResponseDTO;
 import com.progra3.cafeteria_api.model.dto.ProductRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ProductResponseDTO;
+import com.progra3.cafeteria_api.model.dto.mapper.ProductGroupMapper;
 import com.progra3.cafeteria_api.model.dto.mapper.ProductMapper;
 import com.progra3.cafeteria_api.model.entity.Category;
 import com.progra3.cafeteria_api.model.entity.Product;
+import com.progra3.cafeteria_api.model.entity.ProductGroup;
 import com.progra3.cafeteria_api.repository.ProductRepository;
 import com.progra3.cafeteria_api.service.IProductService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +25,8 @@ public class ProductService implements IProductService {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
     private final CategoryService categoryService;
+    private final ProductGroupService productGroupService;
+    private final ProductGroupMapper productGroupMapper;
 
     @Override
     public ProductResponseDTO createProduct(ProductRequestDTO productRequestDTO) {
@@ -63,5 +69,18 @@ public class ProductService implements IProductService {
     @Override
     public Product getEntityById (Long productId){
         return productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException(productId));
+    }
+
+    @Transactional
+    @Override
+    public ProductGroupResponseDTO assignGroupToProduct(Long productId, Long groupId) {
+        Product product = getEntityById(productId);
+        ProductGroup group = productGroupService.getEntityById(groupId);
+
+        product.getProductGroups().add(group);
+
+        productRepository.save(product);
+
+        return productGroupMapper.toDTO(group);
     }
 }

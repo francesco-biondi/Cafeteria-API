@@ -4,45 +4,23 @@ import com.progra3.cafeteria_api.model.dto.ProductRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ProductResponseDTO;
 import com.progra3.cafeteria_api.model.entity.Category;
 import com.progra3.cafeteria_api.model.entity.Product;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
-
+import org.mapstruct.*;
 import java.util.List;
-import java.util.stream.Collectors;
 
-@Component
-public class ProductMapper {
+@Mapper(componentModel = "spring", builder = @Builder(disableBuilder = true), uses = {ProductGroupMapper.class})
+public interface ProductMapper {
 
-    public ProductResponseDTO toDTO(Product product) {
-        return ProductResponseDTO.builder()
-                .id(product.getId())
-                .name(product.getName())
-                .description(product.getDescription())
-                .price(product.getPrice())
-                .cost(product.getCost())
-                .stock(product.getStock())
-                .categoryName(product.getCategory() != null ? product.getCategory().getName() : null)
-                .deleted(product.getDeleted())
-                .isComposite(product.getIsComposite())
-                .build();
-    }
+    @Mapping(source = "category.name", target = "categoryName")
+    ProductResponseDTO toDTO(Product product);
 
-    public Product toEntity(ProductRequestDTO dto, Category category) {
-        return Product.builder()
-                .name(dto.name())
-                .description(dto.description())
-                .price(dto.price())
-                .cost(dto.cost())
-                .stock(dto.stock())
-                .isComposite(false)
-                .category(category)
-                .deleted(false)
-                .build();
-    }
+    List<ProductResponseDTO> toDTOList(List<Product> products);
 
-    public List<ProductResponseDTO> toDTOList(List<Product> products) {
-        return products.stream()
-                .map(this::toDTO)
-                .collect(Collectors.toList());
+    @Mapping(target = "isComposite", constant = "false")
+    @Mapping(target = "deleted", constant = "false")
+    Product toEntity(ProductRequestDTO dto, @Context Category category);
+
+    @AfterMapping
+    default void assignCategory(@MappingTarget Product product, @Context Category category) {
+        product.setCategory(category);
     }
 }

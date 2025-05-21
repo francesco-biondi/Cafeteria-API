@@ -28,10 +28,10 @@ public class ProductGroup {
     @Column(name = "max_quantity")
     private Integer maxQuantity;
 
-    @OneToMany(mappedBy = "productGroup", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "productGroup",cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductGroupOption> options = new ArrayList<>();
 
     @ManyToMany(mappedBy = "productGroups")
-    private List<Product> usedByProducts;
+    private List<Product> usedByProducts = new ArrayList<>();
 }
 

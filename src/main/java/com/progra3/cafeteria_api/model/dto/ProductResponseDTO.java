@@ -16,5 +16,6 @@ public record ProductResponseDTO(
         String categoryName,
         Boolean deleted,
         Boolean isComposite,
-        List<ProductComponentDTO> components
+        List<ProductComponentDTO> components,
+        List<ProductGroupResponseDTO> productGroups
 ) { }

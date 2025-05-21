@@ -1,5 +1,6 @@
 package com.progra3.cafeteria_api.controller;
 
+import com.progra3.cafeteria_api.model.dto.ProductGroupResponseDTO;
 import com.progra3.cafeteria_api.model.dto.ProductRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ProductResponseDTO;
 import com.progra3.cafeteria_api.service.impl.ProductService;
@@ -116,6 +117,14 @@ public class ProductController {
     public ResponseEntity<ProductResponseDTO> deleteProduct(
             @Parameter(description = "ID of the product to delete") @PathVariable @NotNull Long id) {
         ProductResponseDTO response = productService.deleteProduct(id);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{id}/groups/{groupId}")
+    public ResponseEntity<ProductGroupResponseDTO> assignGroupToProduct(
+            @PathVariable Long id,
+            @PathVariable Long groupId) {
+        ProductGroupResponseDTO response = productService.assignGroupToProduct(id, groupId);
         return ResponseEntity.ok(response);
     }
 }

@@ -10,6 +10,7 @@ import com.progra3.cafeteria_api.model.entity.Order;
 import com.progra3.cafeteria_api.model.entity.Product;
 import com.progra3.cafeteria_api.repository.ItemRepository;
 import com.progra3.cafeteria_api.service.IItemService;
+import com.progra3.cafeteria_api.service.helper.ProductQueryService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,12 +22,12 @@ import java.util.List;
 public class ItemService implements IItemService {
     private final ItemRepository itemRepository;
     private final ItemMapper itemMapper;
-    private final ProductService productService;
+    private final ProductQueryService productQueryService;
 
     @Transactional
     @Override
     public Item createItem(Order order, ItemRequestDTO itemDTO) {
-        Product product = productService.getEntityById(itemDTO.productId());
+        Product product = productQueryService.getEntityById(itemDTO.productId());
 
         return itemRepository.save(itemMapper.toEntity(itemDTO, product, order));
     }
