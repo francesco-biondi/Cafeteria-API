@@ -4,9 +4,9 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 
-public record ProductGroupOptionRequestDTO(
+public record ProductOptionRequestDTO(
 
-        @NotNull(message = "Product group ID is required")
+        @NotNull(message = "Product ID is required")
         Long productId,
 
         @NotNull(message = "Max quantity is required")

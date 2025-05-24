@@ -1,7 +1,7 @@
 package com.progra3.cafeteria_api.controller;
 
-import com.progra3.cafeteria_api.model.dto.ProductGroupOptionRequestDTO;
-import com.progra3.cafeteria_api.model.dto.ProductGroupOptionResponseDTO;
+import com.progra3.cafeteria_api.model.dto.ProductOptionRequestDTO;
+import com.progra3.cafeteria_api.model.dto.ProductOptionResponseDTO;
 import com.progra3.cafeteria_api.model.dto.ProductGroupRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ProductGroupResponseDTO;
 import com.progra3.cafeteria_api.service.IProductGroupService;
@@ -51,29 +51,29 @@ public class ProductGroupController {
     }
 
     @PostMapping("/{id}/options")
-    public ResponseEntity<List<ProductGroupOptionResponseDTO>> addOptions(
+    public ResponseEntity<List<ProductOptionResponseDTO>> addOptions(
             @PathVariable Long id,
-            @RequestBody List<@Valid ProductGroupOptionRequestDTO> options) {
-        return ResponseEntity.ok(productGroupService.addOptions(id, options));
+            @RequestBody List<@Valid ProductOptionRequestDTO> options) {
+        return ResponseEntity.ok(productGroupService.addProductOptions(id, options));
     }
 
     @GetMapping("/{id}/options")
-    public ResponseEntity<List<ProductGroupOptionResponseDTO>> getOptions(@PathVariable Long id) {
-        return ResponseEntity.ok(productGroupService.getOptions(id));
+    public ResponseEntity<List<ProductOptionResponseDTO>> getOptions(@PathVariable Long id) {
+        return ResponseEntity.ok(productGroupService.getProductOptions(id));
     }
 
     @PutMapping("/{id}/options/{optionId}")
-    public ResponseEntity<ProductGroupOptionResponseDTO> updateOption(
+    public ResponseEntity<ProductOptionResponseDTO> updateOption(
             @PathVariable Long id,
             @PathVariable Long optionId,
-            @RequestBody @Valid ProductGroupOptionRequestDTO dto) {
-        return ResponseEntity.ok(productGroupService.updateOption(id, optionId, dto));
+            @RequestBody @Valid ProductOptionRequestDTO dto) {
+        return ResponseEntity.ok(productGroupService.updateProductOption(id, optionId, dto));
     }
 
     @DeleteMapping("/{id}/options/{optionId}")
-    public ResponseEntity<ProductGroupOptionResponseDTO> removeOption(
+    public ResponseEntity<ProductOptionResponseDTO> removeOption(
             @PathVariable Long id,
             @PathVariable Long optionId) {
-        return ResponseEntity.ok(productGroupService.removeOption(id, optionId));
+        return ResponseEntity.ok(productGroupService.removeProductOption(id, optionId));
     }
 }

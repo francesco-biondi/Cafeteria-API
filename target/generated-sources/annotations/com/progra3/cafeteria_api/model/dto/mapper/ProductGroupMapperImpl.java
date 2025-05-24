@@ -1,10 +1,10 @@
 package com.progra3.cafeteria_api.model.dto.mapper;
 
-import com.progra3.cafeteria_api.model.dto.ProductGroupOptionResponseDTO;
 import com.progra3.cafeteria_api.model.dto.ProductGroupRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ProductGroupResponseDTO;
+import com.progra3.cafeteria_api.model.dto.ProductOptionResponseDTO;
 import com.progra3.cafeteria_api.model.entity.ProductGroup;
-import com.progra3.cafeteria_api.model.entity.ProductGroupOption;
+import com.progra3.cafeteria_api.model.entity.ProductOption;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.processing.Generated;
@@ -13,14 +13,14 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-05-21T16:21:32-0300",
+    date = "2025-05-23T15:23:48-0300",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 24.0.1 (Oracle Corporation)"
 )
 @Component
 public class ProductGroupMapperImpl implements ProductGroupMapper {
 
     @Autowired
-    private ProductGroupOptionMapper productGroupOptionMapper;
+    private ProductOptionMapper productOptionMapper;
 
     @Override
     public ProductGroupResponseDTO toDTO(ProductGroup productGroup) {
@@ -32,13 +32,13 @@ public class ProductGroupMapperImpl implements ProductGroupMapper {
         String name = null;
         Integer minQuantity = null;
         Integer maxQuantity = null;
-        List<ProductGroupOptionResponseDTO> options = null;
+        List<ProductOptionResponseDTO> options = null;
 
         id = productGroup.getId();
         name = productGroup.getName();
         minQuantity = productGroup.getMinQuantity();
         maxQuantity = productGroup.getMaxQuantity();
-        options = productGroupOptionListToProductGroupOptionResponseDTOList( productGroup.getOptions() );
+        options = productOptionListToProductOptionResponseDTOList( productGroup.getOptions() );
 
         ProductGroupResponseDTO productGroupResponseDTO = new ProductGroupResponseDTO( id, name, minQuantity, maxQuantity, options );
 
@@ -74,14 +74,14 @@ public class ProductGroupMapperImpl implements ProductGroupMapper {
         return productGroup;
     }
 
-    protected List<ProductGroupOptionResponseDTO> productGroupOptionListToProductGroupOptionResponseDTOList(List<ProductGroupOption> list) {
+    protected List<ProductOptionResponseDTO> productOptionListToProductOptionResponseDTOList(List<ProductOption> list) {
         if ( list == null ) {
             return null;
         }
 
-        List<ProductGroupOptionResponseDTO> list1 = new ArrayList<ProductGroupOptionResponseDTO>( list.size() );
-        for ( ProductGroupOption productGroupOption : list ) {
-            list1.add( productGroupOptionMapper.toDTO( productGroupOption ) );
+        List<ProductOptionResponseDTO> list1 = new ArrayList<ProductOptionResponseDTO>( list.size() );
+        for ( ProductOption productOption : list ) {
+            list1.add( productOptionMapper.toDTO( productOption ) );
         }
 
         return list1;

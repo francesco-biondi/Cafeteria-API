@@ -25,7 +25,6 @@ public class ProductService implements IProductService {
     private final ProductMapper productMapper;
     private final CategoryService categoryService;
     private final ProductGroupService productGroupService;
-    private final ProductGroupMapper productGroupMapper;
 
     @Override
     public ProductResponseDTO createProduct(ProductRequestDTO productRequestDTO) {
@@ -93,10 +92,6 @@ public class ProductService implements IProductService {
     }
 
     private void adjustComposite (Product product) {
-        if (product.getProductGroups().isEmpty()) {
-            product.setComposite(false);
-        } else {
-            product.setComposite(true);
-        }
+        product.setComposite(!product.getProductGroups().isEmpty());
     }
 }

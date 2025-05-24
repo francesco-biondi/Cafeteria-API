@@ -8,7 +8,7 @@ import org.mapstruct.Mapper;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", builder = @Builder(disableBuilder = true), uses = {ProductGroupOptionMapper.class})
+@Mapper(componentModel = "spring", builder = @Builder(disableBuilder = true), uses = {ProductOptionMapper.class})
 public interface ProductGroupMapper {
 
      ProductGroupResponseDTO toDTO(ProductGroup productGroup);

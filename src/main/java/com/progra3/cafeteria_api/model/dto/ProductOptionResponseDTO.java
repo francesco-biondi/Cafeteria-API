@@ -1,6 +1,6 @@
 package com.progra3.cafeteria_api.model.dto;
 
-public record ProductGroupOptionResponseDTO(
+public record ProductOptionResponseDTO(
         Long id,
         Long productId,
         Integer maxQuantity,

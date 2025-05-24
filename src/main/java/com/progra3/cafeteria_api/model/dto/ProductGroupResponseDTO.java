@@ -7,6 +7,6 @@ public record ProductGroupResponseDTO(
         String name,
         Integer minQuantity,
         Integer maxQuantity,
-        List<ProductGroupOptionResponseDTO> options
+        List<ProductOptionResponseDTO> options
 ) {
 }

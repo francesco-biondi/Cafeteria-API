@@ -2,14 +2,14 @@ package com.progra3.cafeteria_api.service.impl;
 
 import com.progra3.cafeteria_api.exception.CannotDeleteProductGroupException;
 import com.progra3.cafeteria_api.exception.ProductGroupNotFoundException;
-import com.progra3.cafeteria_api.model.dto.ProductGroupOptionRequestDTO;
-import com.progra3.cafeteria_api.model.dto.ProductGroupOptionResponseDTO;
+import com.progra3.cafeteria_api.model.dto.ProductOptionRequestDTO;
+import com.progra3.cafeteria_api.model.dto.ProductOptionResponseDTO;
 import com.progra3.cafeteria_api.model.dto.ProductGroupRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ProductGroupResponseDTO;
 import com.progra3.cafeteria_api.model.dto.mapper.ProductGroupMapper;
-import com.progra3.cafeteria_api.model.dto.mapper.ProductGroupOptionMapper;
+import com.progra3.cafeteria_api.model.dto.mapper.ProductOptionMapper;
 import com.progra3.cafeteria_api.model.entity.ProductGroup;
-import com.progra3.cafeteria_api.model.entity.ProductGroupOption;
+import com.progra3.cafeteria_api.model.entity.ProductOption;
 import com.progra3.cafeteria_api.repository.ProductGroupRepository;
 import com.progra3.cafeteria_api.service.IProductGroupService;
 import lombok.RequiredArgsConstructor;
@@ -21,9 +21,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductGroupService implements IProductGroupService {
     private final ProductGroupMapper productGroupMapper;
-    private final ProductGroupOptionMapper productGroupOptionMapper;
+    private final ProductOptionMapper productOptionMapper;
     private final ProductGroupRepository productGroupRepository;
-    private final ProductGroupOptionService productGroupOptionService;
+    private final ProductOptionService productOptionService;
 
     @Override
     public ProductGroupResponseDTO createProductGroup(ProductGroupRequestDTO dto) {
@@ -75,7 +75,7 @@ public class ProductGroupService implements IProductGroupService {
     }
 
     @Override
-    public List<ProductGroupOptionResponseDTO> addOptions(Long id, List<ProductGroupOptionRequestDTO> dtos) {
+    public List<ProductOptionResponseDTO> addProductOptions(Long id, List<ProductOptionRequestDTO> dtos) {
         ProductGroup productGroup = getEntityById(id);
 
         return dtos.stream()
@@ -84,39 +84,39 @@ public class ProductGroupService implements IProductGroupService {
     }
 
     @Override
-    public List<ProductGroupOptionResponseDTO> getOptions(Long id) {
+    public List<ProductOptionResponseDTO> getProductOptions(Long id) {
         return getEntityById(id).getOptions()
                 .stream()
-                .map(productGroupOptionMapper::toDTO)
+                .map(productOptionMapper::toDTO)
                 .toList();
     }
 
 
     @Override
-    public ProductGroupOptionResponseDTO updateOption(Long groupId, Long optionId, ProductGroupOptionRequestDTO dto) {
+    public ProductOptionResponseDTO updateProductOption(Long groupId, Long optionId, ProductOptionRequestDTO dto) {
         getEntityById(groupId);
 
-        ProductGroupOption updatedOption = productGroupOptionService.updateProductGroupOption(optionId, dto);
+        ProductOption updatedOption = productOptionService.updateProductOption(optionId, dto);
 
-        return productGroupOptionMapper.toDTO(updatedOption);
+        return productOptionMapper.toDTO(updatedOption);
     }
 
     @Override
-    public ProductGroupOptionResponseDTO removeOption(Long id, Long optionId) {
+    public ProductOptionResponseDTO removeProductOption(Long id, Long optionId) {
         ProductGroup productGroup = getEntityById(id);
-        ProductGroupOption option = productGroupOptionService.getEntityById(optionId);
+        ProductOption option = productOptionService.getEntityById(optionId);
         productGroup.getOptions().remove(option);
 
         productGroupRepository.save(productGroup);
 
-        return productGroupOptionMapper.toDTO(option);
+        return productOptionMapper.toDTO(option);
     }
 
-    private ProductGroupOptionResponseDTO addOption(ProductGroup productGroup, ProductGroupOptionRequestDTO dto) {
-        ProductGroupOption option = productGroupOptionService.createProductGroupOption(productGroup, dto);
+    private ProductOptionResponseDTO addOption(ProductGroup productGroup, ProductOptionRequestDTO dto) {
+        ProductOption option = productOptionService.createProductOption(productGroup, dto);
 
         productGroup.getOptions().add(option);
 
-        return productGroupOptionMapper.toDTO(option);
+        return productOptionMapper.toDTO(option);
     }
 }

@@ -1,7 +1,7 @@
 package com.progra3.cafeteria_api.service;
 
-import com.progra3.cafeteria_api.model.dto.ProductGroupOptionRequestDTO;
-import com.progra3.cafeteria_api.model.dto.ProductGroupOptionResponseDTO;
+import com.progra3.cafeteria_api.model.dto.ProductOptionRequestDTO;
+import com.progra3.cafeteria_api.model.dto.ProductOptionResponseDTO;
 import com.progra3.cafeteria_api.model.dto.ProductGroupRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ProductGroupResponseDTO;
 import com.progra3.cafeteria_api.model.entity.ProductGroup;
@@ -21,12 +21,12 @@ public interface IProductGroupService {
 
     void deleteProductGroup(Long productGroupId);
 
-    List<ProductGroupOptionResponseDTO> addOptions(Long id, List<ProductGroupOptionRequestDTO> dtos);
+    List<ProductOptionResponseDTO> addProductOptions(Long id, List<ProductOptionRequestDTO> dtos);
 
-    List<ProductGroupOptionResponseDTO> getOptions(Long id);
+    List<ProductOptionResponseDTO> getProductOptions(Long id);
 
-    ProductGroupOptionResponseDTO updateOption(Long id, Long optionId, ProductGroupOptionRequestDTO dto);
+    ProductOptionResponseDTO updateProductOption(Long id, Long optionId, ProductOptionRequestDTO dto);
 
-    ProductGroupOptionResponseDTO removeOption(Long id, Long optionId);
+    ProductOptionResponseDTO removeProductOption(Long id, Long optionId);
 
 }
