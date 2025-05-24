@@ -1,5 +1,6 @@
 package com.progra3.cafeteria_api.controller;
 
+import com.progra3.cafeteria_api.model.dto.ProductComponentRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ProductGroupResponseDTO;
 import com.progra3.cafeteria_api.model.dto.ProductRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ProductResponseDTO;
@@ -133,6 +134,34 @@ public class ProductController {
             @PathVariable Long id,
             @PathVariable Long groupId) {
         ProductResponseDTO response = productService.removeGroupFromProduct(id, groupId);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{id}/components")
+    public ResponseEntity<ProductResponseDTO> addComponents(
+            @PathVariable Long id,
+            @RequestBody List<@Valid ProductComponentRequestDTO> components
+    ) {
+        ProductResponseDTO response = productService.addComponentsToProduct(id, components);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{id}/components/{componentId}")
+    public ResponseEntity<ProductResponseDTO> updateComponent(
+            @PathVariable Long id,
+            @PathVariable Long componentId,
+            @RequestParam Integer quantity
+    ) {
+        ProductResponseDTO response = productService.updateProductComponent(id, componentId, quantity);
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{id}/components/{componentId}")
+    public ResponseEntity<ProductResponseDTO> removeComponent(
+            @PathVariable Long id,
+            @PathVariable Long componentId
+    ) {
+        ProductResponseDTO response = productService.removeComponentFromProduct(id, componentId);
         return ResponseEntity.ok(response);
     }
 }

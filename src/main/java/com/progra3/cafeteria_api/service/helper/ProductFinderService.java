@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class ProductQueryService {
+public class ProductFinderService {
     private final ProductRepository productRepository;
 
     public Product getEntityById(Long productId) {

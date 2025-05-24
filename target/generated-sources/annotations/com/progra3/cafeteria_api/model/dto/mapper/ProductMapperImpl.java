@@ -1,13 +1,11 @@
 package com.progra3.cafeteria_api.model.dto.mapper;
 
-import com.progra3.cafeteria_api.model.dto.ProductComponentDTO;
-import com.progra3.cafeteria_api.model.dto.ProductGroupResponseDTO;
+import com.progra3.cafeteria_api.model.dto.ProductComponentResponseDTO;
 import com.progra3.cafeteria_api.model.dto.ProductRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ProductResponseDTO;
 import com.progra3.cafeteria_api.model.entity.Category;
 import com.progra3.cafeteria_api.model.entity.Product;
 import com.progra3.cafeteria_api.model.entity.ProductComponent;
-import com.progra3.cafeteria_api.model.enums.ProductComponentType;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.processing.Generated;
@@ -16,14 +14,14 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-05-23T15:23:48-0300",
+    date = "2025-05-24T17:06:07-0300",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 24.0.1 (Oracle Corporation)"
 )
 @Component
 public class ProductMapperImpl implements ProductMapper {
 
     @Autowired
-    private ProductGroupMapper productGroupMapper;
+    private ProductComponentMapper productComponentMapper;
 
     @Override
     public ProductResponseDTO toDTO(Product product) {
@@ -40,8 +38,8 @@ public class ProductMapperImpl implements ProductMapper {
         Integer stock = null;
         Boolean deleted = null;
         Boolean composite = null;
-        List<ProductComponentDTO> components = null;
-        List<ProductGroupResponseDTO> productGroups = null;
+        List<ProductComponentResponseDTO> components = null;
+        List<String> productGroups = null;
 
         categoryName = productCategoryName( product );
         id = product.getId();
@@ -52,8 +50,8 @@ public class ProductMapperImpl implements ProductMapper {
         stock = product.getStock();
         deleted = product.getDeleted();
         composite = product.getComposite();
-        components = productComponentListToProductComponentDTOList( product.getComponents() );
-        productGroups = productGroupMapper.toDTOList( product.getProductGroups() );
+        components = productComponentListToProductComponentResponseDTOList( product.getComponents() );
+        productGroups = map( product.getProductGroups() );
 
         ProductResponseDTO productResponseDTO = new ProductResponseDTO( id, name, description, price, cost, stock, categoryName, deleted, composite, components, productGroups );
 
@@ -88,9 +86,6 @@ public class ProductMapperImpl implements ProductMapper {
         product.setCost( dto.cost() );
         product.setStock( dto.stock() );
 
-        product.setComposite( false );
-        product.setDeleted( false );
-
         assignCategory( product, category );
 
         return product;
@@ -111,31 +106,14 @@ public class ProductMapperImpl implements ProductMapper {
         return name;
     }
 
-    protected ProductComponentDTO productComponentToProductComponentDTO(ProductComponent productComponent) {
-        if ( productComponent == null ) {
-            return null;
-        }
-
-        Integer quantity = null;
-
-        quantity = productComponent.getQuantity();
-
-        ProductComponentType type = null;
-        Long referenceId = null;
-
-        ProductComponentDTO productComponentDTO = new ProductComponentDTO( type, referenceId, quantity );
-
-        return productComponentDTO;
-    }
-
-    protected List<ProductComponentDTO> productComponentListToProductComponentDTOList(List<ProductComponent> list) {
+    protected List<ProductComponentResponseDTO> productComponentListToProductComponentResponseDTOList(List<ProductComponent> list) {
         if ( list == null ) {
             return null;
         }
 
-        List<ProductComponentDTO> list1 = new ArrayList<ProductComponentDTO>( list.size() );
+        List<ProductComponentResponseDTO> list1 = new ArrayList<ProductComponentResponseDTO>( list.size() );
         for ( ProductComponent productComponent : list ) {
-            list1.add( productComponentToProductComponentDTO( productComponent ) );
+            list1.add( productComponentMapper.toDTO( productComponent ) );
         }
 
         return list1;

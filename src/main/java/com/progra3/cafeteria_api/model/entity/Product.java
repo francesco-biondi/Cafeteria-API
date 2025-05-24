@@ -39,7 +39,7 @@ public class Product {
     private Integer stock;
 
     @Column(nullable = false)
-    private Boolean deleted;
+    private Boolean deleted = false;
 
     @OneToMany(mappedBy = "parentProduct", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductComponent> components = new ArrayList<>();
@@ -53,5 +53,5 @@ public class Product {
     private List<ProductGroup> productGroups = new ArrayList<>();
 
     @Column(nullable = false)
-    private Boolean composite;
+    private Boolean composite = false;
 }

@@ -79,7 +79,7 @@ public class ProductGroupService implements IProductGroupService {
         ProductGroup productGroup = getEntityById(id);
 
         return dtos.stream()
-                .map(dto -> addOption(productGroup, dto))
+                .map(dto -> addProductOption(productGroup, dto))
                 .toList();
     }
 
@@ -112,7 +112,7 @@ public class ProductGroupService implements IProductGroupService {
         return productOptionMapper.toDTO(option);
     }
 
-    private ProductOptionResponseDTO addOption(ProductGroup productGroup, ProductOptionRequestDTO dto) {
+    private ProductOptionResponseDTO addProductOption(ProductGroup productGroup, ProductOptionRequestDTO dto) {
         ProductOption option = productOptionService.createProductOption(productGroup, dto);
 
         productGroup.getOptions().add(option);
