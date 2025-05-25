@@ -13,7 +13,7 @@ public interface ProductComponentMapper {
 
     ProductComponent toEntity(ProductComponentRequestDTO dto, @Context Product product);
 
-    @AfterMapping
+    @BeforeMapping
     default void setProduct(@MappingTarget ProductComponent productComponent , @Context Product product) {
             productComponent.setProduct(product);
     }

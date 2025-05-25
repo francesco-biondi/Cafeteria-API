@@ -81,7 +81,7 @@ public class OrderController {
     @PostMapping("/{id}/items")
     public ResponseEntity<List<ItemResponseDTO>> addItems(
             @PathVariable @NotNull Long id,
-            @RequestBody @Valid List<ItemRequestDTO> items) {
+            @RequestBody List<@Valid ItemRequestDTO> items) {
         List<ItemResponseDTO> itemResponseDTOs = orderService.addItems(id, items);
         return ResponseEntity
                 .created(URI.create("/api/orders/" + id + "/items"))

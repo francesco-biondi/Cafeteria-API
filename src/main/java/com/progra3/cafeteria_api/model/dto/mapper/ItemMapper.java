@@ -5,36 +5,25 @@ import com.progra3.cafeteria_api.model.dto.ItemResponseDTO;
 import com.progra3.cafeteria_api.model.entity.Item;
 import com.progra3.cafeteria_api.model.entity.Order;
 import com.progra3.cafeteria_api.model.entity.Product;
-import org.springframework.stereotype.Component;
+import org.mapstruct.*;
 
-@Component
-public class ItemMapper {
-    public ItemResponseDTO toDTO(Item item) {
-        return ItemResponseDTO.builder()
-                .id(item.getId())
-                .orderId(item.getOrder().getId())
-                .productId(item.getProduct().getId())
-                .unitPrice(item.getUnitPrice())
-                .quantity(item.getQuantity())
-                .comment(item.getComment())
-                .totalPrice(item.getTotalPrice())
-                .deleted(item.getDeleted())
-                .build();
+@Mapper(componentModel = "spring", builder = @Builder(disableBuilder = true), uses = {SelectedProductOptionMapper.class})
+public interface ItemMapper {
+    @Mapping(target = "productId", source = "product.id")
+    @Mapping(target = "orderId", source = "order.id")
+    ItemResponseDTO toDTO(Item item);
+
+    @Mapping(target = "unitPrice", expression = "java(item.getProduct().getPrice())")
+    @Mapping(target = "totalPrice", expression = "java(item.getUnitPrice() * item.getQuantity())")
+    Item toEntity(ItemRequestDTO dto, @Context Product product, @Context Order order);
+
+    @BeforeMapping
+    default void assignProduct(@MappingTarget Item item, @Context Product product) {
+        item.setProduct(product);
     }
 
-    public Item toEntity(ItemRequestDTO dto, Product product, Order order) {
-        double unitPrice = product.getPrice();
-        int quantity = dto.quantity();
-        double totalPrice = unitPrice * quantity;
-
-        return Item.builder()
-                .product(product)
-                .order(order)
-                .comment(dto.comment())
-                .unitPrice(unitPrice)
-                .quantity(quantity)
-                .totalPrice(totalPrice)
-                .deleted(false)
-                .build();
+    @BeforeMapping
+    default void assignOrder(@MappingTarget Item item, @Context Order order) {
+        item.setOrder(order);
     }
 }

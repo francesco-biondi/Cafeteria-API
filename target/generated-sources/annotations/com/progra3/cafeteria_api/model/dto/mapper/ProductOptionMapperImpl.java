@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-05-24T16:51:06-0300",
+    date = "2025-05-25T00:32:09-0300",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 24.0.1 (Oracle Corporation)"
 )
 @Component
@@ -45,6 +45,9 @@ public class ProductOptionMapperImpl implements ProductOptionMapper {
 
         ProductOption productOption = new ProductOption();
 
+        assignProductGroup( productOption, productGroup );
+        assignProduct( productOption, product );
+
         if ( dto.priceIncrease() != null ) {
             productOption.setPriceIncrease( dto.priceIncrease() );
         }
@@ -52,9 +55,6 @@ public class ProductOptionMapperImpl implements ProductOptionMapper {
             productOption.setPriceIncrease( (double) 0.0 );
         }
         productOption.setMaxQuantity( dto.maxQuantity() );
-
-        assignProductGroup( productOption, productGroup );
-        assignProduct( productOption, product );
 
         return productOption;
     }

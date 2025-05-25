@@ -16,12 +16,12 @@ public interface ProductOptionMapper {
     @Mapping(target = "priceIncrease", defaultValue = "0.0")
     ProductOption toEntity(ProductOptionRequestDTO dto, @Context ProductGroup productGroup, @Context Product product);
 
-    @AfterMapping
+    @BeforeMapping
     default void assignProductGroup(@MappingTarget ProductOption productOption, @Context ProductGroup productGroup) {
         productOption.setProductGroup(productGroup);
     }
 
-    @AfterMapping
+    @BeforeMapping
     default void assignProduct(@MappingTarget ProductOption productOption, @Context Product product) {
         productOption.setProduct(product);
     }

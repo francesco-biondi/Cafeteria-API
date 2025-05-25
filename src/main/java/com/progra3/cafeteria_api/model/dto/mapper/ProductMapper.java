@@ -18,7 +18,7 @@ public interface ProductMapper {
 
     Product toEntity(ProductRequestDTO dto, @Context Category category);
 
-    @AfterMapping
+    @BeforeMapping
     default void assignCategory(@MappingTarget Product product, @Context Category category) {
         product.setCategory(category);
     }
