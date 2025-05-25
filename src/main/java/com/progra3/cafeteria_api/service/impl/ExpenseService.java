@@ -34,6 +34,10 @@ public class ExpenseService implements IExpenseService {
     public ExpenseResponseDTO create(ExpenseRequestDTO dto) {
         Supplier supplier = supplierService.getEntityById(dto.supplierId());
 
+        if(supplier.getDeleted()){
+            throw new SupplierNotFoundException(supplier.getId());
+        }
+
         Expense expense = expenseMapper.toEntity(dto, supplier);
         expense.setDeleted(false);
         expense.setDateTime(LocalDateTime.now(clock));
