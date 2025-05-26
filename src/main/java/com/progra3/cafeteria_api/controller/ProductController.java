@@ -1,5 +1,7 @@
 package com.progra3.cafeteria_api.controller;
 
+import com.progra3.cafeteria_api.model.dto.ProductComponentRequestDTO;
+import com.progra3.cafeteria_api.model.dto.ProductGroupResponseDTO;
 import com.progra3.cafeteria_api.model.dto.ProductRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ProductResponseDTO;
 import com.progra3.cafeteria_api.service.impl.ProductService;
@@ -104,7 +106,7 @@ public class ProductController {
                     )
             )
             @RequestBody @Valid ProductRequestDTO productRequestDTO) {
-        return new ResponseEntity<>(productService.updateProduct(productRequestDTO), HttpStatus.OK);
+        return new ResponseEntity<>(productService.updateProduct(id, productRequestDTO), HttpStatus.OK);
     }
 
     @Operation(summary = "Delete a product", description = "Deletes a product by its ID")
@@ -116,6 +118,50 @@ public class ProductController {
     public ResponseEntity<ProductResponseDTO> deleteProduct(
             @Parameter(description = "ID of the product to delete") @PathVariable @NotNull Long id) {
         ProductResponseDTO response = productService.deleteProduct(id);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{id}/groups/{groupId}")
+    public ResponseEntity<ProductResponseDTO> assignGroupToProduct(
+            @PathVariable Long id,
+            @PathVariable Long groupId) {
+        ProductResponseDTO response = productService.assignGroupToProduct(id, groupId);
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{id}/groups/{groupId}")
+    public ResponseEntity<ProductResponseDTO> removeGroupFromProduct(
+            @PathVariable Long id,
+            @PathVariable Long groupId) {
+        ProductResponseDTO response = productService.removeGroupFromProduct(id, groupId);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{id}/components")
+    public ResponseEntity<ProductResponseDTO> addComponents(
+            @PathVariable Long id,
+            @RequestBody List<@Valid ProductComponentRequestDTO> components
+    ) {
+        ProductResponseDTO response = productService.addComponentsToProduct(id, components);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{id}/components/{componentId}")
+    public ResponseEntity<ProductResponseDTO> updateComponent(
+            @PathVariable Long id,
+            @PathVariable Long componentId,
+            @RequestParam Integer quantity
+    ) {
+        ProductResponseDTO response = productService.updateProductComponent(id, componentId, quantity);
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{id}/components/{componentId}")
+    public ResponseEntity<ProductResponseDTO> removeComponent(
+            @PathVariable Long id,
+            @PathVariable Long componentId
+    ) {
+        ProductResponseDTO response = productService.removeComponentFromProduct(id, componentId);
         return ResponseEntity.ok(response);
     }
 }

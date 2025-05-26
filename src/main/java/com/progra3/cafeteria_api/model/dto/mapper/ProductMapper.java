@@ -4,47 +4,28 @@ import com.progra3.cafeteria_api.model.dto.ProductRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ProductResponseDTO;
 import com.progra3.cafeteria_api.model.entity.Category;
 import com.progra3.cafeteria_api.model.entity.Product;
-import com.progra3.cafeteria_api.repository.CategoryRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
-
+import com.progra3.cafeteria_api.model.entity.ProductGroup;
+import org.mapstruct.*;
 import java.util.List;
-import java.util.stream.Collectors;
 
-@Component
-@RequiredArgsConstructor
-public class ProductMapper {
+@Mapper(componentModel = "spring", builder = @Builder(disableBuilder = true), uses = {ProductComponentMapper.class})
+public interface ProductMapper {
 
-    private final CategoryRepository categoryRepository;
+    @Mapping(source = "category.name", target = "categoryName")
+    ProductResponseDTO toDTO(Product product);
 
-    public ProductResponseDTO toDTO(Product product) {
-        return ProductResponseDTO.builder()
-                .id(product.getId())
-                .name(product.getName())
-                .description(product.getDescription())
-                .price(product.getPrice())
-                .cost(product.getCost())
-                .stock(product.getStock())
-                .categoryName(product.getCategory() != null ? product.getCategory().getName() : null)
-                .deleted(product.getDeleted())
-                .build();
+    List<ProductResponseDTO> toDTOList(List<Product> products);
+
+    Product toEntity(ProductRequestDTO dto, @Context Category category);
+
+    @BeforeMapping
+    default void assignCategory(@MappingTarget Product product, @Context Category category) {
+        product.setCategory(category);
     }
 
-    public Product toEntity(ProductRequestDTO dto, Category category) {
-        return Product.builder()
-                .name(dto.name())
-                .description(dto.description())
-                .price(dto.price())
-                .cost(dto.cost())
-                .stock(dto.stock())
-                .category(category)
-                .deleted(false)
-                .build();
-    }
-
-    public List<ProductResponseDTO> toDTOList(List<Product> products) {
-        return products.stream()
-                .map(this::toDTO)
-                .collect(Collectors.toList());
+    default List<String> map(List<ProductGroup> groups) {
+        return groups.stream()
+                .map(ProductGroup::getName)
+                .toList();
     }
 }

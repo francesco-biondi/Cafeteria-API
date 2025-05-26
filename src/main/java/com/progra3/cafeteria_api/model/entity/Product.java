@@ -3,14 +3,16 @@ package com.progra3.cafeteria_api.model.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Table(name = "products")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString(exclude = "category")
 @Builder
-@Entity
-@Table(name = "products")
 public class Product {
 
     @Id
@@ -36,6 +38,20 @@ public class Product {
     @Column
     private Integer stock;
 
-    @Column
+    @Column(nullable = false)
     private Boolean deleted = false;
+
+    @OneToMany(mappedBy = "parentProduct", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProductComponent> components = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "groups_by_products",
+            joinColumns = @JoinColumn(name = "product_id"),
+            inverseJoinColumns = @JoinColumn(name = "product_group_id")
+    )
+    private List<ProductGroup> productGroups = new ArrayList<>();
+
+    @Column(nullable = false)
+    private Boolean composite = false;
 }

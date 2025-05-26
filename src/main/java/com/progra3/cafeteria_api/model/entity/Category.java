@@ -3,7 +3,6 @@ package com.progra3.cafeteria_api.model.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity

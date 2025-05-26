@@ -1,7 +1,8 @@
 package com.progra3.cafeteria_api.model.dto;
 
 import lombok.Builder;
-import lombok.Data;
+
+import java.util.List;
 
 @Builder
 public record ProductResponseDTO(
@@ -12,5 +13,8 @@ public record ProductResponseDTO(
         Double cost,
         Integer stock,
         String categoryName,
-        Boolean deleted
+        Boolean deleted,
+        Boolean composite,
+        List<ProductComponentResponseDTO> components,
+        List<String> productGroups
 ) { }
