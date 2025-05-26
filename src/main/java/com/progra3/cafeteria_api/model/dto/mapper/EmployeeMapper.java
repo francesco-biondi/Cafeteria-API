@@ -33,6 +33,7 @@ public class EmployeeMapper {
                 .phoneNumber(dto.phoneNumber())
                 .password(dto.password())
                 .role(dto.role())
+                .deleted(false)
                 .build();
    }
 
@@ -40,12 +41,12 @@ public class EmployeeMapper {
         return Employee.builder()
                 .id(existingEmployee.getId())
                 .name(isNullOrBlank(dto.name()) ? existingEmployee.getName() : dto.name())
-                .lastName(isNullOrBlank(dto.name()) ? existingEmployee.getLastName() : dto.lastName())
+                .lastName(isNullOrBlank(dto.lastName()) ? existingEmployee.getLastName() : dto.lastName())
                 .dni(isNullOrBlank(dto.dni()) ? existingEmployee.getDni() : dto.dni())
                 .email(isNullOrBlank(dto.email()) ? existingEmployee.getEmail() : dto.email())
                 .phoneNumber(isNullOrBlank(dto.phoneNumber()) ? existingEmployee.getPhoneNumber() : dto.phoneNumber())
                 .password(isNullOrBlank(dto.password()) ? existingEmployee.getPassword() : dto.password())
-                .role(dto.role())
+                .role(dto.role() == null ? existingEmployee.getRole() : dto.role())
                 .deleted(false)
                 .build();
    }

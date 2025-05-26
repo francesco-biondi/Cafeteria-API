@@ -30,6 +30,7 @@ public class CustomerMapper {
                 .phoneNumber(dto.phoneNumber())
                 .email(dto.email())
                 .discount(dto.discount())
+                .deleted(false)
                 .build();
     }
 

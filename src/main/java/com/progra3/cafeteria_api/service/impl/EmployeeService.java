@@ -44,11 +44,19 @@ public class EmployeeService implements IEmployeeService{
             throw new EmployeePermissionException();
         }
 
-        if(dto.role() == Role.ADMIN){
+        Employee employee = employeeMapper.toEntity(dto);
+
+        if(employee.getRole() == Role.ADMIN){
             throw new AdminExistsException();
         }
 
-        Employee employee = employeeMapper.toEntity(dto);
+        if (employeeRepository.existsByDni(employee.getDni())){
+            employee = employeeRepository.findByDni(employee.getDni());
+            if (!employee.getDeleted()){
+                throw new EmployeeActiveException(employee.getDni());
+            }
+        }
+
         employee.setDeleted(false);
 
         return employeeMapper.toDTO(employeeRepository.save(employee));
@@ -89,10 +97,14 @@ public class EmployeeService implements IEmployeeService{
         }
 
         Employee employee = getEntityById(id);
-
-        employeeMapper.toEntity(dto, employee);
+        employee = employeeMapper.toEntity(dto, employee);
 
         return employeeMapper.toDTO(employeeRepository.save(employee));
+    }
+
+    @Override
+    public EmployeeResponseDTO getEmployeeById(Long id){
+        return employeeMapper.toDTO(getEntityById(id));
     }
 
     @Override
@@ -105,6 +117,7 @@ public class EmployeeService implements IEmployeeService{
 
         List<Employee> employees = employeeRepository.findAll();
         return employees.stream()
+                .filter(n -> !n.getDeleted())
                 .map(employeeMapper::toDTO)
                 .toList();
     }
@@ -128,7 +141,6 @@ public class EmployeeService implements IEmployeeService{
 
         List<Employee> employees = employeeRepository.findAll(spec);
 
-        return employees.stream().map(employeeMapper::toDTO).collect(Collectors.toList());
+        return employees.stream().filter(n -> !n.getDeleted()).map(employeeMapper::toDTO).collect(Collectors.toList());
     }
-
 }

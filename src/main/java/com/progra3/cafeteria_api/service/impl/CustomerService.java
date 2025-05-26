@@ -37,16 +37,14 @@ public class CustomerService implements ICustomerService {
             customer.setDiscount(0);
         }
         customer.setDeleted(false);
-        customerRepository.save(customer);
 
-        return customerMapper.toDTO(customer);
+        return customerMapper.toDTO(customerRepository.save(customer));
     }
 
 
     @Override
     public List<CustomerResponseDTO> getAll() {
-        return customerRepository.findAll()
-                .stream()
+        return customerRepository.findAll().stream()
                 .filter(n -> !n.getDeleted())
                 .map(customerMapper::toDTO)
                 .toList();
@@ -68,9 +66,8 @@ public class CustomerService implements ICustomerService {
 
         Customer customer = getEntityById(customerId);
         customer = customerMapper.toEntity(dto, customer);
-        customerRepository.save(customer);
 
-        return customerMapper.toDTO(customer);
+        return customerMapper.toDTO(customerRepository.save(customer));
     }
 
     @Override

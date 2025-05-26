@@ -31,8 +31,8 @@ public class EmployeeController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/{id}")
-    public ResponseEntity<EmployeeResponseDTO> updateEmployee(@PathVariable Long id, @RequestBody EmployeeUpdateDTO dto){
+    @PatchMapping("/{id}")
+    public ResponseEntity<EmployeeResponseDTO> updateEmployee(@PathVariable Long id, @RequestBody @Valid EmployeeUpdateDTO dto){
         EmployeeResponseDTO response = employeeService.updateEmployee(id, dto);
         return ResponseEntity.ok(response);
     }
@@ -41,6 +41,11 @@ public class EmployeeController {
     public ResponseEntity<List<EmployeeResponseDTO>> getAllEmployees(){
         List<EmployeeResponseDTO> employees = employeeService.getAllEmployees();
         return ResponseEntity.ok(employees);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<EmployeeResponseDTO> getEmployeeById (@PathVariable Long id){
+        return ResponseEntity.ok(employeeService.getEmployeeById(id));
     }
 
     @GetMapping("/filter")

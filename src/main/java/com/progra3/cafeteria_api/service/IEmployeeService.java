@@ -14,6 +14,7 @@ public interface IEmployeeService {
     Employee getEntityById (Long employeeId);
     EmployeeResponseDTO deleteEmployee(Long id);
     EmployeeResponseDTO updateEmployee(Long id, EmployeeUpdateDTO updateDTO);
+    EmployeeResponseDTO getEmployeeById(Long id);
     List<EmployeeResponseDTO> getAllEmployees();
     List<EmployeeResponseDTO> filterEmployees(String name, String lastName, String dni, String email, String phoneNumber, Role role, Boolean deleted);
 }
