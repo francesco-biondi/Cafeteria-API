@@ -14,6 +14,8 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -24,10 +26,18 @@ public class OrderMapper {
     public OrderResponseDTO toDTO(Order order) {
         return OrderResponseDTO.builder()
                 .id(order.getId())
-                .employeeName(order.getEmployee() != null ? order.getEmployee().getName() : null)
-                .customerName(order.getCustomer() != null ? order.getCustomer().getName() : null)
-                .seatingNumber(order.getSeating().getNumber())
-                .items(order.getItems()
+                .employeeName(Optional.ofNullable(order.getEmployee())
+                        .map(Employee::getName)
+                        .orElse(null))
+                .customerName(Optional.ofNullable(order.getCustomer())
+                        .map(Customer::getName)
+                        .orElse(null))
+                .seatingNumber(Optional.ofNullable(order.getSeating())
+                        .map(Seating::getNumber)
+                        .orElse(null))
+                .orderType(order.getType())
+                .items(Optional.ofNullable(order.getItems())
+                        .orElse(List.of())
                         .stream()
                         .map(itemMapper::toDTO)
                         .toList())
@@ -47,9 +57,14 @@ public class OrderMapper {
                 .seating(seating)
                 .type(dto.orderType())
                 .peopleCount(dto.peopleCount())
-                .discount(customer.getDiscount())
+                .discount(Optional.ofNullable(customer)
+                        .map(Customer::getDiscount)
+                        .orElse(Order.NO_DISCOUNT))
                 .status(OrderStatus.ACTIVE)
                 .dateTime(LocalDateTime.now(clock))
+                .items(new ArrayList<>())
+                .subtotal(Order.ZERO_AMOUNT)
+                .total(Order.ZERO_AMOUNT)
                 .build();
     }
 

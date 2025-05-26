@@ -9,5 +9,7 @@ public record ItemResponseDTO(
         Long productId,
         Double unitPrice,
         Integer quantity,
-        Double totalPrice
+        String comment,
+        Double totalPrice,
+        Boolean deleted
 ){}

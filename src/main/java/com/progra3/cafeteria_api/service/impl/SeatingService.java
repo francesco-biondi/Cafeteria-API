@@ -1,10 +1,13 @@
 package com.progra3.cafeteria_api.service.impl;
 
+import com.progra3.cafeteria_api.exception.SeatingAlreadyExistsException;
+import com.progra3.cafeteria_api.exception.SeatingModificationNotAllowed;
 import com.progra3.cafeteria_api.exception.SeatingNotFoundException;
 import com.progra3.cafeteria_api.model.dto.SeatingRequestDTO;
 import com.progra3.cafeteria_api.model.dto.SeatingResponseDTO;
 import com.progra3.cafeteria_api.model.dto.mapper.SeatingMapper;
 import com.progra3.cafeteria_api.model.entity.Seating;
+import com.progra3.cafeteria_api.model.enums.OrderStatus;
 import com.progra3.cafeteria_api.model.enums.SeatingStatus;
 import com.progra3.cafeteria_api.repository.SeatingRepository;
 import com.progra3.cafeteria_api.service.ISeatingService;
@@ -12,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,23 +26,25 @@ public class SeatingService implements ISeatingService {
 
     @Override
     public SeatingResponseDTO create(SeatingRequestDTO seatingRequestDTO) {
-        Seating seating = Seating.builder()
-                .number(seatingRequestDTO.number())
-                .status(SeatingStatus.FREE)
-                .build();
-
+        Seating seating = seatingMapper.toEntity(seatingRequestDTO);
+        seatingRepository.findByNumber(seating.getNumber())
+                .ifPresent(s -> {
+                    throw new SeatingAlreadyExistsException(seating.getNumber());
+                });
         return seatingMapper.toDTO(seatingRepository.save(seating));
     }
 
     @Override
-    public SeatingResponseDTO getById(Long id) {
-        return seatingMapper.toDTO(getEntityById(id));
+    public SeatingResponseDTO getById(Long seatingId) {
+        return seatingMapper.toDTO(getEntityById(seatingId));
     }
 
     @Override
     public Seating getEntityById(Long id) {
-        return seatingRepository.findById(id)
-                .orElseThrow(() -> new SeatingNotFoundException(id));
+        return Optional.ofNullable(id)
+                .map(customer -> seatingRepository.findById(id)
+                        .orElseThrow(() -> new SeatingNotFoundException(id)))
+                .orElse(null);
     }
 
     @Override
@@ -50,32 +56,51 @@ public class SeatingService implements ISeatingService {
     }
 
     @Override
-    public SeatingResponseDTO updateNumber(Long id, Integer number) {
+    public SeatingResponseDTO updateNumber(Long id, SeatingRequestDTO dto) {
         Seating seating = getEntityById(id);
-        seating.setNumber(number);
+
+        validateSeating(seating);
+
+        seating.setNumber(dto.number());
 
         return seatingMapper.toDTO(seatingRepository.save(seating));
     }
 
     @Override
-    public SeatingResponseDTO updateStatus(Long id, SeatingStatus status) {
-        Seating seating = getEntityById(id);
-        seating.setStatus(status);
+    public void updateStatus(Seating seating, OrderStatus status) {
 
-        return seatingMapper.toDTO(seatingRepository.save(seating));
-    }
+        validateSeating(seating);
 
-    @Override
-    public void delete(Long id) {
-        Seating seating = getEntityById(id);
-        seating.setDeleted(true);
+        SeatingStatus newSeatingStatus = switch (status) {
+            case BILLED -> SeatingStatus.BILLING;
+            case FINALIZED, CANCELED -> SeatingStatus.FREE;
+            default -> null;
+        };
+
+        seating.setStatus(newSeatingStatus);
 
         seatingRepository.save(seating);
+    }
+
+    @Override
+    public SeatingResponseDTO delete(Long id) {
+        Seating seating = getEntityById(id);
+        seating.setStatus(null);
+        seating.setDeleted(true);
+        seating.setNumber(null);
+
+        return seatingMapper.toDTO(seatingRepository.save(seating));
     }
 
     @Override
     public SeatingResponseDTO getByNumber(Integer number) {
         return seatingMapper.toDTO(seatingRepository.findByNumber(number)
                 .orElseThrow(() -> new SeatingNotFoundException(number)));
+    }
+
+    private void validateSeating(Seating seating) {
+        if (seating.getDeleted()) {
+            throw new SeatingModificationNotAllowed("Seating is deleted and cannot be modified.");
+        }
     }
 }

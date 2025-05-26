@@ -17,13 +17,14 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class EmployeeService implements IEmployeeService{
 
     private final EmployeeMapper employeeMapper;
     private final EmployeeRepository employeeRepository;
-
 
     @Override
     @Transactional
@@ -64,8 +65,10 @@ public class EmployeeService implements IEmployeeService{
 
     @Override
     public Employee getEntityById (Long employeeId) {
-        if (employeeId == null) return null;
-        return employeeRepository.findById(employeeId).orElseThrow(() -> new EmployeeNotFoundException(employeeId));
+        return Optional.ofNullable(employeeId)
+                .map(customer -> employeeRepository.findById(employeeId)
+                        .orElseThrow(() -> new CustomerNotFoundException(employeeId)))
+                .orElse(null);
     }
 
     @Override

@@ -2,7 +2,7 @@ package com.progra3.cafeteria_api.controller;
 
 import com.progra3.cafeteria_api.model.dto.ProductRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ProductResponseDTO;
-import com.progra3.cafeteria_api.service.IProductService;
+import com.progra3.cafeteria_api.service.impl.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -11,6 +11,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +26,7 @@ import java.util.List;
 @Tag(name = "Products", description = "Operations related to product management")
 public class ProductController {
 
-    private final IProductService productService;
+    private final ProductService productService;
 
     @Operation(summary = "Get all products", description = "Returns a list of all registered products")
     @ApiResponses(value = {
@@ -47,7 +49,7 @@ public class ProductController {
     })
     @GetMapping("/{id}")
     public ResponseEntity<ProductResponseDTO> getProductById(
-            @Parameter(description = "ID of the product to retrieve") @PathVariable Long id) {
+            @Parameter(description = "ID of the product to retrieve") @PathVariable @NotNull Long id) {
         return ResponseEntity.ok(productService.getProductById(id));
     }
 
@@ -72,7 +74,7 @@ public class ProductController {
                                     """)
                     )
             )
-            @RequestBody ProductRequestDTO productRequestDTO) {
+            @RequestBody @Valid ProductRequestDTO productRequestDTO) {
         return new ResponseEntity<>(productService.createProduct(productRequestDTO), HttpStatus.CREATED);
     }
 
@@ -101,7 +103,7 @@ public class ProductController {
                                     """)
                     )
             )
-            @RequestBody ProductRequestDTO productRequestDTO) {
+            @RequestBody @Valid ProductRequestDTO productRequestDTO) {
         return new ResponseEntity<>(productService.updateProduct(productRequestDTO), HttpStatus.OK);
     }
 
@@ -112,7 +114,7 @@ public class ProductController {
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<ProductResponseDTO> deleteProduct(
-            @Parameter(description = "ID of the product to delete") @PathVariable Long id) {
+            @Parameter(description = "ID of the product to delete") @PathVariable @NotNull Long id) {
         ProductResponseDTO response = productService.deleteProduct(id);
         return ResponseEntity.ok(response);
     }

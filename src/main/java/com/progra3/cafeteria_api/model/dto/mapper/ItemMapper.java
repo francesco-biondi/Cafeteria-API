@@ -16,7 +16,9 @@ public class ItemMapper {
                 .productId(item.getProduct().getId())
                 .unitPrice(item.getUnitPrice())
                 .quantity(item.getQuantity())
+                .comment(item.getComment())
                 .totalPrice(item.getTotalPrice())
+                .deleted(item.getDeleted())
                 .build();
     }
 
@@ -32,6 +34,7 @@ public class ItemMapper {
                 .unitPrice(unitPrice)
                 .quantity(quantity)
                 .totalPrice(totalPrice)
+                .deleted(false)
                 .build();
     }
 }

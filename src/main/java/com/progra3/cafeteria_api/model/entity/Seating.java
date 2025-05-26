@@ -18,14 +18,14 @@ public class Seating {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column
     private Integer number;
 
     @OneToMany(mappedBy = "seating", cascade = CascadeType.ALL)
     private List<Order> orders;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column
     private SeatingStatus status;
 
     @Column(nullable = false)

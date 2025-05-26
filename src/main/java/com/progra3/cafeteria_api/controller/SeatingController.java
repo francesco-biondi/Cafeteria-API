@@ -36,19 +36,20 @@ public class SeatingController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<SeatingResponseDTO> updateSeating(@RequestBody SeatingRequestDTO dto, @PathVariable Long id) {
-        SeatingResponseDTO seatingResponseDTO = seatingService.updateNumber(id, dto.number());
+    public ResponseEntity<SeatingResponseDTO> updateSeating(@PathVariable Long id,
+                                                            @RequestBody SeatingRequestDTO dto) {
+        SeatingResponseDTO seatingResponseDTO = seatingService.updateNumber(id, dto);
         return ResponseEntity.ok(seatingResponseDTO);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        seatingService.delete(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<SeatingResponseDTO> delete(@PathVariable Long id) {
+
+        return ResponseEntity.ok(seatingService.delete(id));
     }
 
-    @GetMapping("/number/{number}")
-    public ResponseEntity<SeatingResponseDTO> getByName(@PathVariable Integer number) {
+    @GetMapping("/number")
+    public ResponseEntity<SeatingResponseDTO> getByNumber(@RequestParam Integer number) {
         return ResponseEntity.ok(seatingService.getByNumber(number));
     }
 }

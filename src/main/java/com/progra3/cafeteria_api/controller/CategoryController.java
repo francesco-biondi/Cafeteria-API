@@ -2,7 +2,7 @@ package com.progra3.cafeteria_api.controller;
 
 import com.progra3.cafeteria_api.model.dto.CategoryRequestDTO;
 import com.progra3.cafeteria_api.model.dto.CategoryResponseDTO;
-import com.progra3.cafeteria_api.service.ICategoryService;
+import com.progra3.cafeteria_api.service.impl.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -11,6 +11,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +26,7 @@ import java.util.List;
 @Tag(name = "Categories", description = "Operations related to product categories")
 public class CategoryController {
 
-    private final ICategoryService categoryService;
+    private final CategoryService categoryService;
 
     @Operation(summary = "Get all categories", description = "Returns a list of all registered categories")
     @ApiResponses(value = {
@@ -47,7 +49,7 @@ public class CategoryController {
     })
     @GetMapping("/{id}")
     public ResponseEntity<CategoryResponseDTO> getCategoryById(
-            @Parameter(description = "ID of the category to retrieve") @PathVariable Long id) {
+            @Parameter(description = "ID of the category to retrieve") @PathVariable @NotNull Long id) {
         return ResponseEntity.ok(categoryService.getCategoryById(id));
     }
 
@@ -73,7 +75,7 @@ public class CategoryController {
                                     """)
                     )
             )
-            @RequestBody CategoryRequestDTO categoryRequestDTO) {
+            @RequestBody @Valid CategoryRequestDTO categoryRequestDTO) {
         return new ResponseEntity<>(categoryService.createCategory(categoryRequestDTO), HttpStatus.CREATED);
     }
 
@@ -100,7 +102,7 @@ public class CategoryController {
                                     """)
                     )
             )
-            @RequestBody CategoryRequestDTO categoryRequestDTO) {
+            @RequestBody @Valid CategoryRequestDTO categoryRequestDTO) {
         return new ResponseEntity<>(categoryService.updateCategory(id, categoryRequestDTO), HttpStatus.OK);
     }
 
@@ -112,7 +114,7 @@ public class CategoryController {
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCategory(
-            @Parameter(description = "ID of the category to delete") @PathVariable Long id) {
+            @Parameter(description = "ID of the category to delete") @PathVariable @NotNull Long id) {
         categoryService.deleteCategory(id);
         return ResponseEntity.noContent().build();
     }
