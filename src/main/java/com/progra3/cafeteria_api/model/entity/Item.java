@@ -23,6 +23,7 @@ public class Item {
     private Product product;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "item_id")
     private List<SelectedProductOption> selectedOptions = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

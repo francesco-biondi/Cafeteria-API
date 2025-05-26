@@ -106,7 +106,7 @@ public class ProductController {
                     )
             )
             @RequestBody @Valid ProductRequestDTO productRequestDTO) {
-        return new ResponseEntity<>(productService.updateProduct(productRequestDTO), HttpStatus.OK);
+        return new ResponseEntity<>(productService.updateProduct(id, productRequestDTO), HttpStatus.OK);
     }
 
     @Operation(summary = "Delete a product", description = "Deletes a product by its ID")
@@ -137,7 +137,7 @@ public class ProductController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/{id}/components")
+    @PutMapping("/{id}/components")
     public ResponseEntity<ProductResponseDTO> addComponents(
             @PathVariable Long id,
             @RequestBody List<@Valid ProductComponentRequestDTO> components

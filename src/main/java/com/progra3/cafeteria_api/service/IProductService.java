@@ -13,7 +13,7 @@ public interface IProductService {
     ProductResponseDTO createProduct(ProductRequestDTO productRequestDTO);
 
     @Transactional
-    ProductResponseDTO updateProduct(ProductRequestDTO productRequestDTO);
+    ProductResponseDTO updateProduct(Long id, ProductRequestDTO productRequestDTO);
 
     @Transactional
     ProductResponseDTO deleteProduct(Long id);
