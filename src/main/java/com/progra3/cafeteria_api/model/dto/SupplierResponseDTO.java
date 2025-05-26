@@ -10,6 +10,6 @@ public record SupplierResponseDTO(
     String cuit,
     String phoneNumber,
     String email,
-    String address,
+    AddressResponseDTO address,
     Boolean deleted
 ){}

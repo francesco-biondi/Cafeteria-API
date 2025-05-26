@@ -10,5 +10,6 @@ public record CustomerResponseDTO (
     String dni,
     String phoneNumber,
     String email,
+    Boolean deleted,
     Integer discount
 ){}

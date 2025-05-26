@@ -2,16 +2,17 @@ package com.progra3.cafeteria_api.service;
 
 import com.progra3.cafeteria_api.model.dto.CustomerRequestDTO;
 import com.progra3.cafeteria_api.model.dto.CustomerResponseDTO;
+import com.progra3.cafeteria_api.model.dto.CustomerUpdateDTO;
 import com.progra3.cafeteria_api.model.entity.Customer;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface ICustomerService {
-    CustomerResponseDTO createCustomer (CustomerRequestDTO dto);
-    List<CustomerResponseDTO> listCustomers ();
-    CustomerResponseDTO updateCustomer (CustomerRequestDTO dto);
-    CustomerResponseDTO deleteCustomer (Long customerId);
+    CustomerResponseDTO create(CustomerRequestDTO dto);
+    List<CustomerResponseDTO> getAll();
+    CustomerResponseDTO getById(Long auditId);
+    CustomerResponseDTO update(Long customerId, CustomerUpdateDTO dto);
+    void delete(Long customerId);
 
     Customer getEntityById (Long customerId);
     CustomerResponseDTO getDtoById (Long customerId);
