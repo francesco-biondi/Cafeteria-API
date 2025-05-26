@@ -12,8 +12,9 @@ import org.springframework.stereotype.Component;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.ArrayList;
 import java.util.Optional;
 
 @Component
@@ -65,5 +66,11 @@ public class OrderMapper {
                 .subtotal(Order.ZERO_AMOUNT)
                 .total(Order.ZERO_AMOUNT)
                 .build();
+    }
+
+    public List<OrderResponseDTO> toDTOList (List<Order> orders){
+        return orders.stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
     }
 }

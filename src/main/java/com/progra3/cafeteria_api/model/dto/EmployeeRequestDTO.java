@@ -6,7 +6,6 @@ import lombok.Builder;
 
 @Builder
 public record EmployeeRequestDTO(
-        Long id,
 
         @NotBlank(message = "Name is required")
         @Size(min = 1, max = 50, message = "Name must be between 1 and 50 characters")
@@ -20,8 +19,8 @@ public record EmployeeRequestDTO(
         @Pattern(regexp = "^\\d{7,8}$", message = "DNI must be between 7 and 8 numeric digits")
         String dni,
 
-        @Email(message = "Invalid email format. Expected format: example@domain.com")
         @NotBlank(message = "Email is required")
+        @Email(message = "Invalid email format. Expected format: example@domain.com")
         String email,
 
         @NotBlank(message = "Phone number is required")
@@ -33,10 +32,6 @@ public record EmployeeRequestDTO(
         String password,
 
         @NotNull(message = "Role is required")
-        Role role,
-
-        @NotNull(message = "Active is required")
-        Boolean active
-
+        Role role
 ) {
 }

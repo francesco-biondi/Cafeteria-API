@@ -11,5 +11,5 @@ public record EmployeeResponseDTO(
         String phoneNumber,
         String email,
         String role,
-        Boolean active
+        Boolean deleted
 ){}

@@ -7,6 +7,9 @@ import com.progra3.cafeteria_api.model.enums.AuditStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.Optional;
+
 @RequiredArgsConstructor
 @Component
 public class AuditMapper {
@@ -15,17 +18,16 @@ public class AuditMapper {
 
     public AuditResponseDTO toDTO (Audit audit){
         return AuditResponseDTO.builder()
+                .id(audit.getId())
                 .startTime(audit.getStartTime())
                 .closeTime(audit.getCloseTime())
                 .initialCash(audit.getInitialCash())
-                .orders(audit.getOrders()
-                        .stream()
-                        .map(orderMapper::toDTO)
-                        .toList())
-                .expenses(audit.getExpenses()
-                        .stream()
-                        .map(expenseMapper::toDTO)
-                        .toList())
+                .orders(Optional.ofNullable(audit.getOrders())
+                        .map(orderMapper::toDTOList)
+                        .orElse(List.of()))
+                .expenses(Optional.ofNullable(audit.getExpenses())
+                        .map(expenseMapper::toDTOList)
+                        .orElse(List.of()))
                 .totalExpensed(audit.getTotalExpensed())
                 .total(audit.getTotal())
                 .balanceGap(audit.getBalanceGap())
@@ -37,6 +39,7 @@ public class AuditMapper {
         return Audit.builder()
                 .initialCash(dto.initialCash())
                 .auditStatus(AuditStatus.IN_PROGRESS)
+                .deleted(false)
                 .build();
     }
 }
