@@ -1,4 +1,4 @@
-package com.progra3.cafeteria_api.model.dto.validation;
+package com.progra3.cafeteria_api.validation;
 
 import com.progra3.cafeteria_api.model.dto.OrderRequestDTO;
 import com.progra3.cafeteria_api.model.enums.OrderType;

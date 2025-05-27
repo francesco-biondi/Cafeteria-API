@@ -1,4 +1,4 @@
-package com.progra3.cafeteria_api.model.dto.validation;
+package com.progra3.cafeteria_api.validation;
 
 import com.progra3.cafeteria_api.model.dto.ItemRequestDTO;
 import com.progra3.cafeteria_api.model.dto.SelectedProductOptionRequestDTO;
@@ -15,8 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import static com.progra3.cafeteria_api.model.enums.CompositionType.*;
 
 @Component
 @RequiredArgsConstructor

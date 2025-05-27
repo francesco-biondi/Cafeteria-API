@@ -1,4 +1,4 @@
-package com.progra3.cafeteria_api.model.dto.validation;
+package com.progra3.cafeteria_api.validation;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;

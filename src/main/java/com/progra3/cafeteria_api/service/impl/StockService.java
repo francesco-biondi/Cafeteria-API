@@ -1,9 +1,10 @@
-package com.progra3.cafeteria_api.service;
+package com.progra3.cafeteria_api.service.impl;
 
 import com.progra3.cafeteria_api.exception.NotEnoughStockException;
 import com.progra3.cafeteria_api.model.entity.Product;
+import com.progra3.cafeteria_api.service.IStockService;
 
-public class StockService implements IStockService{
+public class StockService implements IStockService {
     @Override
     public void decreaseStock(Product product, int quantity) {
         checkStockAvailability(product, quantity);
