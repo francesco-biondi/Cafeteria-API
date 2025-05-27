@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.progra3.cafeteria_api.model.enums.CompositionType.*;
+
 @Component
 @RequiredArgsConstructor
 public class ValidItemRequestValidator implements ConstraintValidator<ValidItemRequest, ItemRequestDTO> {
@@ -28,8 +30,36 @@ public class ValidItemRequestValidator implements ConstraintValidator<ValidItemR
 
         Product product = productFinderService.getEntityById(dto.productId());
 
-        if (!product.getComposite()) return true;
+        return switch (product.getCompositionType()) {
+            case SELECTABLE, FIXED_SELECTABLE -> validateSelectable(dto, product, context);
+            case FIXED      -> validateFixed(dto, context);
+            case NONE       -> validateNone(dto, context);
+        };
+    }
 
+    private boolean validateSelectable(ItemRequestDTO dto, Product product, ConstraintValidatorContext context) {
+        if (dto.quantity() != 1) {
+            return error(context, "Composite products with selectable options must be added one at a time.", "quantity");
+        }
+
+        return validateOptionGroups(dto, product, context);
+    }
+
+    private boolean validateFixed(ItemRequestDTO dto, ConstraintValidatorContext context) {
+        if (dto.selectedOptions() != null && !dto.selectedOptions().isEmpty()) {
+            return error(context, "Fixed-composition products do not accept selected options.", "selectedOptions");
+        }
+        return true;
+    }
+
+    private boolean validateNone(ItemRequestDTO dto, ConstraintValidatorContext context) {
+        if (dto.selectedOptions() != null && !dto.selectedOptions().isEmpty()) {
+            return error(context, "Simple products do not accept selected options.", "selectedOptions");
+        }
+        return true;
+    }
+
+    private boolean validateOptionGroups(ItemRequestDTO dto, Product product, ConstraintValidatorContext context) {
         List<ProductGroup> groups = product.getProductGroups();
 
         boolean allGroupsOptional = groups.stream()
@@ -37,14 +67,12 @@ public class ValidItemRequestValidator implements ConstraintValidator<ValidItemR
 
         boolean hasSelectedOptions = dto.selectedOptions() != null && !dto.selectedOptions().isEmpty();
 
-        if (!hasSelectedOptions && !allGroupsOptional) {
-            context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate("This product requires at least one option to be selected.")
-                    .addPropertyNode("selectedOptions").addConstraintViolation();
-            return false;
+        if (!hasSelectedOptions) {
+            if (!allGroupsOptional) {
+                return error(context, "This product requires at least one option to be selected.", "selectedOptions");
+            }
+            return true;
         }
-
-        if (!hasSelectedOptions) return true;
 
         Map<Long, Long> optionToGroupMap = groups.stream()
                 .flatMap(group -> group.getOptions().stream()
@@ -54,45 +82,44 @@ public class ValidItemRequestValidator implements ConstraintValidator<ValidItemR
         Map<Long, Integer> selectedCountPerGroup = new HashMap<>();
         Map<Long, Integer> selectedCountPerOption = new HashMap<>();
 
-        for (SelectedProductOptionRequestDTO optionDto : dto.selectedOptions()) {
-            Long optionId = optionDto.productOptionId();
-            Integer quantity = optionDto.quantity();
+        for (SelectedProductOptionRequestDTO option : dto.selectedOptions()) {
 
-            if (!optionToGroupMap.containsKey(optionId)) {
-                context.disableDefaultConstraintViolation();
-                context.buildConstraintViolationWithTemplate("Invalid option ID: " + optionId)
-                        .addPropertyNode("selectedOptions").addConstraintViolation();
-                return false;
+            Long productOptionId = option.productOptionId();
+            Integer quantity = option.quantity();
+
+            if (!optionToGroupMap.containsKey(productOptionId)) {
+                return error(context, "Invalid option ID: " + productOptionId, "selectedOptions");
             }
 
-            Long groupId = optionToGroupMap.get(optionId);
+            Long groupId = optionToGroupMap.get(productOptionId);
             selectedCountPerGroup.merge(groupId, quantity, Integer::sum);
-            selectedCountPerOption.merge(optionId, quantity, Integer::sum);
+            selectedCountPerOption.merge(productOptionId, quantity, Integer::sum);
         }
-
         for (ProductGroup group : groups) {
             int count = selectedCountPerGroup.getOrDefault(group.getId(), 0);
             if (count < group.getMinQuantity() || count > group.getMaxQuantity()) {
-                context.disableDefaultConstraintViolation();
-                context.buildConstraintViolationWithTemplate("Group '" + group.getName() +
-                                "' requires between " + group.getMinQuantity() + " and " + group.getMaxQuantity() + " selections.")
-                        .addPropertyNode("selectedOptions").addConstraintViolation();
-                return false;
+                return error(context, "Group '" + group.getName() + "' requires between " + group.getMinQuantity() +
+                        " and " + group.getMaxQuantity() + " selections.", "selectedOptions");
             }
 
             for (ProductOption option : group.getOptions()) {
                 int countPerOption = selectedCountPerOption.getOrDefault(option.getId(), 0);
                 if (countPerOption > option.getMaxQuantity()) {
-                    context.disableDefaultConstraintViolation();
-                    context.buildConstraintViolationWithTemplate("Option '" + option.getProduct().getName() +
-                                    "' in group '" + group.getName() + "' can be selected at most " + option.getMaxQuantity() + " times.")
-                            .addPropertyNode("selectedOptions").addConstraintViolation();
-                    return false;
+                    return error(context, "Option '" + option.getProduct().getName() +
+                            "' in group '" + group.getName() + "' can be selected at most " + option.getMaxQuantity() + " times.", "selectedOptions");
                 }
             }
         }
 
         return true;
+    }
+
+    private boolean error(ConstraintValidatorContext context, String message, String field) {
+        context.disableDefaultConstraintViolation();
+        context.buildConstraintViolationWithTemplate(message)
+                .addPropertyNode(field)
+                .addConstraintViolation();
+        return false;
     }
 }
 

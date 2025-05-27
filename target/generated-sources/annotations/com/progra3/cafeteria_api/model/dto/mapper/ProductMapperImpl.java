@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-05-25T00:32:09-0300",
+    date = "2025-05-27T10:54:48-0300",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 24.0.1 (Oracle Corporation)"
 )
 @Component
@@ -49,7 +49,7 @@ public class ProductMapperImpl implements ProductMapper {
         cost = product.getCost();
         stock = product.getStock();
         deleted = product.getDeleted();
-        composite = product.getComposite();
+        composite = product.isComposite();
         components = productComponentListToProductComponentResponseDTOList( product.getComponents() );
         productGroups = map( product.getProductGroups() );
 

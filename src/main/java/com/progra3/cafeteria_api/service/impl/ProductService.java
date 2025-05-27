@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.progra3.cafeteria_api.model.enums.CompositionType.*;
+
 @Service
 @RequiredArgsConstructor
 public class ProductService implements IProductService {
@@ -137,6 +139,17 @@ public class ProductService implements IProductService {
     private void adjustComposite(Product product) {
         boolean hasGroups = !product.getProductGroups().isEmpty();
         boolean hasComponents = !product.getComponents().isEmpty();
+
+        if (hasGroups && hasComponents) {
+            product.setCompositionType(FIXED_SELECTABLE);
+        } else if (hasGroups) {
+            product.setCompositionType(SELECTABLE);
+        } else if (hasComponents) {
+            product.setCompositionType(FIXED);
+        } else {
+            product.setCompositionType(NONE);
+        }
+
         product.setComposite(hasGroups || hasComponents);
     }
 

@@ -1,5 +1,6 @@
 package com.progra3.cafeteria_api.model.entity;
 
+import com.progra3.cafeteria_api.model.enums.CompositionType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -53,5 +54,9 @@ public class Product {
     private List<ProductGroup> productGroups = new ArrayList<>();
 
     @Column(nullable = false)
-    private Boolean composite = false;
+    private boolean composite = false;
+
+    @Column(name= "composition_type", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private CompositionType compositionType = CompositionType.NONE;
 }
