@@ -65,6 +65,12 @@ public class ProductService implements IProductService {
 
     @Transactional
     @Override
+    public ProductResponseDTO updateProduct(Product updatedProduct) {
+        return productMapper.toDTO(productRepository.save(updatedProduct));
+    }
+
+    @Transactional
+    @Override
     public ProductResponseDTO deleteProduct(Long id) {
         Product product = getEntityById(id);
         product.setDeleted(true);

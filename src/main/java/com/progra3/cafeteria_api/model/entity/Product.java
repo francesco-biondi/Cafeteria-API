@@ -54,9 +54,12 @@ public class Product {
     private List<ProductGroup> productGroups = new ArrayList<>();
 
     @Column(nullable = false)
-    private boolean composite = false;
+    private Boolean composite = false;
 
     @Column(name= "composition_type", nullable = false)
     @Enumerated(EnumType.STRING)
     private CompositionType compositionType = CompositionType.NONE;
+
+    @Column(name = "control_stock", nullable = false)
+    private Boolean controlStock = false;
 }
