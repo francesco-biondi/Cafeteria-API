@@ -1,6 +1,19 @@
 package com.progra3.cafeteria_api.exception.handler;
 
-import com.progra3.cafeteria_api.exception.*;
+import com.progra3.cafeteria_api.exception.audit.AuditInProgressException;
+import com.progra3.cafeteria_api.exception.audit.AuditNotFoundException;
+import com.progra3.cafeteria_api.exception.customer.CustomerAlreadyActiveException;
+import com.progra3.cafeteria_api.exception.customer.CustomerNotFoundException;
+import com.progra3.cafeteria_api.exception.expense.ExpenseNotFoundException;
+import com.progra3.cafeteria_api.exception.order.ItemNotFoundException;
+import com.progra3.cafeteria_api.exception.order.OrderModificationNotAllowedException;
+import com.progra3.cafeteria_api.exception.order.OrderNotFoundException;
+import com.progra3.cafeteria_api.exception.product.CategoryCannotBeDeletedException;
+import com.progra3.cafeteria_api.exception.product.CategoryNotFoundException;
+import com.progra3.cafeteria_api.exception.product.ProductNotFoundException;
+import com.progra3.cafeteria_api.exception.supplier.SupplierNotFoundException;
+import com.progra3.cafeteria_api.exception.user.*;
+import com.progra3.cafeteria_api.exception.utilities.InvalidDateException;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -81,11 +94,11 @@ public class GlobalHandler extends ResponseEntityExceptionHandler {
         );
     }
 
-    @ExceptionHandler(CannotDeleteCategoryException.class)
+    @ExceptionHandler(CategoryCannotBeDeletedException.class)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "409", description = "Cannot delete category", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseMessage.class)))
     })
-    public ResponseEntity<ResponseMessage> handleCannotDeleteCategoryException(CannotDeleteCategoryException ex) {
+    public ResponseEntity<ResponseMessage> handleCannotDeleteCategoryException(CategoryCannotBeDeletedException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
                 ResponseMessage.builder()
                         .message(ex.getMessage())
@@ -97,17 +110,6 @@ public class GlobalHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(SupplierNotFoundException.class)
     public ResponseEntity<ResponseMessage> handleSupplierNotFoundException(SupplierNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                ResponseMessage.builder()
-                        .message(ex.getMessage())
-                        .status(HttpStatus.CONFLICT.value())
-                        .timestamp(LocalDateTime.now())
-                        .build()
-        );
-    }
-
-    @ExceptionHandler(SupplierInUseException.class)
-    public ResponseEntity<ResponseMessage> handleSupplierInUseException(SupplierInUseException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
                 ResponseMessage.builder()
                         .message(ex.getMessage())
@@ -139,8 +141,8 @@ public class GlobalHandler extends ResponseEntityExceptionHandler {
         );
     }
 
-    @ExceptionHandler(CustomerActiveException.class)
-    public ResponseEntity<ResponseMessage> handleCustomerActiveException(CustomerActiveException ex) {
+    @ExceptionHandler(CustomerAlreadyActiveException.class)
+    public ResponseEntity<ResponseMessage> handleCustomerActiveException(CustomerAlreadyActiveException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 ResponseMessage.builder()
                         .message(ex.getMessage())
@@ -204,8 +206,8 @@ public class GlobalHandler extends ResponseEntityExceptionHandler {
                 .body(e.getMessage());
     }
 
-    @ExceptionHandler(AdminExistsException.class)
-    public ResponseEntity<ResponseMessage> handleAdminExists(AdminExistsException ex){
+    @ExceptionHandler(AdminAlreadyExistsException.class)
+    public ResponseEntity<ResponseMessage> handleAdminExists(AdminAlreadyExistsException ex){
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
                 ResponseMessage.builder()
                         .message(ex.getMessage())
@@ -237,8 +239,8 @@ public class GlobalHandler extends ResponseEntityExceptionHandler {
         );
     }
 
-    @ExceptionHandler(EmployeeDeletionPermission.class)
-    public ResponseEntity<ResponseMessage> handleEmployeeDeletionPermission(EmployeeDeletionPermission ex){
+    @ExceptionHandler(EmployeeCannotBeDeletedPermission.class)
+    public ResponseEntity<ResponseMessage> handleEmployeeDeletionPermission(EmployeeCannotBeDeletedPermission ex){
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
                 ResponseMessage.builder()
                         .message(ex.getMessage())
@@ -248,8 +250,8 @@ public class GlobalHandler extends ResponseEntityExceptionHandler {
         );
     }
 
-    @ExceptionHandler(AdminDeletionException.class)
-    public ResponseEntity<ResponseMessage> handleAdminDeletion(AdminDeletionException ex){
+    @ExceptionHandler(AdminCannotBeDeletedException.class)
+    public ResponseEntity<ResponseMessage> handleAdminDeletion(AdminCannotBeDeletedException ex){
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
                 ResponseMessage.builder()
                         .message(ex.getMessage())
@@ -270,8 +272,8 @@ public class GlobalHandler extends ResponseEntityExceptionHandler {
         );
     }
 
-    @ExceptionHandler(DeletedEmployeeException.class)
-    public ResponseEntity<ResponseMessage> handleDeletedEmployee(DeletedEmployeeException ex){
+    @ExceptionHandler(EmployeeDeletedException.class)
+    public ResponseEntity<ResponseMessage> handleDeletedEmployee(EmployeeDeletedException ex){
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 ResponseMessage.builder()
                         .message(ex.getMessage())

@@ -1,6 +1,6 @@
 package com.progra3.cafeteria_api.service;
 
-import com.progra3.cafeteria_api.exception.OrderNotFoundException;
+import com.progra3.cafeteria_api.exception.order.OrderNotFoundException;
 import com.progra3.cafeteria_api.model.dto.*;
 import com.progra3.cafeteria_api.model.entity.Order;
 import com.progra3.cafeteria_api.model.enums.OrderStatus;

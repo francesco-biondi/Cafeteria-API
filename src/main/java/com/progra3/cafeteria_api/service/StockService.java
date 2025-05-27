@@ -1,6 +1,6 @@
 package com.progra3.cafeteria_api.service;
 
-import com.progra3.cafeteria_api.exception.NotEnoughStockException;
+import com.progra3.cafeteria_api.exception.product.NotEnoughStockException;
 import com.progra3.cafeteria_api.model.entity.Product;
 
 public class StockService implements IStockService{

@@ -1,9 +1,9 @@
 package com.progra3.cafeteria_api.service.impl;
 
-import com.progra3.cafeteria_api.exception.DeletedEmployeeException;
-import com.progra3.cafeteria_api.exception.EmployeeNotFoundException;
-import com.progra3.cafeteria_api.exception.InvalidPasswordException;
-import com.progra3.cafeteria_api.exception.NoLoggedUserException;
+import com.progra3.cafeteria_api.exception.user.EmployeeDeletedException;
+import com.progra3.cafeteria_api.exception.user.EmployeeNotFoundException;
+import com.progra3.cafeteria_api.exception.user.InvalidPasswordException;
+import com.progra3.cafeteria_api.exception.user.NoLoggedUserException;
 import com.progra3.cafeteria_api.model.dto.EmployeeResponseDTO;
 import com.progra3.cafeteria_api.model.entity.Employee;
 import com.progra3.cafeteria_api.model.dto.mapper.EmployeeMapper;
@@ -34,7 +34,7 @@ public class AuthenticationService implements IAuthenticationService{
         }
 
         if(employee.getDeleted() == true){
-            throw new DeletedEmployeeException();
+            throw new EmployeeDeletedException();
         }
 
         LoggedUser.set(employee);

@@ -1,7 +1,7 @@
 package com.progra3.cafeteria_api.service.impl;
 
-import com.progra3.cafeteria_api.exception.CustomerActiveException;
-import com.progra3.cafeteria_api.exception.CustomerNotFoundException;
+import com.progra3.cafeteria_api.exception.customer.CustomerAlreadyActiveException;
+import com.progra3.cafeteria_api.exception.customer.CustomerNotFoundException;
 import com.progra3.cafeteria_api.model.dto.CustomerRequestDTO;
 import com.progra3.cafeteria_api.model.dto.CustomerResponseDTO;
 import com.progra3.cafeteria_api.model.dto.CustomerUpdateDTO;
@@ -30,7 +30,7 @@ public class CustomerService implements ICustomerService {
             if (customerRepository.existsByDni(customer.getDni())) {
                 customer = customerRepository.findByDni(customer.getDni());
                 if (!customer.getDeleted()){
-                    throw new CustomerActiveException(customer.getDni());
+                    throw new CustomerAlreadyActiveException(customer.getDni());
                 }
             }
         }

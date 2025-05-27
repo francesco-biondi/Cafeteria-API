@@ -1,7 +1,7 @@
 package com.progra3.cafeteria_api.service.impl;
 
-import com.progra3.cafeteria_api.exception.AuditInProgressException;
-import com.progra3.cafeteria_api.exception.AuditNotFoundException;
+import com.progra3.cafeteria_api.exception.audit.AuditInProgressException;
+import com.progra3.cafeteria_api.exception.audit.AuditNotFoundException;
 import com.progra3.cafeteria_api.model.dto.AuditRequestDTO;
 import com.progra3.cafeteria_api.model.dto.AuditResponseDTO;
 import com.progra3.cafeteria_api.model.dto.mapper.AuditMapper;

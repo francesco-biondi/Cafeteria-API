@@ -1,6 +1,6 @@
 package com.progra3.cafeteria_api.service.impl;
 
-import com.progra3.cafeteria_api.exception.ProductOptionNotFoundException;
+import com.progra3.cafeteria_api.exception.product.ProductOptionNotFoundException;
 import com.progra3.cafeteria_api.model.dto.ProductOptionRequestDTO;
 import com.progra3.cafeteria_api.model.dto.mapper.ProductOptionMapper;
 import com.progra3.cafeteria_api.model.entity.Product;

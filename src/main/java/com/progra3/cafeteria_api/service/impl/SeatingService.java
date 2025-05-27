@@ -1,8 +1,8 @@
 package com.progra3.cafeteria_api.service.impl;
 
-import com.progra3.cafeteria_api.exception.SeatingAlreadyExistsException;
-import com.progra3.cafeteria_api.exception.SeatingModificationNotAllowed;
-import com.progra3.cafeteria_api.exception.SeatingNotFoundException;
+import com.progra3.cafeteria_api.exception.seating.SeatingAlreadyExistsException;
+import com.progra3.cafeteria_api.exception.seating.SeatingModificationNotAllowed;
+import com.progra3.cafeteria_api.exception.seating.SeatingNotFoundException;
 import com.progra3.cafeteria_api.model.dto.SeatingRequestDTO;
 import com.progra3.cafeteria_api.model.dto.SeatingResponseDTO;
 import com.progra3.cafeteria_api.model.dto.mapper.SeatingMapper;

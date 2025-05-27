@@ -1,6 +1,6 @@
 package com.progra3.cafeteria_api.service.helper;
 
-import com.progra3.cafeteria_api.exception.ProductNotFoundException;
+import com.progra3.cafeteria_api.exception.product.ProductNotFoundException;
 import com.progra3.cafeteria_api.model.entity.Product;
 import com.progra3.cafeteria_api.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;

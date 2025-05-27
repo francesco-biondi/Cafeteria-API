@@ -1,7 +1,7 @@
 package com.progra3.cafeteria_api.service.impl;
 
-import com.progra3.cafeteria_api.exception.CannotDeleteProductGroupException;
-import com.progra3.cafeteria_api.exception.ProductGroupNotFoundException;
+import com.progra3.cafeteria_api.exception.product.ProductGroupCannotBeDeletedException;
+import com.progra3.cafeteria_api.exception.product.ProductGroupNotFoundException;
 import com.progra3.cafeteria_api.model.dto.ProductOptionRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ProductOptionResponseDTO;
 import com.progra3.cafeteria_api.model.dto.ProductGroupRequestDTO;
@@ -68,7 +68,7 @@ public class ProductGroupService implements IProductGroupService {
         ProductGroup productGroup = getEntityById(productGroupId);
 
         if (!productGroup.getUsedByProducts().isEmpty()) {
-            throw new CannotDeleteProductGroupException(productGroupId);
+            throw new ProductGroupCannotBeDeletedException(productGroupId);
         }
 
         productGroupRepository.delete(productGroup);

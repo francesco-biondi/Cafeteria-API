@@ -1,9 +1,8 @@
 package com.progra3.cafeteria_api.service.impl;
 
-import com.progra3.cafeteria_api.exception.ExpenseNotFoundException;
-import com.progra3.cafeteria_api.exception.InvalidDateException;
-import com.progra3.cafeteria_api.exception.SupplierInUseException;
-import com.progra3.cafeteria_api.exception.SupplierNotFoundException;
+import com.progra3.cafeteria_api.exception.expense.ExpenseNotFoundException;
+import com.progra3.cafeteria_api.exception.utilities.InvalidDateException;
+import com.progra3.cafeteria_api.exception.supplier.SupplierNotFoundException;
 import com.progra3.cafeteria_api.model.dto.ExpenseRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ExpenseResponseDTO;
 import com.progra3.cafeteria_api.model.dto.ExpenseUpdateDTO;

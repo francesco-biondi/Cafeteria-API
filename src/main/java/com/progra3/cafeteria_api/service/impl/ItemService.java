@@ -1,6 +1,6 @@
 package com.progra3.cafeteria_api.service.impl;
 
-import com.progra3.cafeteria_api.exception.ItemNotFoundException;
+import com.progra3.cafeteria_api.exception.order.ItemNotFoundException;
 import com.progra3.cafeteria_api.model.dto.ItemRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ItemResponseDTO;
 import com.progra3.cafeteria_api.model.dto.ItemTransferRequestDTO;

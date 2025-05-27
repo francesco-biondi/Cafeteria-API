@@ -1,7 +1,7 @@
 package com.progra3.cafeteria_api.service.impl;
 
-import com.progra3.cafeteria_api.exception.CannotDeleteCategoryException;
-import com.progra3.cafeteria_api.exception.CategoryNotFoundException;
+import com.progra3.cafeteria_api.exception.product.CategoryCannotBeDeletedException;
+import com.progra3.cafeteria_api.exception.product.CategoryNotFoundException;
 import com.progra3.cafeteria_api.model.dto.CategoryRequestDTO;
 import com.progra3.cafeteria_api.model.dto.CategoryResponseDTO;
 import com.progra3.cafeteria_api.model.dto.mapper.CategoryMapper;
@@ -62,7 +62,7 @@ public class CategoryService implements ICategoryService {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new CategoryNotFoundException("Category not found with ID: " + id));
         if (category.getProducts().stream().anyMatch(product -> !product.getDeleted())) {
-            throw new CannotDeleteCategoryException("Cannot delete category with associated products.");
+            throw new CategoryCannotBeDeletedException("Cannot delete category with associated products.");
         }
         categoryRepository.delete(category);
     }
