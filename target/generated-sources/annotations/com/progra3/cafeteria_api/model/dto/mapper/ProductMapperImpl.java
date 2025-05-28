@@ -8,13 +8,14 @@ import com.progra3.cafeteria_api.model.entity.Product;
 import com.progra3.cafeteria_api.model.entity.ProductComponent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import javax.annotation.processing.Generated;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-05-27T10:54:48-0300",
+    date = "2025-05-27T23:09:27-0300",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 24.0.1 (Oracle Corporation)"
 )
 @Component
@@ -35,6 +36,7 @@ public class ProductMapperImpl implements ProductMapper {
         String description = null;
         Double price = null;
         Double cost = null;
+        Boolean controlStock = null;
         Integer stock = null;
         Boolean deleted = null;
         Boolean composite = null;
@@ -47,13 +49,14 @@ public class ProductMapperImpl implements ProductMapper {
         description = product.getDescription();
         price = product.getPrice();
         cost = product.getCost();
+        controlStock = product.isControlStock();
         stock = product.getStock();
         deleted = product.getDeleted();
         composite = product.isComposite();
-        components = productComponentListToProductComponentResponseDTOList( product.getComponents() );
+        components = productComponentSetToProductComponentResponseDTOList( product.getComponents() );
         productGroups = map( product.getProductGroups() );
 
-        ProductResponseDTO productResponseDTO = new ProductResponseDTO( id, name, description, price, cost, stock, categoryName, deleted, composite, components, productGroups );
+        ProductResponseDTO productResponseDTO = new ProductResponseDTO( id, name, description, price, cost, controlStock, stock, categoryName, deleted, composite, components, productGroups );
 
         return productResponseDTO;
     }
@@ -87,6 +90,9 @@ public class ProductMapperImpl implements ProductMapper {
         product.setPrice( dto.price() );
         product.setCost( dto.cost() );
         product.setStock( dto.stock() );
+        if ( dto.controlStock() != null ) {
+            product.setControlStock( dto.controlStock() );
+        }
 
         return product;
     }
@@ -106,16 +112,16 @@ public class ProductMapperImpl implements ProductMapper {
         return name;
     }
 
-    protected List<ProductComponentResponseDTO> productComponentListToProductComponentResponseDTOList(List<ProductComponent> list) {
-        if ( list == null ) {
+    protected List<ProductComponentResponseDTO> productComponentSetToProductComponentResponseDTOList(Set<ProductComponent> set) {
+        if ( set == null ) {
             return null;
         }
 
-        List<ProductComponentResponseDTO> list1 = new ArrayList<ProductComponentResponseDTO>( list.size() );
-        for ( ProductComponent productComponent : list ) {
-            list1.add( productComponentMapper.toDTO( productComponent ) );
+        List<ProductComponentResponseDTO> list = new ArrayList<ProductComponentResponseDTO>( set.size() );
+        for ( ProductComponent productComponent : set ) {
+            list.add( productComponentMapper.toDTO( productComponent ) );
         }
 
-        return list1;
+        return list;
     }
 }

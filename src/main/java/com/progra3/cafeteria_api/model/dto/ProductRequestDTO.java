@@ -24,6 +24,7 @@ public record ProductRequestDTO(
         @Positive(message = "Cost must be positive")
         Double cost,
 
+        @NotNull(message = "Control stock cannot be null")
         Boolean controlStock,
 
         @PositiveOrZero(message = "Stock can't be less than 0")

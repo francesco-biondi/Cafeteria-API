@@ -28,21 +28,24 @@ public class ValidProductRequestValidator implements ConstraintValidator<ValidPr
             return false;
         }
 
-        if (dto.controlStock() && dto.stock() == null) {
-            context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate("Product stock must be set when controlStock is true")
-                    .addPropertyNode("stock")
-                    .addConstraintViolation();
-            return false;
+        if (dto.controlStock()) {
+            if (dto.stock() == null){
+                context.disableDefaultConstraintViolation();
+                context.buildConstraintViolationWithTemplate("Product stock must be set when controlStock is true")
+                        .addPropertyNode("stock")
+                        .addConstraintViolation();
+                return false;
+            }
+
+            if (dto.stock() < 0) {
+                context.disableDefaultConstraintViolation();
+                context.buildConstraintViolationWithTemplate("Product stock must be greater than or equal to zero")
+                        .addPropertyNode("stock")
+                        .addConstraintViolation();
+                return false;
+            }
         }
 
-        if (dto.stock() < 0) {
-            context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate("Product stock must be greater than or equal to zero")
-                    .addPropertyNode("stock")
-                    .addConstraintViolation();
-            return false;
-        }
 
 
         return true;

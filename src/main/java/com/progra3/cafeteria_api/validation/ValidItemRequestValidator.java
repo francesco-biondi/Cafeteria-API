@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
@@ -58,7 +59,7 @@ public class ValidItemRequestValidator implements ConstraintValidator<ValidItemR
     }
 
     private boolean validateOptionGroups(ItemRequestDTO dto, Product product, ConstraintValidatorContext context) {
-        List<ProductGroup> groups = product.getProductGroups();
+        Set<ProductGroup> groups = product.getProductGroups();
 
         boolean allGroupsOptional = groups.stream()
                 .allMatch(group -> group.getMinQuantity() == 0);

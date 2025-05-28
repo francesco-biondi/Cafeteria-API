@@ -48,7 +48,7 @@ public class OrderService implements IOrderService {
 
     @Override
     public List<OrderResponseDTO> getByEmployee(Long employeeId) {
-        return orderRepository.findByEmployeeId(employeeId)
+        return orderRepository.findByEmployee_Id(employeeId)
                 .stream()
                 .map(orderMapper::toDTO)
                 .toList();
@@ -56,7 +56,7 @@ public class OrderService implements IOrderService {
 
     @Override
     public List<OrderResponseDTO> getByCustomer(Long customerId) {
-        return orderRepository.findByCustomerId(customerId)
+        return orderRepository.findByCustomer_Id(customerId)
                 .stream()
                 .map(orderMapper::toDTO)
                 .toList();
@@ -226,7 +226,7 @@ public class OrderService implements IOrderService {
     }
 
     private Order getOrCreateDestinationOrder(OrderRequestDTO destinationDto) {
-        return orderRepository.findBySeatingIdAndStatus(
+        return orderRepository.findBySeating_IdAndStatus(
                         Optional.ofNullable(destinationDto.seatingId())
                                 .orElseThrow(() -> new IllegalArgumentException("Seating ID is required")),
                         OrderStatus.ACTIVE)
