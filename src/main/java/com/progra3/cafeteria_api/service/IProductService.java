@@ -16,6 +16,9 @@ public interface IProductService {
     ProductResponseDTO updateProduct(Long id, ProductRequestDTO productRequestDTO);
 
     @Transactional
+    ProductResponseDTO updateProduct(Product updatedProduct);
+
+    @Transactional
     ProductResponseDTO deleteProduct(Long id);
 
     ProductResponseDTO getProductById(Long id);

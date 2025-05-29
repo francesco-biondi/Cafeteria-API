@@ -1,6 +1,6 @@
 package com.progra3.cafeteria_api.model.dto;
 
-import com.progra3.cafeteria_api.model.dto.validation.ValidItemRequest;
+import com.progra3.cafeteria_api.validation.ValidItemRequest;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
 

@@ -11,6 +11,7 @@ public record ProductResponseDTO(
         String description,
         Double price,
         Double cost,
+        Boolean controlStock,
         Integer stock,
         String categoryName,
         Boolean deleted,

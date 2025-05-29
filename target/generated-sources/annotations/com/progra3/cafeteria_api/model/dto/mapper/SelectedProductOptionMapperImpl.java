@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-05-25T00:33:40-0300",
+    date = "2025-05-27T20:59:01-0300",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 24.0.1 (Oracle Corporation)"
 )
 @Component
@@ -25,11 +25,15 @@ public class SelectedProductOptionMapperImpl implements SelectedProductOptionMap
 
         Long productOptionId = null;
         Long id = null;
+        Long quantity = null;
 
         productOptionId = selectedProductOptionProductOptionId( selectedProductOption );
         id = selectedProductOption.getId();
+        if ( selectedProductOption.getQuantity() != null ) {
+            quantity = selectedProductOption.getQuantity().longValue();
+        }
 
-        SelectedProductOptionResponseDTO selectedProductOptionResponseDTO = new SelectedProductOptionResponseDTO( id, productOptionId );
+        SelectedProductOptionResponseDTO selectedProductOptionResponseDTO = new SelectedProductOptionResponseDTO( id, productOptionId, quantity );
 
         return selectedProductOptionResponseDTO;
     }

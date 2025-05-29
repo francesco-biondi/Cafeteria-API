@@ -7,6 +7,7 @@ import com.progra3.cafeteria_api.model.entity.Product;
 import com.progra3.cafeteria_api.model.entity.ProductGroup;
 import org.mapstruct.*;
 import java.util.List;
+import java.util.Set;
 
 @Mapper(componentModel = "spring", builder = @Builder(disableBuilder = true), uses = {ProductComponentMapper.class})
 public interface ProductMapper {
@@ -23,7 +24,7 @@ public interface ProductMapper {
         product.setCategory(category);
     }
 
-    default List<String> map(List<ProductGroup> groups) {
+    default List<String> map(Set<ProductGroup> groups) {
         return groups.stream()
                 .map(ProductGroup::getName)
                 .toList();

@@ -1,9 +1,11 @@
 package com.progra3.cafeteria_api.model.dto;
 
+import com.progra3.cafeteria_api.validation.ValidProductRequest;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
 
 @Builder
+@ValidProductRequest
 public record ProductRequestDTO(
         @NotNull(message = "Category id cannot be null")
         Long categoryId,
@@ -21,6 +23,9 @@ public record ProductRequestDTO(
 
         @Positive(message = "Cost must be positive")
         Double cost,
+
+        @NotNull(message = "Control stock cannot be null")
+        Boolean controlStock,
 
         @PositiveOrZero(message = "Stock can't be less than 0")
         Integer stock

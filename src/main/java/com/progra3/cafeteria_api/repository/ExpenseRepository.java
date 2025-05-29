@@ -10,6 +10,4 @@ import java.util.List;
 @Repository
 public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     List<Expense> findByDateTimeBetween(LocalDateTime start, LocalDateTime end);
-    boolean existsBySupplierId(Long supplierId);
-    List<Expense> findBySupplierId(Long supplierId);
 }
