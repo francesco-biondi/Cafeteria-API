@@ -13,8 +13,8 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/customers")
 @RequiredArgsConstructor
+@RequestMapping("/api/customers")
 public class CustomerController {
     private final ICustomerService customerService;
 
@@ -32,17 +32,17 @@ public class CustomerController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CustomerResponseDTO> getCustomerById (@PathVariable Long id){
+    public ResponseEntity<CustomerResponseDTO> getCustomerById(@PathVariable Long id){
         return ResponseEntity.ok(customerService.getById(id));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<CustomerResponseDTO> updateCustomer (@PathVariable Long id, @Valid @RequestBody CustomerUpdateDTO dto){
+    public ResponseEntity<CustomerResponseDTO> updateCustomer(@PathVariable Long id, @Valid @RequestBody CustomerUpdateDTO dto){
         return ResponseEntity.ok(customerService.update(id, dto));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCustomer (@PathVariable Long id) {
+    public ResponseEntity<Void> deleteCustomer(@PathVariable Long id) {
         customerService.delete(id);
         return ResponseEntity.noContent().build();
     }

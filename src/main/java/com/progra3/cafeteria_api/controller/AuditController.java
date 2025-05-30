@@ -12,36 +12,36 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/audits")
 @RequiredArgsConstructor
+@RequestMapping("/api/audits")
 public class AuditController {
 
     private final IAuditService auditService;
 
     @PostMapping
-    public ResponseEntity<AuditResponseDTO> createAudit (@Valid @RequestBody AuditRequestDTO dto){
+    public ResponseEntity<AuditResponseDTO> createAudit(@Valid @RequestBody AuditRequestDTO dto){
         AuditResponseDTO auditResponseDTO = auditService.create(dto);
         return ResponseEntity.created(URI.create("/api/audit/" + auditResponseDTO.id()))
                 .body(auditResponseDTO);
     }
 
     @GetMapping
-    public ResponseEntity<List<AuditResponseDTO>> getAllAudits (){
+    public ResponseEntity<List<AuditResponseDTO>> getAllAudits(){
         return ResponseEntity.ok(auditService.getAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AuditResponseDTO> getAuditById (@PathVariable Long id){
+    public ResponseEntity<AuditResponseDTO> getAuditById(@PathVariable Long id){
         return ResponseEntity.ok(auditService.getById(id));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<AuditResponseDTO> cancelAudit (@PathVariable Long id) {
-        return ResponseEntity.ok(auditService.cancel(id));
+    @PatchMapping("/{id}")
+    public ResponseEntity<AuditResponseDTO> finalizeAudit(@PathVariable Long id){
+        return ResponseEntity.ok(auditService.finalize(id));
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<AuditResponseDTO> finalizeAudit (@PathVariable Long id){
-        return ResponseEntity.ok(auditService.finalize(id));
+    @DeleteMapping("/{id}")
+    public ResponseEntity<AuditResponseDTO> cancelAudit(@PathVariable Long id) {
+        return ResponseEntity.ok(auditService.cancel(id));
     }
 }

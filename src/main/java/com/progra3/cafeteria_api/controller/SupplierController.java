@@ -13,8 +13,8 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/suppliers")
 @RequiredArgsConstructor
+@RequestMapping("/api/suppliers")
 public class SupplierController {
     private final ISupplierService supplierService;
 
@@ -32,17 +32,17 @@ public class SupplierController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<SupplierResponseDTO> getSupplierById (@PathVariable Long id){
+    public ResponseEntity<SupplierResponseDTO> getSupplierById(@PathVariable Long id){
         return ResponseEntity.ok(supplierService.getById(id));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<SupplierResponseDTO> updateSupplier (@PathVariable Long id, @Valid @RequestBody SupplierUpdateDTO dto){
+    public ResponseEntity<SupplierResponseDTO> updateSupplier(@PathVariable Long id, @Valid @RequestBody SupplierUpdateDTO dto){
         return ResponseEntity.ok(supplierService.update(id, dto));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteSupplier (@PathVariable Long id) {
+    public ResponseEntity<Void> deleteSupplier(@PathVariable Long id) {
         supplierService.delete(id);
         return ResponseEntity.noContent().build();
     }

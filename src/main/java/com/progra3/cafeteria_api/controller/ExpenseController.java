@@ -4,9 +4,7 @@ import com.progra3.cafeteria_api.model.dto.ExpenseRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ExpenseResponseDTO;
 import com.progra3.cafeteria_api.model.dto.ExpenseUpdateDTO;
 import com.progra3.cafeteria_api.service.IExpenseService;
-import com.progra3.cafeteria_api.service.impl.ExpenseService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,8 +13,8 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/expenses")
 @RequiredArgsConstructor
+@RequestMapping("/api/expenses")
 public class ExpenseController {
     private final IExpenseService expenseService;
 
@@ -34,17 +32,17 @@ public class ExpenseController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ExpenseResponseDTO> getExpenseById (@PathVariable Long id){
+    public ResponseEntity<ExpenseResponseDTO> getExpenseById(@PathVariable Long id){
         return ResponseEntity.ok(expenseService.getById(id));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ExpenseResponseDTO> updateExpense (@PathVariable Long id, @Valid @RequestBody ExpenseUpdateDTO dto){
+    public ResponseEntity<ExpenseResponseDTO> updateExpense(@PathVariable Long id, @Valid @RequestBody ExpenseUpdateDTO dto){
         return ResponseEntity.ok(expenseService.update(id, dto));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteExpense (@PathVariable Long id) {
+    public ResponseEntity<Void> deleteExpense(@PathVariable Long id) {
         expenseService.delete(id);
         return ResponseEntity.noContent().build();
     }

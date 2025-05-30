@@ -22,30 +22,30 @@ public class ProductGroupController {
     private final IProductGroupService productGroupService;
 
     @PostMapping
-    public ResponseEntity<ProductGroupResponseDTO> create(@RequestBody @Valid ProductGroupRequestDTO dto) {
+    public ResponseEntity<ProductGroupResponseDTO> createProductGroup(@RequestBody @Valid ProductGroupRequestDTO dto) {
         ProductGroupResponseDTO response = productGroupService.createProductGroup(dto);
         return ResponseEntity.created(URI.create("/api/groups/" + response.id())).body(response);
     }
 
     @GetMapping
-    public ResponseEntity<List<ProductGroupResponseDTO>> getAll() {
+    public ResponseEntity<List<ProductGroupResponseDTO>> getAllProductGroups() {
         return ResponseEntity.ok(productGroupService.getAllProductGroups());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductGroupResponseDTO> getById(@PathVariable @NotNull Long id) {
+    public ResponseEntity<ProductGroupResponseDTO> getProductGroupById(@PathVariable @NotNull Long id) {
         return ResponseEntity.ok(productGroupService.getProductGroupById(id));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProductGroupResponseDTO> update(
+    public ResponseEntity<ProductGroupResponseDTO> updateProductGroup(
             @PathVariable @NotNull Long id,
             @RequestBody @Valid ProductGroupRequestDTO dto) {
         return ResponseEntity.ok(productGroupService.updateProductGroup(id, dto));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable @NotNull Long id) {
+    public ResponseEntity<Void> deleteProductGroup(@PathVariable @NotNull Long id) {
         productGroupService.deleteProductGroup(id);
         return ResponseEntity.noContent().build();
     }

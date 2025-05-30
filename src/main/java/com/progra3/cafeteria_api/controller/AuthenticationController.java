@@ -2,7 +2,7 @@ package com.progra3.cafeteria_api.controller;
 
 import com.progra3.cafeteria_api.model.dto.EmployeeResponseDTO;
 import com.progra3.cafeteria_api.model.dto.LoginRequestDTO;
-import com.progra3.cafeteria_api.service.impl.AuthenticationService;
+import com.progra3.cafeteria_api.service.IAuthenticationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@RequestMapping("/api/employees")
 @RequiredArgsConstructor
+@RequestMapping("/api/employees")
 public class AuthenticationController {
 
-    private final AuthenticationService authenticationService;
+    private final IAuthenticationService authenticationService;
 
     @PostMapping("/login")
     public ResponseEntity<EmployeeResponseDTO> login(@Valid @RequestBody LoginRequestDTO requestDTO){
