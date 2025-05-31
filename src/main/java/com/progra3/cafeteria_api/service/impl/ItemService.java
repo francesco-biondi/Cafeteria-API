@@ -23,13 +23,17 @@ public class ItemService implements IItemService {
     private final ItemRepository itemRepository;
     private final ItemMapper itemMapper;
     private final ProductFinderService productFinderService;
+    private final StockService stockService;
 
     @Transactional
     @Override
     public Item createItem(Order order, ItemRequestDTO itemDTO) {
         Product product = productFinderService.getEntityById(itemDTO.productId());
+        Item item = itemMapper.toEntity(itemDTO, product, order);
 
-        return itemRepository.save(itemMapper.toEntity(itemDTO, product, order));
+        stockService.decreaseStockForItem(item);
+
+        return itemRepository.save(item);
     }
 
     @Override
@@ -51,7 +55,7 @@ public class ItemService implements IItemService {
 
     @Override
     public List<ItemResponseDTO> getItemsByOrder(Long orderId) {
-        return itemRepository.findByOrderId(orderId)
+        return itemRepository.findByOrder_Id(orderId)
                 .orElse(List.of())
                 .stream()
                 .map(itemMapper::toDTO)

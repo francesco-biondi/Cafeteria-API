@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.progra3.cafeteria_api.model.enums.CompositionType.*;
+
 @Service
 @RequiredArgsConstructor
 public class ProductService implements IProductService {
@@ -38,7 +40,7 @@ public class ProductService implements IProductService {
 
     @Override
     public ProductResponseDTO getProductById(Long id) {
-        Product product = productRepository.findById(id)
+        Product product = productRepository.findByIdWithComponents(id)
                 .orElseThrow(() -> new ProductNotFoundException(id));
         return productMapper.toDTO(product);
     }
@@ -63,6 +65,12 @@ public class ProductService implements IProductService {
 
     @Transactional
     @Override
+    public ProductResponseDTO updateProduct(Product updatedProduct) {
+        return productMapper.toDTO(productRepository.save(updatedProduct));
+    }
+
+    @Transactional
+    @Override
     public ProductResponseDTO deleteProduct(Long id) {
         Product product = getEntityById(id);
         product.setDeleted(true);
@@ -72,7 +80,7 @@ public class ProductService implements IProductService {
 
     @Override
     public Product getEntityById(Long productId) {
-        return productRepository.findById(productId).orElseThrow(() -> new ProductNotFoundException(productId));
+        return productRepository.findByIdWithComponents(productId).orElseThrow(() -> new ProductNotFoundException(productId));
     }
 
     @Transactional
@@ -137,6 +145,17 @@ public class ProductService implements IProductService {
     private void adjustComposite(Product product) {
         boolean hasGroups = !product.getProductGroups().isEmpty();
         boolean hasComponents = !product.getComponents().isEmpty();
+
+        if (hasGroups && hasComponents) {
+            product.setCompositionType(FIXED_SELECTABLE);
+        } else if (hasGroups) {
+            product.setCompositionType(SELECTABLE);
+        } else if (hasComponents) {
+            product.setCompositionType(FIXED);
+        } else {
+            product.setCompositionType(NONE);
+        }
+
         product.setComposite(hasGroups || hasComponents);
     }
 

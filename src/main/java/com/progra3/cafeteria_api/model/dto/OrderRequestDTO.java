@@ -1,6 +1,6 @@
 package com.progra3.cafeteria_api.model.dto;
 
-import com.progra3.cafeteria_api.model.dto.validation.ValidOrderRequest;
+import com.progra3.cafeteria_api.validation.ValidOrderRequest;
 import com.progra3.cafeteria_api.model.enums.OrderType;
 import jakarta.validation.constraints.*;
 import lombok.Builder;

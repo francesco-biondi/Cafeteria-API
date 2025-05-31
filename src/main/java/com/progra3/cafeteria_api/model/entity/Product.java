@@ -1,10 +1,13 @@
 package com.progra3.cafeteria_api.model.entity;
 
+import com.progra3.cafeteria_api.model.enums.CompositionType;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "products")
@@ -42,7 +45,7 @@ public class Product {
     private Boolean deleted = false;
 
     @OneToMany(mappedBy = "parentProduct", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ProductComponent> components = new ArrayList<>();
+    private Set<ProductComponent> components = new HashSet<>();
 
     @ManyToMany
     @JoinTable(
@@ -50,8 +53,15 @@ public class Product {
             joinColumns = @JoinColumn(name = "product_id"),
             inverseJoinColumns = @JoinColumn(name = "product_group_id")
     )
-    private List<ProductGroup> productGroups = new ArrayList<>();
+    private Set<ProductGroup> productGroups = new HashSet<>();
 
     @Column(nullable = false)
-    private Boolean composite = false;
+    private boolean composite = false;
+
+    @Column(name= "composition_type", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private CompositionType compositionType = CompositionType.NONE;
+
+    @Column(name = "control_stock", nullable = false)
+    private boolean controlStock = false;
 }

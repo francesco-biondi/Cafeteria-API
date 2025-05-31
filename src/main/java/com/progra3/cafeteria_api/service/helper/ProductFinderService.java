@@ -12,7 +12,7 @@ public class ProductFinderService {
     private final ProductRepository productRepository;
 
     public Product getEntityById(Long productId) {
-        return productRepository.findById(productId)
+        return productRepository.findByIdWithComponents(productId)
                 .orElseThrow(() -> new ProductNotFoundException(productId));
     }
 }
