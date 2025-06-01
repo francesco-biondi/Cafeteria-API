@@ -6,7 +6,7 @@ import com.progra3.cafeteria_api.exception.supplier.SupplierNotFoundException;
 import com.progra3.cafeteria_api.model.dto.ExpenseRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ExpenseResponseDTO;
 import com.progra3.cafeteria_api.model.dto.ExpenseUpdateDTO;
-import com.progra3.cafeteria_api.model.dto.mapper.ExpenseMapper;
+import com.progra3.cafeteria_api.model.mapper.ExpenseMapper;
 import com.progra3.cafeteria_api.model.entity.Expense;
 import com.progra3.cafeteria_api.model.entity.Supplier;
 import com.progra3.cafeteria_api.repository.ExpenseRepository;

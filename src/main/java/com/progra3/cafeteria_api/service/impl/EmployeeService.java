@@ -5,7 +5,7 @@ import com.progra3.cafeteria_api.exception.user.*;
 import com.progra3.cafeteria_api.model.dto.EmployeeRequestDTO;
 import com.progra3.cafeteria_api.model.dto.EmployeeResponseDTO;
 import com.progra3.cafeteria_api.model.dto.EmployeeUpdateDTO;
-import com.progra3.cafeteria_api.model.dto.mapper.EmployeeMapper;
+import com.progra3.cafeteria_api.model.mapper.EmployeeMapper;
 import com.progra3.cafeteria_api.model.entity.Employee;
 import com.progra3.cafeteria_api.model.enums.Role;
 import com.progra3.cafeteria_api.repository.EmployeeRepository;

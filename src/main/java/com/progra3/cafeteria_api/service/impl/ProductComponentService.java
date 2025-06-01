@@ -1,7 +1,7 @@
 package com.progra3.cafeteria_api.service.impl;
 
 import com.progra3.cafeteria_api.model.dto.ProductComponentRequestDTO;
-import com.progra3.cafeteria_api.model.dto.mapper.ProductComponentMapper;
+import com.progra3.cafeteria_api.model.mapper.ProductComponentMapper;
 import com.progra3.cafeteria_api.model.entity.Product;
 import com.progra3.cafeteria_api.model.entity.ProductComponent;
 import com.progra3.cafeteria_api.service.IProductComponentService;

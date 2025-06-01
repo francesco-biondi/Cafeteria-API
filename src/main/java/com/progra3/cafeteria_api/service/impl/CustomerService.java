@@ -5,7 +5,7 @@ import com.progra3.cafeteria_api.exception.customer.CustomerNotFoundException;
 import com.progra3.cafeteria_api.model.dto.CustomerRequestDTO;
 import com.progra3.cafeteria_api.model.dto.CustomerResponseDTO;
 import com.progra3.cafeteria_api.model.dto.CustomerUpdateDTO;
-import com.progra3.cafeteria_api.model.dto.mapper.CustomerMapper;
+import com.progra3.cafeteria_api.model.mapper.CustomerMapper;
 import com.progra3.cafeteria_api.model.entity.Customer;
 import com.progra3.cafeteria_api.repository.CustomerRepository;
 import com.progra3.cafeteria_api.service.ICustomerService;
