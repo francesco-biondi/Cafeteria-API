@@ -4,7 +4,7 @@ import com.progra3.cafeteria_api.exception.supplier.SupplierNotFoundException;
 import com.progra3.cafeteria_api.model.dto.SupplierRequestDTO;
 import com.progra3.cafeteria_api.model.dto.SupplierResponseDTO;
 import com.progra3.cafeteria_api.model.dto.SupplierUpdateDTO;
-import com.progra3.cafeteria_api.model.dto.mapper.SupplierMapper;
+import com.progra3.cafeteria_api.model.mapper.SupplierMapper;
 import com.progra3.cafeteria_api.model.entity.Supplier;
 import com.progra3.cafeteria_api.repository.SupplierRepository;
 import com.progra3.cafeteria_api.service.ISupplierService;
@@ -58,7 +58,7 @@ public class SupplierService implements ISupplierService {
         if (!supplierRepository.existsById(supplierId)) throw new SupplierNotFoundException(supplierId);
 
         Supplier supplier = getEntityById(supplierId);
-        supplier = supplierMapper.toEntity(dto, supplier);
+        supplierMapper.updateSupplierFromDTO(dto, supplier);
         supplierRepository.save(supplier);
 
         return supplierMapper.toDTO(supplier);

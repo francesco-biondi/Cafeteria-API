@@ -1,4 +1,4 @@
-package com.progra3.cafeteria_api.model.dto.mapper;
+package com.progra3.cafeteria_api.model.mapper;
 
 import com.progra3.cafeteria_api.model.dto.EmployeeRequestDTO;
 import com.progra3.cafeteria_api.model.dto.EmployeeResponseDTO;

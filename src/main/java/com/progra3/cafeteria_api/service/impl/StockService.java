@@ -1,6 +1,6 @@
 package com.progra3.cafeteria_api.service.impl;
 
-import com.progra3.cafeteria_api.exception.InsufficientStockException;
+import com.progra3.cafeteria_api.exception.product.NotEnoughStockException;
 import com.progra3.cafeteria_api.model.entity.*;
 import com.progra3.cafeteria_api.service.IStockService;
 import jakarta.transaction.Transactional;
@@ -98,7 +98,7 @@ public class StockService implements IStockService {
 
     private void verifyStock(Product product, int requiredQuantity) {
         if (product.getStock() < requiredQuantity) {
-            throw new InsufficientStockException(product.getId());
+            throw new NotEnoughStockException(product.getId());
         }
     }
 

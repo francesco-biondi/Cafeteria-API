@@ -1,4 +1,4 @@
-package com.progra3.cafeteria_api.model.dto.mapper;
+package com.progra3.cafeteria_api.model.mapper;
 
 import com.progra3.cafeteria_api.model.dto.ProductGroupRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ProductGroupResponseDTO;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-05-27T20:59:02-0300",
+    date = "2025-06-01T13:50:36-0300",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 24.0.1 (Oracle Corporation)"
 )
 @Component
