@@ -5,9 +5,9 @@ import com.progra3.cafeteria_api.exception.user.*;
 import com.progra3.cafeteria_api.model.dto.EmployeeRequestDTO;
 import com.progra3.cafeteria_api.model.dto.EmployeeResponseDTO;
 import com.progra3.cafeteria_api.model.dto.EmployeeUpdateDTO;
-import com.progra3.cafeteria_api.model.mapper.EmployeeMapper;
 import com.progra3.cafeteria_api.model.entity.Employee;
 import com.progra3.cafeteria_api.model.enums.Role;
+import com.progra3.cafeteria_api.model.mapper.EmployeeMapper;
 import com.progra3.cafeteria_api.repository.EmployeeRepository;
 import com.progra3.cafeteria_api.service.IEmployeeService;
 import com.progra3.cafeteria_api.specification.EmployeeSpecification;
@@ -77,7 +77,7 @@ public class EmployeeService implements IEmployeeService{
     public EmployeeResponseDTO deleteEmployee(Long id){
         Employee loggedUser = LoggedUser.get();
         if(loggedUser == null || loggedUser.getRole() != Role.ADMIN){
-            throw new EmployeeCannotBeDeletedPermission();
+            throw new EmployeeCannotBeDeletedException();
         }
 
         Employee employee = employeeRepository.findById(id)
@@ -101,7 +101,7 @@ public class EmployeeService implements IEmployeeService{
         }
 
         Employee employee = getEntityById(id);
-        employee = employeeMapper.toEntity(dto, employee);
+        employeeMapper.updateEmployeeFromDTO(dto, employee);
 
         return employeeMapper.toDTO(employeeRepository.save(employee));
     }

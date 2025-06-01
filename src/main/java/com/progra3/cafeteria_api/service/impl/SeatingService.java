@@ -5,10 +5,10 @@ import com.progra3.cafeteria_api.exception.seating.SeatingModificationNotAllowed
 import com.progra3.cafeteria_api.exception.seating.SeatingNotFoundException;
 import com.progra3.cafeteria_api.model.dto.SeatingRequestDTO;
 import com.progra3.cafeteria_api.model.dto.SeatingResponseDTO;
-import com.progra3.cafeteria_api.model.mapper.SeatingMapper;
 import com.progra3.cafeteria_api.model.entity.Seating;
 import com.progra3.cafeteria_api.model.enums.OrderStatus;
 import com.progra3.cafeteria_api.model.enums.SeatingStatus;
+import com.progra3.cafeteria_api.model.mapper.SeatingMapper;
 import com.progra3.cafeteria_api.repository.SeatingRepository;
 import com.progra3.cafeteria_api.service.ISeatingService;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +31,8 @@ public class SeatingService implements ISeatingService {
                 .ifPresent(s -> {
                     throw new SeatingAlreadyExistsException(seating.getNumber());
                 });
+        seating.setStatus(SeatingStatus.FREE);
+        seating.setDeleted(false);
         return seatingMapper.toDTO(seatingRepository.save(seating));
     }
 

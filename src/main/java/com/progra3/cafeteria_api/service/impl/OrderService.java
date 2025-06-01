@@ -20,6 +20,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -37,11 +38,18 @@ public class OrderService implements IOrderService {
 
     private final OrderMapper orderMapper;
     private final ItemMapper itemMapper;
+    private final Clock clock;
 
     @Transactional
     @Override
     public OrderResponseDTO create(OrderRequestDTO dto) {
         Order order = createNewOrder(dto);
+
+        if (order.getDiscount() == null){order.setDiscount(Order.NO_DISCOUNT);}
+        order.setDateTime(LocalDateTime.now(clock));
+        order.setTotal(Order.ZERO_AMOUNT);
+        order.setSubtotal(Order.ZERO_AMOUNT);
+        order.setStatus(OrderStatus.ACTIVE);
 
         return orderMapper.toDTO(orderRepository.save(order));
     }

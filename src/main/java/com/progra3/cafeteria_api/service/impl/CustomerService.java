@@ -5,8 +5,8 @@ import com.progra3.cafeteria_api.exception.customer.CustomerNotFoundException;
 import com.progra3.cafeteria_api.model.dto.CustomerRequestDTO;
 import com.progra3.cafeteria_api.model.dto.CustomerResponseDTO;
 import com.progra3.cafeteria_api.model.dto.CustomerUpdateDTO;
-import com.progra3.cafeteria_api.model.mapper.CustomerMapper;
 import com.progra3.cafeteria_api.model.entity.Customer;
+import com.progra3.cafeteria_api.model.mapper.CustomerMapper;
 import com.progra3.cafeteria_api.repository.CustomerRepository;
 import com.progra3.cafeteria_api.service.ICustomerService;
 import lombok.RequiredArgsConstructor;
@@ -66,7 +66,7 @@ public class CustomerService implements ICustomerService {
         if (!customerRepository.existsById(customerId)) throw new CustomerNotFoundException(customerId);
 
         Customer customer = getEntityById(customerId);
-        customer = customerMapper.toEntity(dto, customer);
+        customerMapper.updateCustomerFromDTO(dto, customer);
 
         return customerMapper.toDTO(customerRepository.save(customer));
     }

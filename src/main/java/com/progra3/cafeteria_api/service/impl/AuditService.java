@@ -41,6 +41,8 @@ public class AuditService implements IAuditService {
 
         Audit audit = auditMapper.toEntity(dto);
         audit.setStartTime(LocalDateTime.now(clock));
+        audit.setAuditStatus(AuditStatus.IN_PROGRESS);
+        audit.setDeleted(false);
 
         return auditMapper.toDTO(auditRepository.save(audit));
     }
@@ -63,7 +65,7 @@ public class AuditService implements IAuditService {
         Audit audit = getEntityById(auditId);
         audit.setCloseTime(LocalDateTime.now(clock));
 
-        List<Expense> expenses = expenseService.getByDateTimeBetween(audit.getStartTime(), audit.getStartTime());
+        List<Expense> expenses = expenseService.getByDateTimeBetween(audit.getStartTime(), audit.getCloseTime());
         List<Order> orders = orderService.getByDateTimeBetween(audit.getStartTime(), audit.getCloseTime());
 
         audit.setExpenses(expenses);

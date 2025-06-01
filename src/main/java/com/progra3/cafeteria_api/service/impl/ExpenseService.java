@@ -6,9 +6,9 @@ import com.progra3.cafeteria_api.exception.supplier.SupplierNotFoundException;
 import com.progra3.cafeteria_api.model.dto.ExpenseRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ExpenseResponseDTO;
 import com.progra3.cafeteria_api.model.dto.ExpenseUpdateDTO;
-import com.progra3.cafeteria_api.model.mapper.ExpenseMapper;
 import com.progra3.cafeteria_api.model.entity.Expense;
 import com.progra3.cafeteria_api.model.entity.Supplier;
+import com.progra3.cafeteria_api.model.mapper.ExpenseMapper;
 import com.progra3.cafeteria_api.repository.ExpenseRepository;
 import com.progra3.cafeteria_api.service.IExpenseService;
 import lombok.RequiredArgsConstructor;
@@ -68,7 +68,7 @@ public class ExpenseService implements IExpenseService {
 
         Expense expense = getEntityById(expenseId);
         Supplier supplier = supplierService.getEntityById(expense.getSupplier().getId());
-        expense = expenseMapper.toEntity(dto, supplier, expense);
+        expenseMapper.updateExpenseFromDTO(dto, supplier, expense);
 
         return expenseMapper.toDTO(expenseRepository.save(expense));
     }
