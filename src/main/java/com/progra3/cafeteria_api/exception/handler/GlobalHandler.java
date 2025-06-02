@@ -8,16 +8,13 @@ import com.progra3.cafeteria_api.exception.expense.ExpenseNotFoundException;
 import com.progra3.cafeteria_api.exception.order.ItemNotFoundException;
 import com.progra3.cafeteria_api.exception.order.OrderModificationNotAllowedException;
 import com.progra3.cafeteria_api.exception.order.OrderNotFoundException;
-import com.progra3.cafeteria_api.exception.product.CategoryCannotBeDeletedException;
-import com.progra3.cafeteria_api.exception.product.CategoryNotFoundException;
-import com.progra3.cafeteria_api.exception.product.ProductNotFoundException;
+import com.progra3.cafeteria_api.exception.product.*;
+import com.progra3.cafeteria_api.exception.seating.SeatingAlreadyExistsException;
+import com.progra3.cafeteria_api.exception.seating.SeatingModificationNotAllowed;
+import com.progra3.cafeteria_api.exception.seating.SeatingNotFoundException;
 import com.progra3.cafeteria_api.exception.supplier.SupplierNotFoundException;
 import com.progra3.cafeteria_api.exception.user.*;
 import com.progra3.cafeteria_api.exception.utilities.InvalidDateException;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -66,109 +63,12 @@ public class GlobalHandler extends ResponseEntityExceptionHandler {
         );
     }
 
-    @ExceptionHandler(CategoryNotFoundException.class)
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "404", description = "Category not found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseMessage.class)))
-    })
-    public ResponseEntity<ResponseMessage> handleCategoryNotFoundException(CategoryNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                ResponseMessage.builder()
-                        .message(ex.getMessage())
-                        .status(HttpStatus.NOT_FOUND.value())
-                        .timestamp(LocalDateTime.now())
-                        .build()
-        );
-    }
-
-    @ExceptionHandler(ProductNotFoundException.class)
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "404", description = "Product not found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseMessage.class)))
-    })
-    public ResponseEntity<ResponseMessage> handleProductNotFoundException(ProductNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                ResponseMessage.builder()
-                        .message(ex.getMessage())
-                        .status(HttpStatus.NOT_FOUND.value())
-                        .timestamp(LocalDateTime.now())
-                        .build()
-        );
-    }
-
-    @ExceptionHandler(CategoryCannotBeDeletedException.class)
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "409", description = "Cannot delete category", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseMessage.class)))
-    })
-    public ResponseEntity<ResponseMessage> handleCannotDeleteCategoryException(CategoryCannotBeDeletedException ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                ResponseMessage.builder()
-                        .message(ex.getMessage())
-                        .status(HttpStatus.CONFLICT.value())
-                        .timestamp(LocalDateTime.now())
-                        .build()
-        );
-    }
-
-    @ExceptionHandler(SupplierNotFoundException.class)
-    public ResponseEntity<ResponseMessage> handleSupplierNotFoundException(SupplierNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                ResponseMessage.builder()
-                        .message(ex.getMessage())
-                        .status(HttpStatus.CONFLICT.value())
-                        .timestamp(LocalDateTime.now())
-                        .build()
-        );
-    }
-
     @ExceptionHandler(AuditNotFoundException.class)
     public ResponseEntity<ResponseMessage> handleAuditNotFoundException(AuditNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 ResponseMessage.builder()
                         .message(ex.getMessage())
                         .status(HttpStatus.NOT_FOUND.value())
-                        .timestamp(LocalDateTime.now())
-                        .build()
-        );
-    }
-
-    @ExceptionHandler(CustomerNotFoundException.class)
-    public ResponseEntity<ResponseMessage> handleCustomerNotFoundException(CustomerNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                ResponseMessage.builder()
-                        .message(ex.getMessage())
-                        .status(HttpStatus.NOT_FOUND.value())
-                        .timestamp(LocalDateTime.now())
-                        .build()
-        );
-    }
-
-    @ExceptionHandler(CustomerAlreadyActiveException.class)
-    public ResponseEntity<ResponseMessage> handleCustomerActiveException(CustomerAlreadyActiveException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                ResponseMessage.builder()
-                        .message(ex.getMessage())
-                        .status(HttpStatus.BAD_REQUEST.value())
-                        .timestamp(LocalDateTime.now())
-                        .build()
-        );
-    }
-
-    @ExceptionHandler(ExpenseNotFoundException.class)
-    public ResponseEntity<ResponseMessage> handleExpenseNotFoundException(ExpenseNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                ResponseMessage.builder()
-                        .message(ex.getMessage())
-                        .status(HttpStatus.NOT_FOUND.value())
-                        .timestamp(LocalDateTime.now())
-                        .build()
-        );
-    }
-
-    @ExceptionHandler(InvalidDateException.class)
-    public ResponseEntity<ResponseMessage> handleInvalidDateException(InvalidDateException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                ResponseMessage.builder()
-                        .message(ex.getMessage())
-                        .status(HttpStatus.BAD_REQUEST.value())
                         .timestamp(LocalDateTime.now())
                         .build()
         );
@@ -185,29 +85,183 @@ public class GlobalHandler extends ResponseEntityExceptionHandler {
         );
     }
 
-    @ExceptionHandler(ItemNotFoundException.class)
-    public ResponseEntity<String> handleItemNotFound(ItemNotFoundException e) {
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(e.getMessage());
+    @ExceptionHandler(CustomerAlreadyActiveException.class)
+    public ResponseEntity<ResponseMessage> handleCustomerActiveException(CustomerAlreadyActiveException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                ResponseMessage.builder()
+                        .message(ex.getMessage())
+                        .status(HttpStatus.BAD_REQUEST.value())
+                        .timestamp(LocalDateTime.now())
+                        .build()
+        );
     }
 
-    @ExceptionHandler(OrderNotFoundException.class)
-    public ResponseEntity<String> handleOrderNotFound(OrderNotFoundException e) {
+    @ExceptionHandler(CustomerNotFoundException.class)
+    public ResponseEntity<ResponseMessage> handleCustomerNotFoundException(CustomerNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                ResponseMessage.builder()
+                        .message(ex.getMessage())
+                        .status(HttpStatus.NOT_FOUND.value())
+                        .timestamp(LocalDateTime.now())
+                        .build()
+        );
+    }
+
+    @ExceptionHandler(ExpenseNotFoundException.class)
+    public ResponseEntity<ResponseMessage> handleExpenseNotFoundException(ExpenseNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                ResponseMessage.builder()
+                        .message(ex.getMessage())
+                        .status(HttpStatus.NOT_FOUND.value())
+                        .timestamp(LocalDateTime.now())
+                        .build()
+        );
+    }
+
+    @ExceptionHandler(ItemNotFoundException.class)
+    public ResponseEntity<String> handleItemNotFoundException(ItemNotFoundException e) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body(e.getMessage());
     }
 
     @ExceptionHandler(OrderModificationNotAllowedException.class)
-    public ResponseEntity<String> handleOrderModificationNotAllowed(OrderModificationNotAllowedException e) {
+    public ResponseEntity<String> handleOrderModificationNotAllowedException(OrderModificationNotAllowedException e) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(e.getMessage());
     }
 
+    @ExceptionHandler(OrderNotFoundException.class)
+    public ResponseEntity<String> handleOrderNotFoundException(OrderNotFoundException e) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(e.getMessage());
+    }
+
+    @ExceptionHandler(CategoryCannotBeDeletedException.class)
+    public ResponseEntity<ResponseMessage> handleCannotDeleteCategoryException(CategoryCannotBeDeletedException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                ResponseMessage.builder()
+                        .message(ex.getMessage())
+                        .status(HttpStatus.CONFLICT.value())
+                        .timestamp(LocalDateTime.now())
+                        .build()
+        );
+    }
+
+    @ExceptionHandler(CategoryNotFoundException.class)
+    public ResponseEntity<ResponseMessage> handleCategoryNotFoundException(CategoryNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                ResponseMessage.builder()
+                        .message(ex.getMessage())
+                        .status(HttpStatus.NOT_FOUND.value())
+                        .timestamp(LocalDateTime.now())
+                        .build()
+        );
+    }
+
+    @ExceptionHandler(NotEnoughStockException.class)
+    public ResponseEntity<ResponseMessage> handleNotEnoughStockException(NotEnoughStockException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                ResponseMessage.builder()
+                        .message(ex.getMessage())
+                        .status(HttpStatus.CONFLICT.value())
+                        .timestamp(LocalDateTime.now())
+                        .build()
+        );
+    }
+
+    @ExceptionHandler(ProductGroupCannotBeDeletedException.class)
+    public ResponseEntity<ResponseMessage> handleProductGroupCannotBeDeletedException(ProductGroupCannotBeDeletedException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                ResponseMessage.builder()
+                        .message(ex.getMessage())
+                        .status(HttpStatus.CONFLICT.value())
+                        .timestamp(LocalDateTime.now())
+                        .build()
+        );
+    }
+
+    @ExceptionHandler(ProductGroupNotFoundException.class)
+    public ResponseEntity<ResponseMessage> handleProductGroupNotFoundException(ProductGroupNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                ResponseMessage.builder()
+                        .message(ex.getMessage())
+                        .status(HttpStatus.NOT_FOUND.value())
+                        .timestamp(LocalDateTime.now())
+                        .build()
+        );
+    }
+
+    @ExceptionHandler(ProductNotFoundException.class)
+    public ResponseEntity<ResponseMessage> handleProductNotFoundException(ProductNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                ResponseMessage.builder()
+                        .message(ex.getMessage())
+                        .status(HttpStatus.NOT_FOUND.value())
+                        .timestamp(LocalDateTime.now())
+                        .build()
+        );
+    }
+
+    @ExceptionHandler(ProductOptionNotFoundException.class)
+    public ResponseEntity<ResponseMessage> handleProductOptionNotFoundException(ProductOptionNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                ResponseMessage.builder()
+                        .message(ex.getMessage())
+                        .status(HttpStatus.NOT_FOUND.value())
+                        .timestamp(LocalDateTime.now())
+                        .build()
+        );
+    }
+
+    @ExceptionHandler(SeatingAlreadyExistsException.class)
+    public ResponseEntity<ResponseMessage> handleSeatingAlreadyExistsException(SeatingAlreadyExistsException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                ResponseMessage.builder()
+                        .message(ex.getMessage())
+                        .status(HttpStatus.CONFLICT.value())
+                        .timestamp(LocalDateTime.now())
+                        .build()
+        );
+    }
+
+    @ExceptionHandler(SeatingModificationNotAllowed.class)
+    public ResponseEntity<ResponseMessage> handleSeatingModificationNotAllowedException(SeatingModificationNotAllowed ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                ResponseMessage.builder()
+                        .message(ex.getMessage())
+                        .status(HttpStatus.CONFLICT.value())
+                        .timestamp(LocalDateTime.now())
+                        .build()
+        );
+    }
+
+    @ExceptionHandler(SeatingNotFoundException.class)
+    public ResponseEntity<ResponseMessage> handleSeatingNotFoundException(SeatingNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                ResponseMessage.builder()
+                        .message(ex.getMessage())
+                        .status(HttpStatus.NOT_FOUND.value())
+                        .timestamp(LocalDateTime.now())
+                        .build()
+        );
+    }
+
+    @ExceptionHandler(SupplierNotFoundException.class)
+    public ResponseEntity<ResponseMessage> handleSupplierNotFoundException(SupplierNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                ResponseMessage.builder()
+                        .message(ex.getMessage())
+                        .status(HttpStatus.CONFLICT.value())
+                        .timestamp(LocalDateTime.now())
+                        .build()
+        );
+    }
+
     @ExceptionHandler(AdminAlreadyExistsException.class)
-    public ResponseEntity<ResponseMessage> handleAdminExists(AdminAlreadyExistsException ex){
+    public ResponseEntity<ResponseMessage> handleAdminAlreadyExistsException(AdminAlreadyExistsException ex){
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
                 ResponseMessage.builder()
                         .message(ex.getMessage())
@@ -217,8 +271,52 @@ public class GlobalHandler extends ResponseEntityExceptionHandler {
                 );
     }
 
+    @ExceptionHandler(AdminCannotBeDeletedException.class)
+    public ResponseEntity<ResponseMessage> handleAdminCannotBeDeletedException(AdminCannotBeDeletedException ex){
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                ResponseMessage.builder()
+                        .message(ex.getMessage())
+                        .status(HttpStatus.CONTINUE.value())
+                        .timestamp(LocalDateTime.now())
+                        .build()
+        );
+    }
+
+    @ExceptionHandler(EmployeeAlreadyActiveException.class)
+    public ResponseEntity<ResponseMessage> handleEmployeeAlreadyActiveException(EmployeeAlreadyActiveException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                ResponseMessage.builder()
+                        .message(ex.getMessage())
+                        .status(HttpStatus.CONFLICT.value())
+                        .timestamp(LocalDateTime.now())
+                        .build()
+        );
+    }
+
+    @ExceptionHandler(EmployeeCannotBeDeletedException.class)
+    public ResponseEntity<ResponseMessage> handleEmployeeCannotBeDeletedException(EmployeeCannotBeDeletedException ex){
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                ResponseMessage.builder()
+                        .message(ex.getMessage())
+                        .status(HttpStatus.CONFLICT.value())
+                        .timestamp(LocalDateTime.now())
+                        .build()
+        );
+    }
+
+    @ExceptionHandler(EmployeeDeletedException.class)
+    public ResponseEntity<ResponseMessage> handleEmployeeDeletedException(EmployeeDeletedException ex){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                ResponseMessage.builder()
+                        .message(ex.getMessage())
+                        .status(HttpStatus.NOT_FOUND.value())
+                        .timestamp(LocalDateTime.now())
+                        .build()
+        );
+    }
+
     @ExceptionHandler(EmployeeNotFoundException.class)
-    public ResponseEntity<ResponseMessage> handleEmployeeNotFound(EmployeeNotFoundException ex){
+    public ResponseEntity<ResponseMessage> handleEmployeeNotFoundException(EmployeeNotFoundException ex){
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 ResponseMessage.builder()
                         .message(ex.getMessage())
@@ -229,40 +327,18 @@ public class GlobalHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(EmployeePermissionException.class)
-    public ResponseEntity<ResponseMessage> handleEmployeeCreationPermission(EmployeePermissionException ex){
+    public ResponseEntity<ResponseMessage> handleEmployeePermissionException(EmployeePermissionException ex){
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
                 ResponseMessage.builder()
                         .message(ex.getMessage())
                         .status(HttpStatus.CONFLICT.value())
-                        .timestamp(LocalDateTime.now())
-                        .build()
-        );
-    }
-
-    @ExceptionHandler(EmployeeCannotBeDeletedPermission.class)
-    public ResponseEntity<ResponseMessage> handleEmployeeDeletionPermission(EmployeeCannotBeDeletedPermission ex){
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                ResponseMessage.builder()
-                        .message(ex.getMessage())
-                        .status(HttpStatus.CONFLICT.value())
-                        .timestamp(LocalDateTime.now())
-                        .build()
-        );
-    }
-
-    @ExceptionHandler(AdminCannotBeDeletedException.class)
-    public ResponseEntity<ResponseMessage> handleAdminDeletion(AdminCannotBeDeletedException ex){
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                ResponseMessage.builder()
-                        .message(ex.getMessage())
-                        .status(HttpStatus.CONTINUE.value())
                         .timestamp(LocalDateTime.now())
                         .build()
         );
     }
 
     @ExceptionHandler(InvalidPasswordException.class)
-    public ResponseEntity<ResponseMessage> handleInvalidPassword(InvalidPasswordException ex){
+    public ResponseEntity<ResponseMessage> handleInvalidPasswordException(InvalidPasswordException ex){
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
                 ResponseMessage.builder()
                         .message(ex.getMessage())
@@ -272,8 +348,8 @@ public class GlobalHandler extends ResponseEntityExceptionHandler {
         );
     }
 
-    @ExceptionHandler(EmployeeDeletedException.class)
-    public ResponseEntity<ResponseMessage> handleDeletedEmployee(EmployeeDeletedException ex){
+    @ExceptionHandler(NoLoggedUserException.class)
+    public ResponseEntity<ResponseMessage> handleNoLoggedUserException(NoLoggedUserException ex){
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 ResponseMessage.builder()
                         .message(ex.getMessage())
@@ -283,12 +359,12 @@ public class GlobalHandler extends ResponseEntityExceptionHandler {
         );
     }
 
-    @ExceptionHandler(NoLoggedUserException.class)
-    public ResponseEntity<ResponseMessage> handleNoLoggedUser(NoLoggedUserException ex){
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+    @ExceptionHandler(InvalidDateException.class)
+    public ResponseEntity<ResponseMessage> handleInvalidDateException(InvalidDateException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 ResponseMessage.builder()
                         .message(ex.getMessage())
-                        .status(HttpStatus.NOT_FOUND.value())
+                        .status(HttpStatus.BAD_REQUEST.value())
                         .timestamp(LocalDateTime.now())
                         .build()
         );
