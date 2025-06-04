@@ -21,6 +21,9 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ExpenseService implements IExpenseService {
+
+    private final BusinessService businessService;
+
     private final ExpenseRepository expenseRepository;
 
     private final SupplierService supplierService;
@@ -33,12 +36,7 @@ public class ExpenseService implements IExpenseService {
     public ExpenseResponseDTO create(ExpenseRequestDTO dto) {
         Supplier supplier = supplierService.getEntityById(dto.supplierId());
 
-        if(supplier.getDeleted()){
-            throw new SupplierNotFoundException(supplier.getId());
-        }
-
-        Expense expense = expenseMapper.toEntity(dto, supplier);
-        expense.setDeleted(false);
+        Expense expense = expenseMapper.toEntity(dto, supplier, businessService.getCurrentBusiness());
         expense.setDateTime(LocalDateTime.now(clock));
 
         return expenseMapper.toDTO(expenseRepository.save(expense));
@@ -46,7 +44,7 @@ public class ExpenseService implements IExpenseService {
 
     @Override
     public List<ExpenseResponseDTO> getAll() {
-        return expenseRepository.findAll()
+        return expenseRepository.findByBusiness_Id(businessService.getCurrentBusinessId())
                 .stream()
                 .filter(n -> !n.getDeleted())
                 .map(expenseMapper::toDTO)
@@ -64,11 +62,11 @@ public class ExpenseService implements IExpenseService {
 
     @Override
     public ExpenseResponseDTO update(Long expenseId, ExpenseUpdateDTO dto) {
-        if (!expenseRepository.existsById(expenseId)) throw new SupplierNotFoundException(expenseId);
+        if (!expenseRepository.existsByIdAndBusiness_Id(expenseId, businessService.getCurrentBusinessId()))
+            throw new SupplierNotFoundException(expenseId);
 
         Expense expense = getEntityById(expenseId);
-        Supplier supplier = supplierService.getEntityById(expense.getSupplier().getId());
-        expenseMapper.updateExpenseFromDTO(dto, supplier, expense);
+        expenseMapper.updateExpenseFromDTO(dto, expense);
 
         return expenseMapper.toDTO(expenseRepository.save(expense));
     }
@@ -84,7 +82,8 @@ public class ExpenseService implements IExpenseService {
 
     @Override
     public Expense getEntityById (Long expenseId){
-        return expenseRepository.findById(expenseId).orElseThrow(() -> new ExpenseNotFoundException(expenseId));
+        return expenseRepository.findByIdAndBusiness_Id(expenseId, businessService.getCurrentBusinessId())
+                .orElseThrow(() -> new ExpenseNotFoundException(expenseId));
     }
 
     @Override
@@ -92,6 +91,6 @@ public class ExpenseService implements IExpenseService {
         if (start.isAfter(end)){
             throw new InvalidDateException("Start should be earlier than end");
         }
-        return expenseRepository.findByDateTimeBetween(start, end);
+        return expenseRepository.findByDateTimeBetweenAndBusiness_Id(start, end, businessService.getCurrentBusinessId());
     }
 }

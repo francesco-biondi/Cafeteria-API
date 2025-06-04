@@ -3,6 +3,7 @@ package com.progra3.cafeteria_api.model.mapper;
 import com.progra3.cafeteria_api.model.dto.ProductGroupRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ProductGroupResponseDTO;
 import com.progra3.cafeteria_api.model.dto.ProductOptionResponseDTO;
+import com.progra3.cafeteria_api.model.entity.Business;
 import com.progra3.cafeteria_api.model.entity.ProductGroup;
 import com.progra3.cafeteria_api.model.entity.ProductOption;
 import java.util.ArrayList;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-06-01T13:50:36-0300",
+    date = "2025-06-03T22:01:56-0300",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 24.0.1 (Oracle Corporation)"
 )
 @Component
@@ -60,16 +61,37 @@ public class ProductGroupMapperImpl implements ProductGroupMapper {
     }
 
     @Override
-    public ProductGroup toEntity(ProductGroupRequestDTO productGroupRequestDTO) {
+    public ProductGroup toEntity(ProductGroupRequestDTO productGroupRequestDTO, Business business) {
         if ( productGroupRequestDTO == null ) {
             return null;
         }
 
         ProductGroup productGroup = new ProductGroup();
 
+        assignBusiness( productGroup, business );
+
         productGroup.setName( productGroupRequestDTO.name() );
         productGroup.setMinQuantity( productGroupRequestDTO.minQuantity() );
         productGroup.setMaxQuantity( productGroupRequestDTO.maxQuantity() );
+
+        return productGroup;
+    }
+
+    @Override
+    public ProductGroup updateProductGroupFromDTO(ProductGroup productGroup, ProductGroupRequestDTO productGroupRequestDTO) {
+        if ( productGroupRequestDTO == null ) {
+            return productGroup;
+        }
+
+        if ( productGroupRequestDTO.name() != null ) {
+            productGroup.setName( productGroupRequestDTO.name() );
+        }
+        if ( productGroupRequestDTO.minQuantity() != null ) {
+            productGroup.setMinQuantity( productGroupRequestDTO.minQuantity() );
+        }
+        if ( productGroupRequestDTO.maxQuantity() != null ) {
+            productGroup.setMaxQuantity( productGroupRequestDTO.maxQuantity() );
+        }
 
         return productGroup;
     }

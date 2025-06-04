@@ -7,7 +7,7 @@ import com.progra3.cafeteria_api.model.entity.ProductOption;
 public interface IProductOptionService {
     ProductOption createProductOption(ProductGroup productGroup, ProductOptionRequestDTO dto);
 
-    ProductOption getEntityById(Long productGroupOptionId);
+    ProductOption getEntityById(Long id);
 
-    ProductOption updateProductOption(Long productGroupOptionId, ProductOptionRequestDTO dto);
+    ProductOption updateProductOption(ProductOption productOption, ProductOptionRequestDTO dto);
 }

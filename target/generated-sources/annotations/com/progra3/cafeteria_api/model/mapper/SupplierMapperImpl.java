@@ -5,6 +5,7 @@ import com.progra3.cafeteria_api.model.dto.SupplierRequestDTO;
 import com.progra3.cafeteria_api.model.dto.SupplierResponseDTO;
 import com.progra3.cafeteria_api.model.dto.SupplierUpdateDTO;
 import com.progra3.cafeteria_api.model.entity.Address;
+import com.progra3.cafeteria_api.model.entity.Business;
 import com.progra3.cafeteria_api.model.entity.Supplier;
 import javax.annotation.processing.Generated;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-06-01T13:50:36-0300",
+    date = "2025-06-03T22:01:56-0300",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 24.0.1 (Oracle Corporation)"
 )
 @Component
@@ -51,12 +52,14 @@ public class SupplierMapperImpl implements SupplierMapper {
     }
 
     @Override
-    public Supplier toEntity(SupplierRequestDTO supplierRequestDTO) {
+    public Supplier toEntity(SupplierRequestDTO supplierRequestDTO, Business business) {
         if ( supplierRequestDTO == null ) {
             return null;
         }
 
         Supplier supplier = new Supplier();
+
+        assignBusiness( supplier, business );
 
         supplier.setLegalName( supplierRequestDTO.legalName() );
         supplier.setTradeName( supplierRequestDTO.tradeName() );
@@ -69,31 +72,33 @@ public class SupplierMapperImpl implements SupplierMapper {
     }
 
     @Override
-    public void updateSupplierFromDTO(SupplierUpdateDTO supplierRequestDTO, Supplier supplier) {
-        if ( supplierRequestDTO == null ) {
-            return;
+    public Supplier updateSupplierFromDTO(SupplierUpdateDTO supplierUpdateDTO, Supplier supplier) {
+        if ( supplierUpdateDTO == null ) {
+            return supplier;
         }
 
-        if ( supplierRequestDTO.legalName() != null ) {
-            supplier.setLegalName( supplierRequestDTO.legalName() );
+        if ( supplierUpdateDTO.legalName() != null ) {
+            supplier.setLegalName( supplierUpdateDTO.legalName() );
         }
-        if ( supplierRequestDTO.tradeName() != null ) {
-            supplier.setTradeName( supplierRequestDTO.tradeName() );
+        if ( supplierUpdateDTO.tradeName() != null ) {
+            supplier.setTradeName( supplierUpdateDTO.tradeName() );
         }
-        if ( supplierRequestDTO.cuit() != null ) {
-            supplier.setCuit( supplierRequestDTO.cuit() );
+        if ( supplierUpdateDTO.cuit() != null ) {
+            supplier.setCuit( supplierUpdateDTO.cuit() );
         }
-        if ( supplierRequestDTO.phoneNumber() != null ) {
-            supplier.setPhoneNumber( supplierRequestDTO.phoneNumber() );
+        if ( supplierUpdateDTO.phoneNumber() != null ) {
+            supplier.setPhoneNumber( supplierUpdateDTO.phoneNumber() );
         }
-        if ( supplierRequestDTO.email() != null ) {
-            supplier.setEmail( supplierRequestDTO.email() );
+        if ( supplierUpdateDTO.email() != null ) {
+            supplier.setEmail( supplierUpdateDTO.email() );
         }
-        if ( supplierRequestDTO.address() != null ) {
+        if ( supplierUpdateDTO.address() != null ) {
             if ( supplier.getAddress() == null ) {
                 supplier.setAddress( new Address() );
             }
-            addressMapper.updateAddressFromDTO( supplierRequestDTO.address(), supplier.getAddress() );
+            addressMapper.updateAddressFromDTO( supplierUpdateDTO.address(), supplier.getAddress() );
         }
+
+        return supplier;
     }
 }

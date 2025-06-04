@@ -39,13 +39,13 @@ public class OrderController {
     @Operation(summary = "Add multiple items to an order", description = "Adds multiple items to the order. The items will be included in the total and subtotal calculations.")
     @ApiResponse(responseCode = "201", description = "Items successfully added to the order")
     @PostMapping("/{id}/items")
-    public ResponseEntity<List<ItemResponseDTO>> addItems(
+    public ResponseEntity<OrderResponseDTO> addItems(
             @PathVariable @NotNull Long id,
             @RequestBody List<@Valid ItemRequestDTO> items) {
-        List<ItemResponseDTO> itemResponseDTOs = orderService.addItems(id, items);
+        OrderResponseDTO orderResponseDTO = orderService.addItems(id, items);
         return ResponseEntity
                 .created(URI.create("/api/orders/" + id + "/items"))
-                .body(itemResponseDTOs);
+                .body(orderResponseDTO);
     }
 
     @Operation(summary = "Get all orders", description = "Retrieves a list of all orders in the system")

@@ -10,7 +10,9 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-@Table(name = "products")
+@Table(name = "products", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"name", "business_id"})
+})
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -22,7 +24,7 @@ public class Product {
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -42,7 +44,7 @@ public class Product {
     private Integer stock;
 
     @Column(nullable = false)
-    private Boolean deleted = false;
+    private Boolean deleted;
 
     @OneToMany(mappedBy = "parentProduct", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ProductComponent> components = new HashSet<>();
@@ -56,12 +58,16 @@ public class Product {
     private Set<ProductGroup> productGroups = new HashSet<>();
 
     @Column(nullable = false)
-    private boolean composite = false;
+    private boolean composite;
 
     @Column(name= "composition_type", nullable = false)
     @Enumerated(EnumType.STRING)
-    private CompositionType compositionType = CompositionType.NONE;
+    private CompositionType compositionType;
 
     @Column(name = "control_stock", nullable = false)
-    private boolean controlStock = false;
+    private boolean controlStock;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "business_id", nullable = false)
+    private Business business;
 }

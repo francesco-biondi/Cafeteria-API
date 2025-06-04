@@ -22,15 +22,19 @@ public abstract class Person {
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String dni;
 
-    @Column(unique = true, name = "phone_number", nullable = false)
+    @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String email;
 
     @Column(nullable = false)
     private Boolean deleted;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "business_id", nullable = false)
+    private Business business;
 }

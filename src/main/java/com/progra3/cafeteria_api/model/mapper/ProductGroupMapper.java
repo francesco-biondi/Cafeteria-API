@@ -2,18 +2,25 @@ package com.progra3.cafeteria_api.model.mapper;
 
 import com.progra3.cafeteria_api.model.dto.ProductGroupRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ProductGroupResponseDTO;
+import com.progra3.cafeteria_api.model.entity.Business;
 import com.progra3.cafeteria_api.model.entity.ProductGroup;
-import org.mapstruct.Builder;
-import org.mapstruct.Mapper;
+import org.mapstruct.*;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", builder = @Builder(disableBuilder = true), uses = {ProductOptionMapper.class})
+@Mapper(componentModel = "spring", builder = @Builder(disableBuilder = true), uses = {ProductOptionMapper.class}, nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface ProductGroupMapper {
 
-     ProductGroupResponseDTO toDTO(ProductGroup productGroup);
+    ProductGroupResponseDTO toDTO(ProductGroup productGroup);
 
-     List<ProductGroupResponseDTO> toDTOList(List<ProductGroup> productGroups);
+    List<ProductGroupResponseDTO> toDTOList(List<ProductGroup> productGroups);
 
-     ProductGroup toEntity(ProductGroupRequestDTO productGroupRequestDTO);
+    ProductGroup toEntity(ProductGroupRequestDTO productGroupRequestDTO, @Context Business business);
+
+    ProductGroup updateProductGroupFromDTO(@MappingTarget ProductGroup productGroup, ProductGroupRequestDTO productGroupRequestDTO);
+
+    @BeforeMapping
+    default void assignBusiness(@MappingTarget ProductGroup productGroup, @Context Business business) {
+        productGroup.setBusiness(business);
+    }
 }

@@ -14,8 +14,10 @@ public interface ItemMapper {
     ItemResponseDTO toDTO(Item item);
 
     @Mapping(target = "unitPrice", expression = "java(item.getProduct().getPrice())")
-    @Mapping(target = "totalPrice", expression = "java(item.getUnitPrice() * item.getQuantity())")
     Item toEntity(ItemRequestDTO dto, @Context Product product, @Context Order order);
+
+    @Mapping(target = "unitPrice", expression = "java(item.getProduct().getPrice())")
+    Item updateItemFromDTO(ItemRequestDTO itemDTO, @MappingTarget Item item);
 
     @BeforeMapping
     default void assignProduct(@MappingTarget Item item, @Context Product product) {

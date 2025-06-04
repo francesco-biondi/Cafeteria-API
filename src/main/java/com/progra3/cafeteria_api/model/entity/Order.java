@@ -19,9 +19,6 @@ import java.util.List;
 @Setter
 @Builder
 public class Order {
-    public static final Integer NO_DISCOUNT = 0;
-    public static final Double ZERO_AMOUNT = 0.0;
-
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
     private Long id;
@@ -39,7 +36,7 @@ public class Order {
     private Seating seating;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-    private List<Item> items;
+    private List<Item> items = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -49,7 +46,7 @@ public class Order {
     private LocalDateTime dateTime;
 
     @Column(nullable = false)
-    private Integer discount = NO_DISCOUNT;
+    private Integer discount;
 
     @Column(name = "people_count")
     private Integer peopleCount;
@@ -59,8 +56,12 @@ public class Order {
     private OrderStatus status;
 
     @Column(nullable = false)
-    private Double subtotal = ZERO_AMOUNT;
+    private Double subtotal;
 
     @Column(nullable = false)
-    private Double total = ZERO_AMOUNT;
+    private Double total;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "business_id", nullable = false)
+    private Business business;
 }

@@ -30,36 +30,19 @@ public class ItemService implements IItemService {
     public Item createItem(Order order, ItemRequestDTO itemDTO) {
         Product product = productFinderService.getEntityById(itemDTO.productId());
         Item item = itemMapper.toEntity(itemDTO, product, order);
+        item.setDeleted(false);
+        calculateTotalPrice(item);
 
         stockService.decreaseStockForItem(item);
 
-        return itemRepository.save(item);
+        return item;
     }
 
     @Override
-    public Item getEntityById(Long itemId) {
-        return itemRepository.findById(itemId)
-                .orElseThrow(() -> new ItemNotFoundException(itemId));
-    }
-
-    @Override
-    public Item updateItem(Long itemId, ItemRequestDTO itemDTO) {
-        Item itemToUpdate = getEntityById(itemId);
-
-        itemToUpdate.setComment(itemDTO.comment());
-        itemToUpdate.setQuantity(itemDTO.quantity());
-        itemToUpdate.setTotalPrice(itemToUpdate.getUnitPrice() * itemToUpdate.getQuantity());
-
+    public Item updateItem(Item itemToUpdate, ItemRequestDTO itemDTO) {
+        itemToUpdate = itemMapper.updateItemFromDTO(itemDTO, itemToUpdate);
+        calculateTotalPrice(itemToUpdate);
         return itemToUpdate;
-    }
-
-    @Override
-    public List<ItemResponseDTO> getItemsByOrder(Long orderId) {
-        return itemRepository.findByOrder_Id(orderId)
-                .orElse(List.of())
-                .stream()
-                .map(itemMapper::toDTO)
-                .toList();
     }
 
     @Override
@@ -93,7 +76,7 @@ public class ItemService implements IItemService {
             itemRepository.delete(originalItem);
         } else {
             originalItem.setQuantity(originalItem.getQuantity() - quantityToTransfer);
-            originalItem.setTotalPrice(originalItem.getUnitPrice() * originalItem.getQuantity());
+            calculateTotalPrice(originalItem);
         }
 
         return Item.builder()
@@ -105,5 +88,9 @@ public class ItemService implements IItemService {
                 .totalPrice(originalItem.getUnitPrice() * quantityToTransfer)
                 .deleted(false)
                 .build();
+    }
+
+    private void calculateTotalPrice(Item item) {
+        item.setTotalPrice(item.getUnitPrice() * item.getQuantity());
     }
 }

@@ -6,7 +6,11 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 @Entity
-@Table(name = "employees")
+@Table(name = "employees", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"dni", "business_id"}),
+        @UniqueConstraint(columnNames = {"email", "business_id"}),
+        @UniqueConstraint(columnNames = {"phone_number", "business_id"})
+})
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

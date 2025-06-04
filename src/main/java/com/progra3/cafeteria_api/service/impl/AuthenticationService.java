@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthenticationService implements IAuthenticationService{
 
+    private final BusinessService businessService;
     private final EmployeeMapper employeeMapper;
     private final EmployeeRepository employeeRepository;
 
@@ -26,7 +27,7 @@ public class AuthenticationService implements IAuthenticationService{
     @Transactional
     public EmployeeResponseDTO login(LoginRequestDTO dto){
 
-        Employee employee = employeeRepository.findByEmail(dto.email())
+        Employee employee = employeeRepository.findByEmailAndBusiness_Id(dto.email(), businessService.getCurrentBusinessId())
                 .orElseThrow(() -> new EmployeeNotFoundException(dto.email()));
 
         if(!employee.getPassword().equals(dto.password())){

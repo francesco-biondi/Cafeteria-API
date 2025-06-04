@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-06-01T13:50:36-0300",
+    date = "2025-06-03T22:01:56-0300",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 24.0.1 (Oracle Corporation)"
 )
 @Component
@@ -71,7 +71,36 @@ public class ItemMapperImpl implements ItemMapper {
         item.setQuantity( dto.quantity() );
 
         item.setUnitPrice( item.getProduct().getPrice() );
-        item.setTotalPrice( item.getUnitPrice() * item.getQuantity() );
+
+        return item;
+    }
+
+    @Override
+    public Item updateItemFromDTO(ItemRequestDTO itemDTO, Item item) {
+        if ( itemDTO == null ) {
+            return item;
+        }
+
+        if ( item.getSelectedOptions() != null ) {
+            List<SelectedProductOption> list = selectedProductOptionMapper.toEntityList( itemDTO.selectedOptions() );
+            if ( list != null ) {
+                item.getSelectedOptions().clear();
+                item.getSelectedOptions().addAll( list );
+            }
+            else {
+                item.setSelectedOptions( null );
+            }
+        }
+        else {
+            List<SelectedProductOption> list = selectedProductOptionMapper.toEntityList( itemDTO.selectedOptions() );
+            if ( list != null ) {
+                item.setSelectedOptions( list );
+            }
+        }
+        item.setComment( itemDTO.comment() );
+        item.setQuantity( itemDTO.quantity() );
+
+        item.setUnitPrice( item.getProduct().getPrice() );
 
         return item;
     }

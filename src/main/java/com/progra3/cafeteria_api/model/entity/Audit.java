@@ -15,6 +15,7 @@ import java.util.List;
 @Setter
 @Builder
 public class Audit{
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -28,6 +29,9 @@ public class Audit{
     @Column(name = "initial_cash", nullable = false)
     private Double initialCash;
 
+    @Column(name = "real_cash", nullable = false)
+    private Double realCash;
+
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "audit_id")
     private List<Order> orders;
@@ -36,6 +40,7 @@ public class Audit{
     @JoinColumn(name = "audit_id")
     private List<Expense> expenses;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "audit_status", nullable = false)
     private AuditStatus auditStatus;
 
@@ -50,4 +55,8 @@ public class Audit{
 
     @Column(nullable = false)
     private Boolean deleted;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "business_id", nullable = false)
+    private Business business;
 }

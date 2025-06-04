@@ -3,6 +3,7 @@ package com.progra3.cafeteria_api.model.mapper;
 import com.progra3.cafeteria_api.model.dto.ProductComponentResponseDTO;
 import com.progra3.cafeteria_api.model.dto.ProductRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ProductResponseDTO;
+import com.progra3.cafeteria_api.model.entity.Business;
 import com.progra3.cafeteria_api.model.entity.Category;
 import com.progra3.cafeteria_api.model.entity.Product;
 import com.progra3.cafeteria_api.model.entity.ProductComponent;
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-06-01T13:50:36-0300",
+    date = "2025-06-03T22:01:56-0300",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 24.0.1 (Oracle Corporation)"
 )
 @Component
@@ -76,7 +77,7 @@ public class ProductMapperImpl implements ProductMapper {
     }
 
     @Override
-    public Product toEntity(ProductRequestDTO dto, Category category) {
+    public Product toEntity(ProductRequestDTO dto, Category category, Business business) {
         if ( dto == null ) {
             return null;
         }
@@ -84,12 +85,43 @@ public class ProductMapperImpl implements ProductMapper {
         Product product = new Product();
 
         assignCategory( product, category );
+        assignBusiness( product, business );
 
         product.setName( dto.name() );
         product.setDescription( dto.description() );
         product.setPrice( dto.price() );
         product.setCost( dto.cost() );
         product.setStock( dto.stock() );
+        if ( dto.controlStock() != null ) {
+            product.setControlStock( dto.controlStock() );
+        }
+
+        return product;
+    }
+
+    @Override
+    public Product updateProductFromDTO(Product product, ProductRequestDTO dto, Category category) {
+        if ( dto == null ) {
+            return product;
+        }
+
+        assignCategory( product, category );
+
+        if ( dto.name() != null ) {
+            product.setName( dto.name() );
+        }
+        if ( dto.description() != null ) {
+            product.setDescription( dto.description() );
+        }
+        if ( dto.price() != null ) {
+            product.setPrice( dto.price() );
+        }
+        if ( dto.cost() != null ) {
+            product.setCost( dto.cost() );
+        }
+        if ( dto.stock() != null ) {
+            product.setStock( dto.stock() );
+        }
         if ( dto.controlStock() != null ) {
             product.setControlStock( dto.controlStock() );
         }

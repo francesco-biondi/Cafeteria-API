@@ -1,6 +1,5 @@
 package com.progra3.cafeteria_api.service.impl;
 
-import com.progra3.cafeteria_api.exception.customer.CustomerNotFoundException;
 import com.progra3.cafeteria_api.exception.user.*;
 import com.progra3.cafeteria_api.model.dto.EmployeeRequestDTO;
 import com.progra3.cafeteria_api.model.dto.EmployeeResponseDTO;
@@ -24,16 +23,18 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class EmployeeService implements IEmployeeService{
 
+    private final BusinessService businessService;
+
     private final EmployeeMapper employeeMapper;
     private final EmployeeRepository employeeRepository;
 
     @Override
     @Transactional
     public EmployeeResponseDTO createEmployeeOrAdmin(EmployeeRequestDTO dto){
-        boolean adminExists = employeeRepository.existsByRole(Role.ADMIN);
+        boolean adminExists = employeeRepository.existsByRoleAndBusiness_Id(Role.ADMIN, businessService.getCurrentBusinessId());
 
         if(!adminExists){
-            Employee newAdmin = employeeMapper.toEntity(dto);
+            Employee newAdmin = employeeMapper.toEntity(dto, businessService.getCurrentBusiness());
             newAdmin.setRole(Role.ADMIN);
             newAdmin.setDeleted(false);
 
@@ -46,14 +47,14 @@ public class EmployeeService implements IEmployeeService{
             throw new EmployeePermissionException();
         }
 
-        Employee employee = employeeMapper.toEntity(dto);
+        Employee employee = employeeMapper.toEntity(dto, businessService.getCurrentBusiness());
 
         if(employee.getRole() == Role.ADMIN){
             throw new AdminAlreadyExistsException();
         }
 
-        if (employeeRepository.existsByDni(employee.getDni())){
-            employee = employeeRepository.findByDni(employee.getDni());
+        if (employeeRepository.existsByDniAndBusiness_Id(employee.getDni(), businessService.getCurrentBusinessId())) {
+            employee = employeeRepository.findByDniAndBusiness_Id(employee.getDni(), businessService.getCurrentBusinessId());
             if (!employee.getDeleted()){
                 throw new EmployeeAlreadyActiveException(employee.getDni());
             }
@@ -67,8 +68,8 @@ public class EmployeeService implements IEmployeeService{
     @Override
     public Employee getEntityById (Long employeeId) {
         return Optional.ofNullable(employeeId)
-                .map(customer -> employeeRepository.findById(employeeId)
-                        .orElseThrow(() -> new CustomerNotFoundException(employeeId)))
+                .map(customer -> employeeRepository.findByIdAndBusiness_Id(employeeId, businessService.getCurrentBusinessId())
+                        .orElseThrow(() -> new EmployeeNotFoundException(employeeId)))
                 .orElse(null);
     }
 
@@ -80,8 +81,7 @@ public class EmployeeService implements IEmployeeService{
             throw new EmployeeCannotBeDeletedException();
         }
 
-        Employee employee = employeeRepository.findById(id)
-                .orElseThrow(() -> new EmployeeNotFoundException(id));
+        Employee employee = getEntityById(id);
 
         if(employee.getRole() == Role.ADMIN){
             throw new AdminCannotBeDeletedException();
@@ -119,7 +119,7 @@ public class EmployeeService implements IEmployeeService{
             throw new EmployeePermissionException();
         }
 
-        List<Employee> employees = employeeRepository.findAll();
+        List<Employee> employees = employeeRepository.findByBusiness_Id(businessService.getCurrentBusinessId());
         return employees.stream()
                 .filter(n -> !n.getDeleted())
                 .map(employeeMapper::toDTO)
@@ -141,10 +141,10 @@ public class EmployeeService implements IEmployeeService{
             throw new EmployeePermissionException();
         }
 
-        Specification<Employee> spec = EmployeeSpecification.filterBy(name, lastName, dni, email, phoneNumber, role, deleted);
+        Specification<Employee> spec = EmployeeSpecification.filterBy(name, lastName, dni, email, phoneNumber, role, deleted, businessService.getCurrentBusinessId());
 
         List<Employee> employees = employeeRepository.findAll(spec);
 
-        return employees.stream().filter(n -> !n.getDeleted()).map(employeeMapper::toDTO).collect(Collectors.toList());
+        return employees.stream().filter(n -> !n.getDeleted()).map(employeeMapper::toDTO).toList();
     }
 }

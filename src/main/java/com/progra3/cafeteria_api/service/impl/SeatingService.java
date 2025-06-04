@@ -20,16 +20,19 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class SeatingService implements ISeatingService {
+
+    private final BusinessService businessService;
+
     private final SeatingRepository seatingRepository;
 
     private final SeatingMapper seatingMapper;
 
     @Override
     public SeatingResponseDTO create(SeatingRequestDTO seatingRequestDTO) {
-        Seating seating = seatingMapper.toEntity(seatingRequestDTO);
-        seatingRepository.findByNumber(seating.getNumber())
+        Seating seating = seatingMapper.toEntity(seatingRequestDTO, businessService.getCurrentBusiness());
+        seatingRepository.findByNumberAndBusiness_Id(seating.getNumber(), businessService.getCurrentBusinessId())
                 .ifPresent(s -> {
-                    throw new SeatingAlreadyExistsException(seating.getNumber());
+                    if(!s.getDeleted()) throw new SeatingAlreadyExistsException(seating.getNumber());
                 });
         seating.setStatus(SeatingStatus.FREE);
         seating.setDeleted(false);
@@ -44,14 +47,14 @@ public class SeatingService implements ISeatingService {
     @Override
     public Seating getEntityById(Long id) {
         return Optional.ofNullable(id)
-                .map(customer -> seatingRepository.findById(id)
+                .map(customer -> seatingRepository.findByIdAndBusiness_Id(id, businessService.getCurrentBusinessId())
                         .orElseThrow(() -> new SeatingNotFoundException(id)))
                 .orElse(null);
     }
 
     @Override
     public List<SeatingResponseDTO> getAll() {
-        return seatingRepository.findAll()
+        return seatingRepository.findByBusiness_Id(businessService.getCurrentBusinessId())
                 .stream()
                 .map(seatingMapper::toDTO)
                 .toList();
@@ -63,7 +66,7 @@ public class SeatingService implements ISeatingService {
 
         validateSeating(seating);
 
-        seating.setNumber(dto.number());
+        seating = seatingMapper.updateSeatingFromDTO(seating, dto);
 
         return seatingMapper.toDTO(seatingRepository.save(seating));
     }
@@ -87,16 +90,20 @@ public class SeatingService implements ISeatingService {
     @Override
     public SeatingResponseDTO delete(Long id) {
         Seating seating = getEntityById(id);
-        seating.setStatus(null);
+
+        if(seating.getStatus() != SeatingStatus.FREE) {
+            throw new SeatingModificationNotAllowed("Seating cannot be deleted while it is not free.");
+        }
+
+        seating.setStatus(SeatingStatus.DELETED);
         seating.setDeleted(true);
-        seating.setNumber(null);
 
         return seatingMapper.toDTO(seatingRepository.save(seating));
     }
 
     @Override
     public SeatingResponseDTO getByNumber(Integer number) {
-        return seatingMapper.toDTO(seatingRepository.findByNumber(number)
+        return seatingMapper.toDTO(seatingRepository.findByNumberAndBusiness_Id(number, businessService.getCurrentBusinessId())
                 .orElseThrow(() -> new SeatingNotFoundException(number)));
     }
 

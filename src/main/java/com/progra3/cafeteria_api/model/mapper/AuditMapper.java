@@ -7,10 +7,11 @@ import org.mapstruct.*;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", builder = @Builder(disableBuilder = true), uses = {OrderMapper.class, Expense.class})
+@Mapper(componentModel = "spring", builder = @Builder(disableBuilder = true), uses = {OrderMapper.class, Expense.class}, nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface AuditMapper {
     AuditResponseDTO toDTO(Audit audit);
-    Audit toEntity(AuditRequestDTO auditRequestDTO);
+
+    Audit toEntity(AuditRequestDTO auditRequestDTO, @Context Business business);
 
     @BeforeMapping
     default void assignOrders(@MappingTarget Audit audit, @Context List<Order> orders) {
@@ -18,7 +19,12 @@ public interface AuditMapper {
     }
 
     @BeforeMapping
-    default void assignExpense(@MappingTarget Audit audit, @Context List<Expense> expenses) {
+    default void assignExpenses(@MappingTarget Audit audit, @Context List<Expense> expenses) {
         audit.setExpenses(expenses);
+    }
+
+    @BeforeMapping
+    default void assignBusiness(@MappingTarget Audit audit, @Context Business business) {
+        audit.setBusiness(business);
     }
 }

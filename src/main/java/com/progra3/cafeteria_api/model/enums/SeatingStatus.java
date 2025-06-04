@@ -8,7 +8,8 @@ import lombok.RequiredArgsConstructor;
 public enum SeatingStatus {
     FREE("Free"),
     OCCUPIED("Occupied"),
-    BILLING("Billing");
+    BILLING("Billing"),
+    DELETED("Deleted");
 
     private final String name;
 }

@@ -8,6 +8,7 @@ import com.progra3.cafeteria_api.model.dto.OrderResponseDTO;
 import com.progra3.cafeteria_api.model.dto.SupplierResponseDTO;
 import com.progra3.cafeteria_api.model.entity.Address;
 import com.progra3.cafeteria_api.model.entity.Audit;
+import com.progra3.cafeteria_api.model.entity.Business;
 import com.progra3.cafeteria_api.model.entity.Expense;
 import com.progra3.cafeteria_api.model.entity.Order;
 import com.progra3.cafeteria_api.model.entity.Supplier;
@@ -20,7 +21,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-06-01T13:50:36-0300",
+    date = "2025-06-03T22:01:56-0300",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 24.0.1 (Oracle Corporation)"
 )
 @Component
@@ -67,12 +68,14 @@ public class AuditMapperImpl implements AuditMapper {
     }
 
     @Override
-    public Audit toEntity(AuditRequestDTO auditRequestDTO) {
+    public Audit toEntity(AuditRequestDTO auditRequestDTO, Business business) {
         if ( auditRequestDTO == null ) {
             return null;
         }
 
         Audit audit = new Audit();
+
+        assignBusiness( audit, business );
 
         audit.setInitialCash( auditRequestDTO.initialCash() );
 

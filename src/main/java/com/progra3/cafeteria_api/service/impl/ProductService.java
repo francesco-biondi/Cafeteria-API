@@ -24,6 +24,8 @@ import static com.progra3.cafeteria_api.model.enums.CompositionType.*;
 @RequiredArgsConstructor
 public class ProductService implements IProductService {
 
+    private final BusinessService businessService;
+
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
     private final CategoryService categoryService;
@@ -34,20 +36,25 @@ public class ProductService implements IProductService {
     @Override
     public ProductResponseDTO createProduct(ProductRequestDTO productRequestDTO) {
         Category category = categoryService.getEntityById(productRequestDTO.categoryId());
-        Product product = productMapper.toEntity(productRequestDTO, category);
+        Product product = productMapper.toEntity(productRequestDTO, category, businessService.getCurrentBusiness());
+
+        product.setDeleted(false);
+        product.setComposite(false);
+        product.setCompositionType(NONE);
+
         return productMapper.toDTO(productRepository.save(product));
     }
 
     @Override
     public ProductResponseDTO getProductById(Long id) {
-        Product product = productRepository.findByIdWithComponents(id)
+        Product product = productRepository.findByIdAndBusiness_IdWithComponents(id, businessService.getCurrentBusinessId())
                 .orElseThrow(() -> new ProductNotFoundException(id));
         return productMapper.toDTO(product);
     }
 
     @Override
     public List<ProductResponseDTO> getAllProducts() {
-        return productRepository.findAll()
+        return productRepository.findByBusiness_Id(businessService.getCurrentBusinessId())
                 .stream()
                 .map(productMapper::toDTO)
                 .collect(Collectors.toList());
@@ -57,8 +64,8 @@ public class ProductService implements IProductService {
     @Override
     public ProductResponseDTO updateProduct(Long id, ProductRequestDTO productRequestDTO) {
         Category category = categoryService.getEntityById(productRequestDTO.categoryId());
-        Product updatedProduct = productMapper.toEntity(productRequestDTO, category);
-        updatedProduct.setId(id);
+        Product updatedProduct = getEntityById(id);
+        updatedProduct = productMapper.updateProductFromDTO(updatedProduct, productRequestDTO, category);
 
         return productMapper.toDTO(productRepository.save(updatedProduct));
     }
@@ -80,7 +87,8 @@ public class ProductService implements IProductService {
 
     @Override
     public Product getEntityById(Long productId) {
-        return productRepository.findByIdWithComponents(productId).orElseThrow(() -> new ProductNotFoundException(productId));
+        return productRepository.findByIdAndBusiness_IdWithComponents(productId, businessService.getCurrentBusinessId())
+                .orElseThrow(() -> new ProductNotFoundException(productId));
     }
 
     @Transactional

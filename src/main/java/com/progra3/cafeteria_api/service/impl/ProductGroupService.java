@@ -2,6 +2,7 @@ package com.progra3.cafeteria_api.service.impl;
 
 import com.progra3.cafeteria_api.exception.product.ProductGroupCannotBeDeletedException;
 import com.progra3.cafeteria_api.exception.product.ProductGroupNotFoundException;
+import com.progra3.cafeteria_api.exception.product.ProductOptionNotFoundException;
 import com.progra3.cafeteria_api.model.dto.ProductOptionRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ProductOptionResponseDTO;
 import com.progra3.cafeteria_api.model.dto.ProductGroupRequestDTO;
@@ -20,6 +21,9 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ProductGroupService implements IProductGroupService {
+
+    private final BusinessService businessService;
+
     private final ProductGroupMapper productGroupMapper;
     private final ProductOptionMapper productOptionMapper;
     private final ProductGroupRepository productGroupRepository;
@@ -27,14 +31,14 @@ public class ProductGroupService implements IProductGroupService {
 
     @Override
     public ProductGroupResponseDTO createProductGroup(ProductGroupRequestDTO dto) {
-        ProductGroup productGroup = productGroupMapper.toEntity(dto);
+        ProductGroup productGroup = productGroupMapper.toEntity(dto, businessService.getCurrentBusiness());
 
         return productGroupMapper.toDTO(productGroupRepository.save(productGroup));
     }
 
     @Override
     public ProductGroup getEntityById(Long productGroupId) {
-        return productGroupRepository.findById(productGroupId)
+        return productGroupRepository.findByIdAndBusiness_Id(productGroupId, businessService.getCurrentBusinessId())
                 .orElseThrow(() -> new ProductGroupNotFoundException(productGroupId));
     }
 
@@ -47,7 +51,7 @@ public class ProductGroupService implements IProductGroupService {
 
     @Override
     public List<ProductGroupResponseDTO> getAllProductGroups() {
-        List<ProductGroup> productGroups = productGroupRepository.findAll();
+        List<ProductGroup> productGroups = productGroupRepository.findByBusiness_Id(businessService.getCurrentBusinessId());
 
         return productGroupMapper.toDTOList(productGroups);
     }
@@ -56,9 +60,7 @@ public class ProductGroupService implements IProductGroupService {
     public ProductGroupResponseDTO updateProductGroup(Long productGroupId, ProductGroupRequestDTO dto) {
         ProductGroup productGroup = getEntityById(productGroupId);
 
-        productGroup.setName(dto.name());
-        productGroup.setMinQuantity(dto.minQuantity());
-        productGroup.setMaxQuantity(dto.maxQuantity());
+        productGroup = productGroupMapper.updateProductGroupFromDTO(productGroup, dto);
 
         return productGroupMapper.toDTO(productGroupRepository.save(productGroup));
     }
@@ -94,9 +96,14 @@ public class ProductGroupService implements IProductGroupService {
 
     @Override
     public ProductOptionResponseDTO updateProductOption(Long groupId, Long optionId, ProductOptionRequestDTO dto) {
-        getEntityById(groupId);
+        ProductGroup group = getEntityById(groupId);
 
-        ProductOption updatedOption = productOptionService.updateProductOption(optionId, dto);
+        ProductOption optionToUpdate = group.getOptions().stream()
+                .filter(option -> option.getId().equals(optionId))
+                .findFirst()
+                .orElseThrow(() -> new ProductOptionNotFoundException(optionId));
+
+        ProductOption updatedOption = productOptionService.updateProductOption(optionToUpdate, dto);
 
         return productOptionMapper.toDTO(updatedOption);
     }
@@ -104,7 +111,12 @@ public class ProductGroupService implements IProductGroupService {
     @Override
     public ProductOptionResponseDTO removeProductOption(Long id, Long optionId) {
         ProductGroup productGroup = getEntityById(id);
-        ProductOption option = productOptionService.getEntityById(optionId);
+
+        ProductOption option = productGroup.getOptions().stream()
+                .filter(opt -> opt.getId().equals(optionId))
+                .findFirst()
+                .orElseThrow(() -> new ProductOptionNotFoundException(optionId));
+
         productGroup.getOptions().remove(option);
 
         productGroupRepository.save(productGroup);

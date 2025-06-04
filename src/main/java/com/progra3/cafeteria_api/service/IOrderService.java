@@ -22,7 +22,7 @@ public interface IOrderService {
 
     List<OrderResponseDTO> transferItemsBetweenOrders(Long originalOrderId, OrderSplitRequestDTO dto) ;
 
-    List<ItemResponseDTO> addItems(Long orderId, List<ItemRequestDTO> itemRequestDTOList);
+    OrderResponseDTO addItems(Long orderId, List<ItemRequestDTO> itemRequestDTOList);
     List<ItemResponseDTO> getItems(Long orderId);
     ItemResponseDTO removeItem(Long orderId, Long itemId);
     ItemResponseDTO updateItem(Long orderId, Long itemId, ItemRequestDTO itemDTO);

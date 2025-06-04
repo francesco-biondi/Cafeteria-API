@@ -26,5 +26,5 @@ public class ProductOption {
     private Integer maxQuantity;
 
     @Column(name = "price_increase")
-    private Double priceIncrease = 0.0;
+    private Double priceIncrease;
 }

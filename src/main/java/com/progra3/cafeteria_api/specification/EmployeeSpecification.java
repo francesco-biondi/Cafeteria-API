@@ -5,6 +5,9 @@ import com.progra3.cafeteria_api.model.enums.Role;
 import org.springframework.data.jpa.domain.Specification;
 import jakarta.persistence.criteria.Predicate;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class EmployeeSpecification {
 
     public static Specification<Employee> filterBy(
@@ -14,49 +17,41 @@ public class EmployeeSpecification {
             String email,
             String phoneNumber,
             Role role,
-            Boolean deleted
-    ){
-        return(root, query, builder) -> {
-            var predicates = new java.util.ArrayList<Predicate>();
+            Boolean deleted,
+            Long businessId
+    ) {
+        return (root, query, builder) -> {
+            List<Predicate> predicates = new ArrayList<>();
 
-            if(name != null && !name.isBlank()){
-                predicates.add(builder.like(
-                        builder.lower(root.get("name")),
-                        "%" + name.toLowerCase() + "%"
-                ));
-            }
-
-            if(lastName != null && !lastName.isBlank()){
-                predicates.add(builder.like(
-                        builder.lower(root.get("lastName")),
-                        "%" + lastName.toLowerCase() + "%"
-                ));
-            }
-
-            if(dni != null && !dni.isBlank()){
-                predicates.add(builder.equal(root.get("dni"), dni));
-            }
-
-            if(email != null && !email.isBlank()){
-                predicates.add(builder.like(
-                        builder.lower(root.get("email")),
-                        "%" + email.toLowerCase() + "%"
-                ));
-            }
-
-            if(phoneNumber != null && !phoneNumber.isBlank()){
-                predicates.add(builder.equal(root.get("phoneNumber"), phoneNumber));
-            }
-
-            if(role != null){
-                predicates.add(builder.equal(root.get("role"), role));
-            }
-
-            if(deleted != null){
-                predicates.add(builder.equal(root.get("deleted"), deleted));
-            }
+            addLikeIgnoreCase(predicates, builder, root.get("name"), name);
+            addLikeIgnoreCase(predicates, builder, root.get("lastName"), lastName);
+            addLikeIgnoreCase(predicates, builder, root.get("dni"), dni);
+            addLikeIgnoreCase(predicates, builder, root.get("email"), email);
+            addLikeIgnoreCase(predicates, builder, root.get("phoneNumber"), phoneNumber);
+            addEqual(predicates, builder, root.get("role"), role);
+            addEqual(predicates, builder, root.get("deleted"), deleted);
+            addEqual(predicates, builder, root.get("businessId"), businessId);
 
             return builder.and(predicates.toArray(new Predicate[0]));
         };
     }
+
+    private static void addLikeIgnoreCase(List<Predicate> predicates,
+                                          jakarta.persistence.criteria.CriteriaBuilder builder,
+                                          jakarta.persistence.criteria.Path<String> path,
+                                          String value) {
+        if (value != null && !value.isBlank()) {
+            predicates.add(builder.like(builder.lower(path), "%" + value.toLowerCase() + "%"));
+        }
+    }
+
+    private static <T> void addEqual(List<Predicate> predicates,
+                                     jakarta.persistence.criteria.CriteriaBuilder builder,
+                                     jakarta.persistence.criteria.Path<T> path,
+                                     T value) {
+        if (value != null) {
+            predicates.add(builder.equal(path, value));
+        }
+    }
 }
+
