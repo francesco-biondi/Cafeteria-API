@@ -2,7 +2,7 @@ package com.progra3.cafeteria_api.controller;
 
 import com.progra3.cafeteria_api.model.dto.AuditRequestDTO;
 import com.progra3.cafeteria_api.model.dto.AuditResponseDTO;
-import com.progra3.cafeteria_api.service.IAuditService;
+import com.progra3.cafeteria_api.service.port.IAuditService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

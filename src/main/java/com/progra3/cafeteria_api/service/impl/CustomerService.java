@@ -8,7 +8,7 @@ import com.progra3.cafeteria_api.model.dto.CustomerUpdateDTO;
 import com.progra3.cafeteria_api.model.entity.Customer;
 import com.progra3.cafeteria_api.model.mapper.CustomerMapper;
 import com.progra3.cafeteria_api.repository.CustomerRepository;
-import com.progra3.cafeteria_api.service.ICustomerService;
+import com.progra3.cafeteria_api.service.port.ICustomerService;
 import com.progra3.cafeteria_api.service.helper.Constant;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,9 +20,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CustomerService implements ICustomerService {
 
-    private final BusinessService businessService;
-
     private final CustomerRepository customerRepository;
+
+    private final BusinessService businessService;
 
     private final CustomerMapper customerMapper;
 
@@ -86,10 +86,5 @@ public class CustomerService implements ICustomerService {
                 .map(customer -> customerRepository.findByIdAndBusiness_Id(customerId, businessService.getCurrentBusinessId())
                         .orElseThrow(() -> new CustomerNotFoundException(customerId)))
                 .orElse(null);
-    }
-
-    @Override
-    public CustomerResponseDTO getDtoById(Long id) {
-        return customerMapper.toDTO(getEntityById(id));
     }
 }

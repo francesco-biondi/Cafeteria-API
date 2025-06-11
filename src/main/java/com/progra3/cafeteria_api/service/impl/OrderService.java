@@ -16,12 +16,11 @@ import com.progra3.cafeteria_api.model.entity.*;
 import com.progra3.cafeteria_api.model.enums.OrderStatus;
 import com.progra3.cafeteria_api.model.enums.SeatingStatus;
 import com.progra3.cafeteria_api.repository.OrderRepository;
-import com.progra3.cafeteria_api.service.IOrderService;
+import com.progra3.cafeteria_api.service.port.IOrderService;
 import com.progra3.cafeteria_api.service.helper.Constant;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,10 +30,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class OrderService implements IOrderService {
 
-    private final BusinessService businessService;
-
     private final OrderRepository orderRepository;
 
+    private final BusinessService businessService;
     private final EmployeeService employeeService;
     private final CustomerService customerService;
     private final SeatingService seatingService;
@@ -42,6 +40,7 @@ public class OrderService implements IOrderService {
 
     private final OrderMapper orderMapper;
     private final ItemMapper itemMapper;
+
     private final Clock clock;
 
     @Transactional
@@ -55,22 +54,6 @@ public class OrderService implements IOrderService {
     @Override
     public OrderResponseDTO getById(Long orderId) {
         return orderMapper.toDTO(getEntityById(orderId));
-    }
-
-    @Override
-    public List<OrderResponseDTO> getByEmployee(Long employeeId) {
-        return orderRepository.findByEmployee_IdAndBusiness_Id(employeeId, businessService.getCurrentBusinessId())
-                .stream()
-                .map(orderMapper::toDTO)
-                .toList();
-    }
-
-    @Override
-    public List<OrderResponseDTO> getByCustomer(Long customerId) {
-        return orderRepository.findByCustomer_IdAndBusiness_Id(customerId, businessService.getCurrentBusinessId())
-                .stream()
-                .map(orderMapper::toDTO)
-                .toList();
     }
 
     @Override
@@ -271,7 +254,8 @@ public class OrderService implements IOrderService {
         recalculate(order);
     }
 
-    private Order getEntityById(Long orderId) {
+    @Override
+    public Order getEntityById(Long orderId) {
         return orderRepository.findByIdAndBusiness_Id(orderId, businessService.getCurrentBusinessId())
                 .orElseThrow(() -> new OrderNotFoundException(orderId));
     }

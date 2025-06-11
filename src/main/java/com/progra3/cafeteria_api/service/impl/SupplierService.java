@@ -8,7 +8,7 @@ import com.progra3.cafeteria_api.model.dto.SupplierUpdateDTO;
 import com.progra3.cafeteria_api.model.mapper.SupplierMapper;
 import com.progra3.cafeteria_api.model.entity.Supplier;
 import com.progra3.cafeteria_api.repository.SupplierRepository;
-import com.progra3.cafeteria_api.service.ISupplierService;
+import com.progra3.cafeteria_api.service.port.ISupplierService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,32 +19,24 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class SupplierService implements ISupplierService {
 
-    private final BusinessService businessService;
-
     private final SupplierRepository supplierRepository;
+
+    private final BusinessService businessService;
 
     private final SupplierMapper supplierMapper;
 
     @Override
     public SupplierResponseDTO create(SupplierRequestDTO dto) {
-        Long businessId = businessService.getCurrentBusinessId();
+        Supplier supplier = supplierMapper.toEntity(dto, businessService.getCurrentBusiness());
 
-        if (dto.cuit() != null) {
-            Optional<Supplier> optionalSupplier = supplierRepository.findByCuitAndBusiness_Id(dto.cuit(), businessId);
+        if (supplier.getCuit() != null){
+            Optional<Supplier> existingSupplier = validateSupplier(supplier);
 
-            if (optionalSupplier.isPresent()) {
-                Supplier existingSupplier = optionalSupplier.get();
-
-                if (!existingSupplier.getDeleted()) {
-                    throw new SupplierAlreadyActiveException("Cuit already exists for another supplier in this business");
-                }
-
-                existingSupplier.setDeleted(false);
-                return supplierMapper.toDTO(supplierRepository.save(existingSupplier));
+            if (existingSupplier.isPresent()) {
+                supplier = existingSupplier.get();
             }
         }
 
-        Supplier supplier = supplierMapper.toEntity(dto, businessService.getCurrentBusiness());
         supplier.setDeleted(false);
 
         return supplierMapper.toDTO(supplierRepository.save(supplier));
@@ -94,8 +86,19 @@ public class SupplierService implements ISupplierService {
         return supplier;
     }
 
-    @Override
-    public SupplierResponseDTO getDtoById(Long supplierId) {
-        return supplierMapper.toDTO(getEntityById(supplierId));
+    private Optional<Supplier> validateSupplier(Supplier supplier){
+
+        Optional<Supplier> optionalSupplier = supplierRepository.findByCuitAndBusiness_Id(supplier.getCuit(), businessService.getCurrentBusinessId());
+
+        if (optionalSupplier.isPresent()) {
+
+            if (!optionalSupplier.get().getDeleted()) {
+                throw new SupplierAlreadyActiveException("Cuit already exists for another supplier in this business");
+            }
+
+            return optionalSupplier;
+        }
+
+        return optionalSupplier;
     }
 }

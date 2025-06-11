@@ -1,4 +1,4 @@
-package com.progra3.cafeteria_api.service;
+package com.progra3.cafeteria_api.service.port;
 
 import com.progra3.cafeteria_api.model.entity.Item;
 import com.progra3.cafeteria_api.model.entity.Product;

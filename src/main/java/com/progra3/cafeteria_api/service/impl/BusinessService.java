@@ -6,7 +6,7 @@ import com.progra3.cafeteria_api.model.dto.BusinessResponseDTO;
 import com.progra3.cafeteria_api.model.mapper.BusinessMapper;
 import com.progra3.cafeteria_api.model.entity.Business;
 import com.progra3.cafeteria_api.repository.BusinessRepository;
-import com.progra3.cafeteria_api.service.IBusinessService;
+import com.progra3.cafeteria_api.service.port.IBusinessService;
 import com.progra3.cafeteria_api.security.BusinessContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

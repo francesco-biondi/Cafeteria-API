@@ -1,7 +1,6 @@
-package com.progra3.cafeteria_api.service;
+package com.progra3.cafeteria_api.service.port;
 
 import com.progra3.cafeteria_api.model.dto.ItemRequestDTO;
-import com.progra3.cafeteria_api.model.dto.ItemResponseDTO;
 import com.progra3.cafeteria_api.model.dto.ItemTransferRequestDTO;
 import com.progra3.cafeteria_api.model.entity.Item;
 import com.progra3.cafeteria_api.model.entity.Order;

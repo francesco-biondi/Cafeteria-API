@@ -10,7 +10,7 @@ import com.progra3.cafeteria_api.model.entity.Order;
 import com.progra3.cafeteria_api.model.enums.AuditStatus;
 import com.progra3.cafeteria_api.model.mapper.AuditMapper;
 import com.progra3.cafeteria_api.repository.AuditRepository;
-import com.progra3.cafeteria_api.service.IAuditService;
+import com.progra3.cafeteria_api.service.port.IAuditService;
 import com.progra3.cafeteria_api.service.helper.Constant;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,10 +23,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AuditService implements IAuditService {
 
-    private final BusinessService businessService;
-
     private final AuditRepository auditRepository;
 
+    private final BusinessService businessService;
     private final ExpenseService expenseService;
     private final OrderService orderService;
 
@@ -36,13 +35,10 @@ public class AuditService implements IAuditService {
 
     @Override
     public AuditResponseDTO create(AuditRequestDTO dto) {
-        if (auditRepository.existsByBusiness_Id(businessService.getCurrentBusinessId())){
-            if (findTop().getAuditStatus().equals(AuditStatus.IN_PROGRESS)) {
-                throw new AuditInProgressException();
-            }
-        }
+        verifyAuditStatus(businessService.getCurrentBusinessId());
 
         Audit audit = auditMapper.toEntity(dto, businessService.getCurrentBusiness());
+
         audit.setStartTime(LocalDateTime.now(clock));
         audit.setAuditStatus(AuditStatus.IN_PROGRESS);
         audit.setRealCash(Constant.ZERO_AMOUNT);
@@ -101,9 +97,14 @@ public class AuditService implements IAuditService {
                 .orElseThrow(() -> new AuditNotFoundException(auditId));
     }
 
-    @Override
-    public Audit findTop() {
-        return auditRepository.findTopByBusiness_IdOrderByIdDesc(businessService.getCurrentBusinessId());
+    private void verifyAuditStatus(Long businessId) {
+        if (auditRepository.existsByBusiness_Id(businessId)) {
+            auditRepository.findTopByBusiness_IdOrderByIdDesc(businessId)
+                    .filter(audit -> audit.getAuditStatus().equals(AuditStatus.IN_PROGRESS))
+                    .ifPresent(audit -> {
+                        throw new AuditInProgressException();
+                    });
+        }
     }
 
     private Double calculateExpenseTotal(Audit audit) {

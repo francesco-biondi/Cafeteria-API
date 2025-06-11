@@ -10,7 +10,7 @@ import com.progra3.cafeteria_api.model.enums.OrderStatus;
 import com.progra3.cafeteria_api.model.enums.SeatingStatus;
 import com.progra3.cafeteria_api.model.mapper.SeatingMapper;
 import com.progra3.cafeteria_api.repository.SeatingRepository;
-import com.progra3.cafeteria_api.service.ISeatingService;
+import com.progra3.cafeteria_api.service.port.ISeatingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,9 +21,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class SeatingService implements ISeatingService {
 
-    private final BusinessService businessService;
-
     private final SeatingRepository seatingRepository;
+
+    private final BusinessService businessService;
 
     private final SeatingMapper seatingMapper;
 

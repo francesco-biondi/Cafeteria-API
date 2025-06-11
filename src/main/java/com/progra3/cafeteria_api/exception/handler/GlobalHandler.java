@@ -12,6 +12,7 @@ import com.progra3.cafeteria_api.exception.product.*;
 import com.progra3.cafeteria_api.exception.seating.SeatingAlreadyExistsException;
 import com.progra3.cafeteria_api.exception.seating.SeatingModificationNotAllowed;
 import com.progra3.cafeteria_api.exception.seating.SeatingNotFoundException;
+import com.progra3.cafeteria_api.exception.supplier.SupplierAlreadyActiveException;
 import com.progra3.cafeteria_api.exception.supplier.SupplierNotFoundException;
 import com.progra3.cafeteria_api.exception.user.*;
 import com.progra3.cafeteria_api.exception.utilities.InvalidDateException;
@@ -251,6 +252,17 @@ public class GlobalHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(SupplierNotFoundException.class)
     public ResponseEntity<ResponseMessage> handleSupplierNotFoundException(SupplierNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                ResponseMessage.builder()
+                        .message(ex.getMessage())
+                        .status(HttpStatus.NOT_FOUND.value())
+                        .timestamp(LocalDateTime.now())
+                        .build()
+        );
+    }
+
+    @ExceptionHandler(SupplierAlreadyActiveException.class)
+    public ResponseEntity<ResponseMessage> handleSupplierAlreadyActiveException(SupplierAlreadyActiveException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
                 ResponseMessage.builder()
                         .message(ex.getMessage())

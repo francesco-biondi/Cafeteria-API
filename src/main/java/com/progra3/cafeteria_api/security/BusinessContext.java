@@ -7,6 +7,6 @@ public class BusinessContext {
     public Long getCurrentBusinessId() {
 //        var auth = SecurityContextHolder.getContext().getAuthentication();
 //        return ((CustomUserDetails) auth.getPrincipal()).getBusinessId();
-        return 2L;
+        return 1L;
     }
 }

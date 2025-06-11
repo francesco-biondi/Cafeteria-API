@@ -1,11 +1,10 @@
-package com.progra3.cafeteria_api.service;
+package com.progra3.cafeteria_api.service.port;
 
 import com.progra3.cafeteria_api.model.dto.ProductComponentRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ProductRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ProductResponseDTO;
 import com.progra3.cafeteria_api.model.entity.Product;
 import jakarta.transaction.Transactional;
-
 import java.util.List;
 
 public interface IProductService {

@@ -1,4 +1,4 @@
-package com.progra3.cafeteria_api.service;
+package com.progra3.cafeteria_api.service.port;
 
 import com.progra3.cafeteria_api.model.dto.AuditRequestDTO;
 import com.progra3.cafeteria_api.model.dto.AuditResponseDTO;
@@ -14,5 +14,4 @@ public interface IAuditService {
     AuditResponseDTO cancel(Long auditId);
 
     Audit getEntityById (Long auditId);
-    Audit findTop ();
 }

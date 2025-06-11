@@ -1,4 +1,4 @@
-package com.progra3.cafeteria_api.service;
+package com.progra3.cafeteria_api.service.port;
 
 import com.progra3.cafeteria_api.model.dto.CustomerRequestDTO;
 import com.progra3.cafeteria_api.model.dto.CustomerResponseDTO;
@@ -15,5 +15,4 @@ public interface ICustomerService {
     void delete(Long customerId);
 
     Customer getEntityById (Long customerId);
-    CustomerResponseDTO getDtoById (Long customerId);
 }

@@ -2,7 +2,7 @@ package com.progra3.cafeteria_api.service.impl;
 
 import com.progra3.cafeteria_api.exception.product.NotEnoughStockException;
 import com.progra3.cafeteria_api.model.entity.*;
-import com.progra3.cafeteria_api.service.IStockService;
+import com.progra3.cafeteria_api.service.port.IStockService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

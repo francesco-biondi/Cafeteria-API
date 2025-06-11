@@ -10,7 +10,7 @@ import com.progra3.cafeteria_api.model.entity.Expense;
 import com.progra3.cafeteria_api.model.entity.Supplier;
 import com.progra3.cafeteria_api.model.mapper.ExpenseMapper;
 import com.progra3.cafeteria_api.repository.ExpenseRepository;
-import com.progra3.cafeteria_api.service.IExpenseService;
+import com.progra3.cafeteria_api.service.port.IExpenseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,10 +22,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ExpenseService implements IExpenseService {
 
-    private final BusinessService businessService;
-
     private final ExpenseRepository expenseRepository;
 
+    private final BusinessService businessService;
     private final SupplierService supplierService;
 
     private final ExpenseMapper expenseMapper;
@@ -61,6 +60,14 @@ public class ExpenseService implements IExpenseService {
     }
 
     @Override
+    public List<Expense> getByDateTimeBetween(LocalDateTime start, LocalDateTime end){
+        if (start.isAfter(end)){
+            throw new InvalidDateException("Start should be earlier than end");
+        }
+        return expenseRepository.findByDateTimeBetweenAndBusiness_Id(start, end, businessService.getCurrentBusinessId());
+    }
+
+    @Override
     public ExpenseResponseDTO update(Long expenseId, ExpenseUpdateDTO dto) {
         if (!expenseRepository.existsByIdAndBusiness_Id(expenseId, businessService.getCurrentBusinessId()))
             throw new SupplierNotFoundException(expenseId);
@@ -84,13 +91,5 @@ public class ExpenseService implements IExpenseService {
     public Expense getEntityById (Long expenseId){
         return expenseRepository.findByIdAndBusiness_Id(expenseId, businessService.getCurrentBusinessId())
                 .orElseThrow(() -> new ExpenseNotFoundException(expenseId));
-    }
-
-    @Override
-    public List<Expense> getByDateTimeBetween(LocalDateTime start, LocalDateTime end){
-        if (start.isAfter(end)){
-            throw new InvalidDateException("Start should be earlier than end");
-        }
-        return expenseRepository.findByDateTimeBetweenAndBusiness_Id(start, end, businessService.getCurrentBusinessId());
     }
 }

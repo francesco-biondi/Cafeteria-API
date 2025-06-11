@@ -10,11 +10,10 @@ import com.progra3.cafeteria_api.model.entity.Product;
 import com.progra3.cafeteria_api.model.entity.ProductComponent;
 import com.progra3.cafeteria_api.model.entity.ProductGroup;
 import com.progra3.cafeteria_api.repository.ProductRepository;
-import com.progra3.cafeteria_api.service.IProductService;
+import com.progra3.cafeteria_api.service.port.IProductService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,13 +23,14 @@ import static com.progra3.cafeteria_api.model.enums.CompositionType.*;
 @RequiredArgsConstructor
 public class ProductService implements IProductService {
 
-    private final BusinessService businessService;
-
     private final ProductRepository productRepository;
-    private final ProductMapper productMapper;
+
+    private final BusinessService businessService;
     private final CategoryService categoryService;
     private final ProductGroupService productGroupService;
     private final ProductComponentService productComponentService;
+
+    private final ProductMapper productMapper;
 
     @Transactional
     @Override

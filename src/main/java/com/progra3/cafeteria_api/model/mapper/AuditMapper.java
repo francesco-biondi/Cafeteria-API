@@ -14,16 +14,6 @@ public interface AuditMapper {
     Audit toEntity(AuditRequestDTO auditRequestDTO, @Context Business business);
 
     @BeforeMapping
-    default void assignOrders(@MappingTarget Audit audit, @Context List<Order> orders) {
-        audit.setOrders(orders);
-    }
-
-    @BeforeMapping
-    default void assignExpenses(@MappingTarget Audit audit, @Context List<Expense> expenses) {
-        audit.setExpenses(expenses);
-    }
-
-    @BeforeMapping
     default void assignBusiness(@MappingTarget Audit audit, @Context Business business) {
         audit.setBusiness(business);
     }

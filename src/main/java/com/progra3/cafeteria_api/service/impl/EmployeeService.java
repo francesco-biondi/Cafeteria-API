@@ -8,14 +8,13 @@ import com.progra3.cafeteria_api.model.entity.Employee;
 import com.progra3.cafeteria_api.model.enums.Role;
 import com.progra3.cafeteria_api.model.mapper.EmployeeMapper;
 import com.progra3.cafeteria_api.repository.EmployeeRepository;
-import com.progra3.cafeteria_api.service.IEmployeeService;
+import com.progra3.cafeteria_api.service.port.IEmployeeService;
 import com.progra3.cafeteria_api.specification.EmployeeSpecification;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import java.util.Optional;
 
@@ -23,10 +22,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class EmployeeService implements IEmployeeService{
 
+    private final EmployeeRepository employeeRepository;
+
     private final BusinessService businessService;
 
     private final EmployeeMapper employeeMapper;
-    private final EmployeeRepository employeeRepository;
 
     @Override
     @Transactional

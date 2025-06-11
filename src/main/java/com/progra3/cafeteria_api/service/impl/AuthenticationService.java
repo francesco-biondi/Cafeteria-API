@@ -9,7 +9,7 @@ import com.progra3.cafeteria_api.model.entity.Employee;
 import com.progra3.cafeteria_api.model.dto.LoginRequestDTO;
 import com.progra3.cafeteria_api.model.mapper.EmployeeMapper;
 import com.progra3.cafeteria_api.repository.EmployeeRepository;
-import com.progra3.cafeteria_api.service.IAuthenticationService;
+import com.progra3.cafeteria_api.service.port.IAuthenticationService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

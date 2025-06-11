@@ -12,7 +12,7 @@ import com.progra3.cafeteria_api.model.mapper.ProductOptionMapper;
 import com.progra3.cafeteria_api.model.entity.ProductGroup;
 import com.progra3.cafeteria_api.model.entity.ProductOption;
 import com.progra3.cafeteria_api.repository.ProductGroupRepository;
-import com.progra3.cafeteria_api.service.IProductGroupService;
+import com.progra3.cafeteria_api.service.port.IProductGroupService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,12 +22,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductGroupService implements IProductGroupService {
 
+    private final ProductGroupRepository productGroupRepository;
+
     private final BusinessService businessService;
+    private final ProductOptionService productOptionService;
 
     private final ProductGroupMapper productGroupMapper;
     private final ProductOptionMapper productOptionMapper;
-    private final ProductGroupRepository productGroupRepository;
-    private final ProductOptionService productOptionService;
 
     @Override
     public ProductGroupResponseDTO createProductGroup(ProductGroupRequestDTO dto) {

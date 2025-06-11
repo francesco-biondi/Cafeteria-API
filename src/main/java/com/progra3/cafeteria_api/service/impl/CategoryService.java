@@ -7,7 +7,7 @@ import com.progra3.cafeteria_api.model.dto.CategoryResponseDTO;
 import com.progra3.cafeteria_api.model.entity.Category;
 import com.progra3.cafeteria_api.model.mapper.CategoryMapper;
 import com.progra3.cafeteria_api.repository.CategoryRepository;
-import com.progra3.cafeteria_api.service.ICategoryService;
+import com.progra3.cafeteria_api.service.port.ICategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,9 +18,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CategoryService implements ICategoryService {
 
+    private final CategoryRepository categoryRepository;
+
     private final BusinessService businessService;
 
-    private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
 
     @Override

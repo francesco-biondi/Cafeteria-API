@@ -1,4 +1,4 @@
-package com.progra3.cafeteria_api.service;
+package com.progra3.cafeteria_api.service.port;
 
 import com.progra3.cafeteria_api.model.dto.SupplierRequestDTO;
 import com.progra3.cafeteria_api.model.dto.SupplierResponseDTO;
@@ -15,5 +15,4 @@ public interface ISupplierService {
     SupplierResponseDTO delete(Long supplierId);
 
     Supplier getEntityById (Long supplierId);
-    SupplierResponseDTO getDtoById (Long supplierId);
 }

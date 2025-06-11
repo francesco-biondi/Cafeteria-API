@@ -7,7 +7,7 @@ import com.progra3.cafeteria_api.model.entity.Product;
 import com.progra3.cafeteria_api.model.entity.ProductGroup;
 import com.progra3.cafeteria_api.model.entity.ProductOption;
 import com.progra3.cafeteria_api.repository.ProductOptionRepository;
-import com.progra3.cafeteria_api.service.IProductOptionService;
+import com.progra3.cafeteria_api.service.port.IProductOptionService;
 import com.progra3.cafeteria_api.service.helper.Constant;
 import com.progra3.cafeteria_api.service.helper.ProductFinderService;
 import lombok.RequiredArgsConstructor;
@@ -17,8 +17,10 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ProductOptionService implements IProductOptionService {
     private final ProductOptionRepository productOptionRepository;
-    private final ProductOptionMapper productOptionMapper;
+
     private final ProductFinderService productFinderService;
+
+    private final ProductOptionMapper productOptionMapper;
 
     @Override
     public ProductOption createProductOption(ProductGroup productGroup, ProductOptionRequestDTO dto) {
