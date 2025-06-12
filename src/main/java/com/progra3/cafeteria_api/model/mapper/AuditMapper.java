@@ -11,10 +11,5 @@ import java.util.List;
 public interface AuditMapper {
     AuditResponseDTO toDTO(Audit audit);
 
-    Audit toEntity(AuditRequestDTO auditRequestDTO, @Context Business business);
-
-    @BeforeMapping
-    default void assignBusiness(@MappingTarget Audit audit, @Context Business business) {
-        audit.setBusiness(business);
-    }
+    Audit toEntity(AuditRequestDTO auditRequestDTO);
 }

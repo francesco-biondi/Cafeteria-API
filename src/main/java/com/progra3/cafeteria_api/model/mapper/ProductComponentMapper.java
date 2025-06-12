@@ -11,10 +11,5 @@ public interface ProductComponentMapper {
     @Mapping(target = "productName", source = "product.name")
     ProductComponentResponseDTO toDTO(ProductComponent productComponent);
 
-    ProductComponent toEntity(ProductComponentRequestDTO dto, @Context Product product);
-
-    @BeforeMapping
-    default void setProduct(@MappingTarget ProductComponent productComponent , @Context Product product) {
-            productComponent.setProduct(product);
-    }
+    ProductComponent toEntity(ProductComponentRequestDTO dto);
 }

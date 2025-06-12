@@ -20,7 +20,9 @@ public class ProductComponentService implements IProductComponentService {
     @Override
     public ProductComponent createProductComponent(ProductComponentRequestDTO dto) {
         Product product = productFinderService.getEntityById(dto.productId());
+        ProductComponent productComponent = productComponentMapper.toEntity(dto);
+        productComponent.setProduct(product);
 
-        return productComponentMapper.toEntity(dto, product);
+        return productComponent;
     }
 }

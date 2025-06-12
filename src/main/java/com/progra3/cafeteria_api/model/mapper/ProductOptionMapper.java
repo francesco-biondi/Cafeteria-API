@@ -13,18 +13,8 @@ public interface ProductOptionMapper {
     @Mapping(source = "product.id", target = "productId")
     ProductOptionResponseDTO toDTO(ProductOption productOption);
 
-    ProductOption toEntity(ProductOptionRequestDTO dto, @Context ProductGroup productGroup, @Context Product product);
+    ProductOption toEntity(ProductOptionRequestDTO dto);
 
     ProductOption updateProductOptionFromDTO(@MappingTarget ProductOption productOption, ProductOptionRequestDTO dto);
-
-    @BeforeMapping
-    default void assignProductGroup(@MappingTarget ProductOption productOption, @Context ProductGroup productGroup) {
-        productOption.setProductGroup(productGroup);
-    }
-
-    @BeforeMapping
-    default void assignProduct(@MappingTarget ProductOption productOption, @Context Product product) {
-        productOption.setProduct(product);
-    }
 
 }

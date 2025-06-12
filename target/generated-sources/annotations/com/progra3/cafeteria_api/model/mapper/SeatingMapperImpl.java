@@ -2,7 +2,6 @@ package com.progra3.cafeteria_api.model.mapper;
 
 import com.progra3.cafeteria_api.model.dto.SeatingRequestDTO;
 import com.progra3.cafeteria_api.model.dto.SeatingResponseDTO;
-import com.progra3.cafeteria_api.model.entity.Business;
 import com.progra3.cafeteria_api.model.entity.Seating;
 import com.progra3.cafeteria_api.model.enums.SeatingStatus;
 import javax.annotation.processing.Generated;
@@ -10,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-06-03T22:01:56-0300",
+    date = "2025-06-12T19:38:26-0300",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 24.0.1 (Oracle Corporation)"
 )
 @Component
@@ -38,14 +37,12 @@ public class SeatingMapperImpl implements SeatingMapper {
     }
 
     @Override
-    public Seating toEntity(SeatingRequestDTO seatingRequestDTO, Business business) {
+    public Seating toEntity(SeatingRequestDTO seatingRequestDTO) {
         if ( seatingRequestDTO == null ) {
             return null;
         }
 
         Seating seating = new Seating();
-
-        assignBusiness( seating, business );
 
         seating.setNumber( seatingRequestDTO.number() );
 

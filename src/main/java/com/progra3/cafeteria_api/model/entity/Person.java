@@ -34,7 +34,7 @@ public abstract class Person {
     @Column(nullable = false)
     private Boolean deleted;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "business_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "business_id")
     private Business business;
 }

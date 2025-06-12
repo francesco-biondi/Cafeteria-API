@@ -28,7 +28,10 @@ public class ItemService implements IItemService {
     @Override
     public Item createItem(Order order, ItemRequestDTO itemDTO) {
         Product product = productFinderService.getEntityById(itemDTO.productId());
-        Item item = itemMapper.toEntity(itemDTO, product, order);
+        Item item = itemMapper.toEntity(itemDTO);
+        item.setOrder(order);
+        item.setProduct(product);
+        item.setUnitPrice(product.getPrice());
         item.setDeleted(false);
         calculateTotalPrice(item);
 

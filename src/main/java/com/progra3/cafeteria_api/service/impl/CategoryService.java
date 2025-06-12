@@ -7,6 +7,7 @@ import com.progra3.cafeteria_api.model.dto.CategoryResponseDTO;
 import com.progra3.cafeteria_api.model.entity.Category;
 import com.progra3.cafeteria_api.model.mapper.CategoryMapper;
 import com.progra3.cafeteria_api.repository.CategoryRepository;
+import com.progra3.cafeteria_api.security.BusinessContext;
 import com.progra3.cafeteria_api.service.port.ICategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,32 +21,34 @@ public class CategoryService implements ICategoryService {
 
     private final CategoryRepository categoryRepository;
 
-    private final BusinessService businessService;
+    private final BusinessContext businessContext;
 
     private final CategoryMapper categoryMapper;
 
     @Override
     public CategoryResponseDTO createCategory(CategoryRequestDTO categoryRequestDTO) {
-        Category category = categoryMapper.toEntity(categoryRequestDTO, businessService.getCurrentBusiness());
+        Category category = categoryMapper.toEntity(categoryRequestDTO);
+        category.setBusiness(businessContext.getCurrentBusiness());
+
         return categoryMapper.toDTO(categoryRepository.save(category));
     }
 
     @Override
     public Category getEntityById(Long id) {
-        return categoryRepository.findByIdAndBusiness_Id(id, businessService.getCurrentBusinessId())
+        return categoryRepository.findByIdAndBusiness_Id(id, businessContext.getCurrentBusinessId())
                 .orElseThrow(() -> new CategoryNotFoundException("Category not found with ID " + id + " for the current business."));
     }
 
     @Override
     public CategoryResponseDTO getCategoryById(Long id) {
-        return categoryRepository.findByIdAndBusiness_Id(id, businessService.getCurrentBusinessId())
+        return categoryRepository.findByIdAndBusiness_Id(id, businessContext.getCurrentBusinessId())
                 .map(categoryMapper::toDTO)
                 .orElseThrow(() -> new CategoryNotFoundException("Category not found with ID " + id + " for the current business."));
     }
 
     @Override
     public List<CategoryResponseDTO> getAllCategories() {
-        return categoryRepository.findByBusiness_Id(businessService.getCurrentBusinessId())
+        return categoryRepository.findByBusiness_Id(businessContext.getCurrentBusinessId())
                 .stream()
                 .map(categoryMapper::toDTO)
                 .collect(Collectors.toList());
@@ -53,7 +56,7 @@ public class CategoryService implements ICategoryService {
 
     @Override
     public CategoryResponseDTO updateCategory(Long id, CategoryRequestDTO categoryRequestDTO) {
-        Category categoryToUpdate = categoryRepository.findByIdAndBusiness_Id(id, businessService.getCurrentBusinessId())
+        Category categoryToUpdate = categoryRepository.findByIdAndBusiness_Id(id, businessContext.getCurrentBusinessId())
                 .orElseThrow(() -> new CategoryNotFoundException("Category not found with ID " + id + " for the current business."));
 
         categoryToUpdate.setName(categoryRequestDTO.name());
@@ -62,7 +65,7 @@ public class CategoryService implements ICategoryService {
 
     @Override
     public void deleteCategory(Long id) {
-        Category category = categoryRepository.findByIdAndBusiness_Id(id, businessService.getCurrentBusinessId())
+        Category category = categoryRepository.findByIdAndBusiness_Id(id, businessContext.getCurrentBusinessId())
                 .orElseThrow(() -> new CategoryNotFoundException("Category not found with ID " + id + " for the current business."));
         if (category.getProducts().stream().anyMatch(product -> !product.getDeleted())) {
             throw new CategoryCannotBeDeletedException("Cannot delete category with associated products.");

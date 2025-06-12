@@ -21,7 +21,7 @@ public class EmployeeController {
 
     @PostMapping
     public ResponseEntity<EmployeeResponseDTO> createEmployee(@RequestBody @Valid EmployeeRequestDTO dto) {
-        EmployeeResponseDTO response = employeeService.createEmployeeOrAdmin(dto);
+        EmployeeResponseDTO response = employeeService.createEmployee(dto);
         return ResponseEntity.ok(response);
     }
 
