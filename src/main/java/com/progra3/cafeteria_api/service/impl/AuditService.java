@@ -1,16 +1,17 @@
 package com.progra3.cafeteria_api.service.impl;
 
-import com.progra3.cafeteria_api.exception.AuditInProgressException;
-import com.progra3.cafeteria_api.exception.AuditNotFoundException;
+import com.progra3.cafeteria_api.exception.audit.AuditInProgressException;
+import com.progra3.cafeteria_api.exception.audit.AuditNotFoundException;
 import com.progra3.cafeteria_api.model.dto.AuditRequestDTO;
 import com.progra3.cafeteria_api.model.dto.AuditResponseDTO;
-import com.progra3.cafeteria_api.model.dto.mapper.AuditMapper;
 import com.progra3.cafeteria_api.model.entity.Audit;
 import com.progra3.cafeteria_api.model.entity.Expense;
 import com.progra3.cafeteria_api.model.entity.Order;
 import com.progra3.cafeteria_api.model.enums.AuditStatus;
+import com.progra3.cafeteria_api.model.mapper.AuditMapper;
 import com.progra3.cafeteria_api.repository.AuditRepository;
-import com.progra3.cafeteria_api.service.IAuditService;
+import com.progra3.cafeteria_api.service.port.IAuditService;
+import com.progra3.cafeteria_api.service.helper.Constant;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +25,7 @@ public class AuditService implements IAuditService {
 
     private final AuditRepository auditRepository;
 
+    private final BusinessService businessService;
     private final ExpenseService expenseService;
     private final OrderService orderService;
 
@@ -33,21 +35,24 @@ public class AuditService implements IAuditService {
 
     @Override
     public AuditResponseDTO create(AuditRequestDTO dto) {
-        if (auditRepository.existsBy()){
-            if (findTop().getAuditStatus().equals(AuditStatus.IN_PROGRESS)) {
-                throw new AuditInProgressException();
-            }
-        }
+        verifyAuditStatus(businessService.getCurrentBusinessId());
 
-        Audit audit = auditMapper.toEntity(dto);
+        Audit audit = auditMapper.toEntity(dto, businessService.getCurrentBusiness());
+
         audit.setStartTime(LocalDateTime.now(clock));
+        audit.setAuditStatus(AuditStatus.IN_PROGRESS);
+        audit.setRealCash(Constant.ZERO_AMOUNT);
+        audit.setTotal(Constant.ZERO_AMOUNT);
+        audit.setTotalExpensed(Constant.ZERO_AMOUNT);
+        audit.setDeleted(false);
+        audit.setBalanceGap(calculateBalanceGap(audit));
 
         return auditMapper.toDTO(auditRepository.save(audit));
     }
 
     @Override
     public List<AuditResponseDTO> getAll() {
-        return auditRepository.findAll()
+        return auditRepository.findByBusiness_Id(businessService.getCurrentBusinessId())
                 .stream()
                 .map(auditMapper::toDTO)
                 .toList();
@@ -63,7 +68,7 @@ public class AuditService implements IAuditService {
         Audit audit = getEntityById(auditId);
         audit.setCloseTime(LocalDateTime.now(clock));
 
-        List<Expense> expenses = expenseService.getByDateTimeBetween(audit.getStartTime(), audit.getStartTime());
+        List<Expense> expenses = expenseService.getByDateTimeBetween(audit.getStartTime(), audit.getCloseTime());
         List<Order> orders = orderService.getByDateTimeBetween(audit.getStartTime(), audit.getCloseTime());
 
         audit.setExpenses(expenses);
@@ -71,6 +76,7 @@ public class AuditService implements IAuditService {
 
         audit.setTotalExpensed(calculateExpenseTotal(audit));
         audit.setTotal(calculateTotal(audit));
+        audit.setBalanceGap(calculateBalanceGap(audit));
 
         audit.setAuditStatus(AuditStatus.FINALIZED);
 
@@ -87,12 +93,18 @@ public class AuditService implements IAuditService {
 
     @Override
     public Audit getEntityById(Long auditId) {
-        return auditRepository.findById(auditId).orElseThrow(() -> new AuditNotFoundException(auditId));
+        return auditRepository.findByIdAndBusiness_Id(auditId, businessService.getCurrentBusinessId())
+                .orElseThrow(() -> new AuditNotFoundException(auditId));
     }
 
-    @Override
-    public Audit findTop() {
-        return auditRepository.findTopByOrderByIdDesc();
+    private void verifyAuditStatus(Long businessId) {
+        if (auditRepository.existsByBusiness_Id(businessId)) {
+            auditRepository.findTopByBusiness_IdOrderByIdDesc(businessId)
+                    .filter(audit -> audit.getAuditStatus().equals(AuditStatus.IN_PROGRESS))
+                    .ifPresent(audit -> {
+                        throw new AuditInProgressException();
+                    });
+        }
     }
 
     private Double calculateExpenseTotal(Audit audit) {
@@ -105,5 +117,9 @@ public class AuditService implements IAuditService {
         return audit.getOrders().stream()
                 .mapToDouble(Order::getTotal)
                 .sum();
+    }
+
+    private Double calculateBalanceGap(Audit audit) {
+        return audit.getRealCash() - (audit.getTotal() + audit.getInitialCash() - audit.getTotalExpensed());
     }
 }

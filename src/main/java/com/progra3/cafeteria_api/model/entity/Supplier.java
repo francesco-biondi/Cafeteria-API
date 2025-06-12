@@ -4,13 +4,19 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "suppliers")
+@Table(name = "suppliers",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"legal_name", "business_id"}),
+                @UniqueConstraint(columnNames = {"cuit", "business_id"}),
+                @UniqueConstraint(columnNames = {"email", "business_id"}),
+                @UniqueConstraint(columnNames = {"phone_number", "business_id"})
+        })
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @Builder
-public class Supplier{
+public class Supplier {
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
     private Long id;
@@ -35,4 +41,8 @@ public class Supplier{
 
     @Column(name = "deleted", nullable = false)
     private Boolean deleted;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "business_id", nullable = false)
+    private Business business;
 }

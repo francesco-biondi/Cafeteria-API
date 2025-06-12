@@ -11,9 +11,11 @@ import com.progra3.cafeteria_api.model.enums.*;
 public record EmployeeUpdateDTO(
 
         @Size(min = 1, max = 50, message = "Name must be between 1 and 50 characters")
+        @Pattern(regexp = "^\\s*\\S.*$", message = "Name cannot be blank or only spaces")
         String name,
 
         @Size(min = 1, max = 50, message = "Last name must be between 1 and 50 characters")
+        @Pattern(regexp = "^\\s*\\S.*$", message = "Last name cannot be blank or only spaces")
         String lastName,
 
         @Pattern(regexp = "^\\d{7,8}$", message = "DNI must be between 7 and 8 numeric digits")

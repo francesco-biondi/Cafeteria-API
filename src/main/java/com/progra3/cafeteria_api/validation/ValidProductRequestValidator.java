@@ -8,7 +8,7 @@ public class ValidProductRequestValidator implements ConstraintValidator<ValidPr
 
     @Override
     public boolean isValid(ProductRequestDTO dto, ConstraintValidatorContext context) {
-        if (dto == null || dto.name() == null || dto.name().isBlank() || dto.price() == null) {
+        if (dto == null || dto.name() == null || dto.name().isBlank() || dto.price() == null || dto.controlStock() == null) {
             return false;
         }
 
@@ -45,8 +45,6 @@ public class ValidProductRequestValidator implements ConstraintValidator<ValidPr
                 return false;
             }
         }
-
-
 
         return true;
     }

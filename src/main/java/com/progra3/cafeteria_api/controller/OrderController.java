@@ -2,7 +2,7 @@ package com.progra3.cafeteria_api.controller;
 
 import com.progra3.cafeteria_api.model.dto.*;
 import com.progra3.cafeteria_api.model.enums.OrderStatus;
-import com.progra3.cafeteria_api.service.impl.OrderService;
+import com.progra3.cafeteria_api.service.port.IOrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,23 +24,34 @@ import java.util.List;
 @Tag(name = "Orders", description = "Operations related to orders")
 public class OrderController {
 
-    private final OrderService orderService;
+    private final IOrderService orderService;
 
     @Operation(summary = "Create a new destinationOrder", description = "Creates a new destinationOrder with optional customer and employee IDs. The destinationOrder starts in ACTIVE state.")
     @ApiResponse(responseCode = "201", description = "Order successfully created")
     @PostMapping
-    public ResponseEntity<OrderResponseDTO> create(@RequestBody @Valid OrderRequestDTO dto) {
+    public ResponseEntity<OrderResponseDTO> createOrder(@RequestBody @Valid OrderRequestDTO dto) {
         OrderResponseDTO responseDTO = orderService.create(dto);
         return ResponseEntity
                 .created(URI.create("/api/orders/" + responseDTO.id()))
                 .body(responseDTO);
     }
 
+    @Operation(summary = "Add multiple items to an order", description = "Adds multiple items to the order. The items will be included in the total and subtotal calculations.")
+    @ApiResponse(responseCode = "201", description = "Items successfully added to the order")
+    @PostMapping("/{id}/items")
+    public ResponseEntity<OrderResponseDTO> addItems(
+            @PathVariable @NotNull Long id,
+            @RequestBody List<@Valid ItemRequestDTO> items) {
+        OrderResponseDTO orderResponseDTO = orderService.addItems(id, items);
+        return ResponseEntity
+                .created(URI.create("/api/orders/" + id + "/items"))
+                .body(orderResponseDTO);
+    }
 
     @Operation(summary = "Get all orders", description = "Retrieves a list of all orders in the system")
     @ApiResponse(responseCode = "200", description = "List of orders returned successfully")
     @GetMapping
-    public ResponseEntity<List<OrderResponseDTO>> getAll() {
+    public ResponseEntity<List<OrderResponseDTO>> getAllOrders() {
         return ResponseEntity.ok(orderService.getAll());
     }
 
@@ -48,14 +59,21 @@ public class OrderController {
     @ApiResponse(responseCode = "200", description = "Order found and returned")
     @ApiResponse(responseCode = "404", description = "Order not found")
     @GetMapping("/{id}")
-    public ResponseEntity<OrderResponseDTO> getById(@PathVariable @NotNull Long id) {
+    public ResponseEntity<OrderResponseDTO> getOrderById(@PathVariable @NotNull Long id) {
         return ResponseEntity.ok(orderService.getById(id));
+    }
+
+    @Operation(summary = "Get items from an destinationOrder", description = "Returns all items associated with a given destinationOrder ID")
+    @ApiResponse(responseCode = "200", description = "List of items returned successfully")
+    @GetMapping("/{id}/items")
+    public ResponseEntity<List<ItemResponseDTO>> getItems(@PathVariable @NotNull Long id) {
+        return ResponseEntity.ok(orderService.getItems(id));
     }
 
     @Operation(summary = "Update an destinationOrder", description = "Updates basic fields of an existing destinationOrder")
     @ApiResponse(responseCode = "200", description = "Order updated successfully")
     @PutMapping("/{id}")
-    public ResponseEntity<OrderResponseDTO> update(@PathVariable @NotNull Long id, @RequestBody @Valid OrderRequestDTO dto) {
+    public ResponseEntity<OrderResponseDTO> updateOrder(@PathVariable @NotNull Long id, @RequestBody @Valid OrderRequestDTO dto) {
         return ResponseEntity.ok(orderService.update(id, dto));
     }
 
@@ -67,25 +85,6 @@ public class OrderController {
             @RequestParam @Min(0) @Max(100) Integer discount) {
 
         return ResponseEntity.ok(orderService.updateDiscount(id, discount));
-    }
-
-    @Operation(summary = "Get items from an destinationOrder", description = "Returns all items associated with a given destinationOrder ID")
-    @ApiResponse(responseCode = "200", description = "List of items returned successfully")
-    @GetMapping("/{id}/items")
-    public ResponseEntity<List<ItemResponseDTO>> getItems(@PathVariable @NotNull Long id) {
-        return ResponseEntity.ok(orderService.getItems(id));
-    }
-
-    @Operation(summary = "Add multiple items to an order", description = "Adds multiple items to the order. The items will be included in the total and subtotal calculations.")
-    @ApiResponse(responseCode = "201", description = "Items successfully added to the order")
-    @PostMapping("/{id}/items")
-    public ResponseEntity<List<ItemResponseDTO>> addItems(
-            @PathVariable @NotNull Long id,
-            @RequestBody List<@Valid ItemRequestDTO> items) {
-        List<ItemResponseDTO> itemResponseDTOs = orderService.addItems(id, items);
-        return ResponseEntity
-                .created(URI.create("/api/orders/" + id + "/items"))
-                .body(itemResponseDTOs);
     }
 
     @Operation(summary = "Update an item in an destinationOrder", description = "Modifies the comment and quantity of an existing item within an destinationOrder")

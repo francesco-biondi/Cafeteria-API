@@ -1,20 +1,19 @@
 package com.progra3.cafeteria_api.service.impl;
 
-import com.progra3.cafeteria_api.exception.ProductNotFoundException;
+import com.progra3.cafeteria_api.exception.product.ProductNotFoundException;
 import com.progra3.cafeteria_api.model.dto.ProductComponentRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ProductRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ProductResponseDTO;
-import com.progra3.cafeteria_api.model.dto.mapper.ProductMapper;
+import com.progra3.cafeteria_api.model.mapper.ProductMapper;
 import com.progra3.cafeteria_api.model.entity.Category;
 import com.progra3.cafeteria_api.model.entity.Product;
 import com.progra3.cafeteria_api.model.entity.ProductComponent;
 import com.progra3.cafeteria_api.model.entity.ProductGroup;
 import com.progra3.cafeteria_api.repository.ProductRepository;
-import com.progra3.cafeteria_api.service.IProductService;
+import com.progra3.cafeteria_api.service.port.IProductService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,29 +24,37 @@ import static com.progra3.cafeteria_api.model.enums.CompositionType.*;
 public class ProductService implements IProductService {
 
     private final ProductRepository productRepository;
-    private final ProductMapper productMapper;
+
+    private final BusinessService businessService;
     private final CategoryService categoryService;
     private final ProductGroupService productGroupService;
     private final ProductComponentService productComponentService;
+
+    private final ProductMapper productMapper;
 
     @Transactional
     @Override
     public ProductResponseDTO createProduct(ProductRequestDTO productRequestDTO) {
         Category category = categoryService.getEntityById(productRequestDTO.categoryId());
-        Product product = productMapper.toEntity(productRequestDTO, category);
+        Product product = productMapper.toEntity(productRequestDTO, category, businessService.getCurrentBusiness());
+
+        product.setDeleted(false);
+        product.setComposite(false);
+        product.setCompositionType(NONE);
+
         return productMapper.toDTO(productRepository.save(product));
     }
 
     @Override
     public ProductResponseDTO getProductById(Long id) {
-        Product product = productRepository.findByIdWithComponents(id)
+        Product product = productRepository.findByIdAndBusiness_IdWithComponents(id, businessService.getCurrentBusinessId())
                 .orElseThrow(() -> new ProductNotFoundException(id));
         return productMapper.toDTO(product);
     }
 
     @Override
     public List<ProductResponseDTO> getAllProducts() {
-        return productRepository.findAll()
+        return productRepository.findByBusiness_Id(businessService.getCurrentBusinessId())
                 .stream()
                 .map(productMapper::toDTO)
                 .collect(Collectors.toList());
@@ -57,8 +64,8 @@ public class ProductService implements IProductService {
     @Override
     public ProductResponseDTO updateProduct(Long id, ProductRequestDTO productRequestDTO) {
         Category category = categoryService.getEntityById(productRequestDTO.categoryId());
-        Product updatedProduct = productMapper.toEntity(productRequestDTO, category);
-        updatedProduct.setId(id);
+        Product updatedProduct = getEntityById(id);
+        updatedProduct = productMapper.updateProductFromDTO(updatedProduct, productRequestDTO, category);
 
         return productMapper.toDTO(productRepository.save(updatedProduct));
     }
@@ -80,7 +87,8 @@ public class ProductService implements IProductService {
 
     @Override
     public Product getEntityById(Long productId) {
-        return productRepository.findByIdWithComponents(productId).orElseThrow(() -> new ProductNotFoundException(productId));
+        return productRepository.findByIdAndBusiness_IdWithComponents(productId, businessService.getCurrentBusinessId())
+                .orElseThrow(() -> new ProductNotFoundException(productId));
     }
 
     @Transactional

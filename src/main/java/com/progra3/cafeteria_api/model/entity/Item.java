@@ -43,5 +43,5 @@ public class Item {
     private Double totalPrice;
 
     @Column(nullable = false)
-    private Boolean deleted = false;
+    private Boolean deleted;
 }

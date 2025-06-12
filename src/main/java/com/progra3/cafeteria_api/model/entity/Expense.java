@@ -31,5 +31,9 @@ public class Expense {
     private LocalDateTime dateTime;
 
     @Column(nullable = false)
-    private Boolean deleted;
+    private Boolean deleted = false;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "business_id", nullable = false)
+    private Business business;
 }

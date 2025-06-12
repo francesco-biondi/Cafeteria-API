@@ -18,16 +18,20 @@ public class Seating {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
+    @Column(nullable = false)
     private Integer number;
 
     @OneToMany(mappedBy = "seating", cascade = CascadeType.ALL)
     private List<Order> orders;
 
     @Enumerated(EnumType.STRING)
-    @Column
+    @Column(nullable = false)
     private SeatingStatus status;
 
     @Column(nullable = false)
     private Boolean deleted = false;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "business_id", nullable = false)
+    private Business business;
 }

@@ -1,15 +1,15 @@
 package com.progra3.cafeteria_api.service.impl;
 
-import com.progra3.cafeteria_api.exception.DeletedEmployeeException;
-import com.progra3.cafeteria_api.exception.EmployeeNotFoundException;
-import com.progra3.cafeteria_api.exception.InvalidPasswordException;
-import com.progra3.cafeteria_api.exception.NoLoggedUserException;
+import com.progra3.cafeteria_api.exception.user.EmployeeDeletedException;
+import com.progra3.cafeteria_api.exception.user.EmployeeNotFoundException;
+import com.progra3.cafeteria_api.exception.user.InvalidPasswordException;
+import com.progra3.cafeteria_api.exception.user.NoLoggedUserException;
 import com.progra3.cafeteria_api.model.dto.EmployeeResponseDTO;
 import com.progra3.cafeteria_api.model.entity.Employee;
-import com.progra3.cafeteria_api.model.dto.mapper.EmployeeMapper;
 import com.progra3.cafeteria_api.model.dto.LoginRequestDTO;
+import com.progra3.cafeteria_api.model.mapper.EmployeeMapper;
 import com.progra3.cafeteria_api.repository.EmployeeRepository;
-import com.progra3.cafeteria_api.service.IAuthenticationService;
+import com.progra3.cafeteria_api.service.port.IAuthenticationService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthenticationService implements IAuthenticationService{
 
+    private final BusinessService businessService;
     private final EmployeeMapper employeeMapper;
     private final EmployeeRepository employeeRepository;
 
@@ -26,7 +27,7 @@ public class AuthenticationService implements IAuthenticationService{
     @Transactional
     public EmployeeResponseDTO login(LoginRequestDTO dto){
 
-        Employee employee = employeeRepository.findByEmail(dto.email())
+        Employee employee = employeeRepository.findByEmailAndBusiness_Id(dto.email(), businessService.getCurrentBusinessId())
                 .orElseThrow(() -> new EmployeeNotFoundException(dto.email()));
 
         if(!employee.getPassword().equals(dto.password())){
@@ -34,7 +35,7 @@ public class AuthenticationService implements IAuthenticationService{
         }
 
         if(employee.getDeleted() == true){
-            throw new DeletedEmployeeException();
+            throw new EmployeeDeletedException();
         }
 
         LoggedUser.set(employee);

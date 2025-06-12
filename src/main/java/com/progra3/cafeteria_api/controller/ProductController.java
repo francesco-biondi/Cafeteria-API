@@ -1,10 +1,9 @@
 package com.progra3.cafeteria_api.controller;
 
 import com.progra3.cafeteria_api.model.dto.ProductComponentRequestDTO;
-import com.progra3.cafeteria_api.model.dto.ProductGroupResponseDTO;
 import com.progra3.cafeteria_api.model.dto.ProductRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ProductResponseDTO;
-import com.progra3.cafeteria_api.service.impl.ProductService;
+import com.progra3.cafeteria_api.service.port.IProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -28,32 +27,7 @@ import java.util.List;
 @Tag(name = "Products", description = "Operations related to product management")
 public class ProductController {
 
-    private final ProductService productService;
-
-    @Operation(summary = "Get all products", description = "Returns a list of all registered products")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Product list retrieved successfully",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ProductResponseDTO.class))),
-            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
-    })
-    @GetMapping
-    public List<ProductResponseDTO> getAllProducts() {
-        return productService.getAllProducts();
-    }
-
-    @Operation(summary = "Get a product by ID", description = "Retrieves a product by its unique ID")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Product found",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ProductResponseDTO.class))),
-            @ApiResponse(responseCode = "404", description = "Product not found", content = @Content)
-    })
-    @GetMapping("/{id}")
-    public ResponseEntity<ProductResponseDTO> getProductById(
-            @Parameter(description = "ID of the product to retrieve") @PathVariable @NotNull Long id) {
-        return ResponseEntity.ok(productService.getProductById(id));
-    }
+    private final IProductService productService;
 
     @Operation(summary = "Create a new product", description = "Registers a new product in the system")
     @ApiResponse(responseCode = "201", description = "Product created successfully",
@@ -78,6 +52,31 @@ public class ProductController {
             )
             @RequestBody @Valid ProductRequestDTO productRequestDTO) {
         return new ResponseEntity<>(productService.createProduct(productRequestDTO), HttpStatus.CREATED);
+    }
+
+    @Operation(summary = "Get all products", description = "Returns a list of all registered products")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Product list retrieved successfully",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProductResponseDTO.class))),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+    })
+    @GetMapping
+    public List<ProductResponseDTO> getAllProducts() {
+        return productService.getAllProducts();
+    }
+
+    @Operation(summary = "Get a product by ID", description = "Retrieves a product by its unique ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Product found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProductResponseDTO.class))),
+            @ApiResponse(responseCode = "404", description = "Product not found", content = @Content)
+    })
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductResponseDTO> getProductById(
+            @Parameter(description = "ID of the product to retrieve") @PathVariable @NotNull Long id) {
+        return ResponseEntity.ok(productService.getProductById(id));
     }
 
     @Operation(summary = "Update an existing product", description = "Modifies the details of an existing product")

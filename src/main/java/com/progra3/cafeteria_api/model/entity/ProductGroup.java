@@ -7,7 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "product_groups")
+@Table(name = "product_groups", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"name", "business_id"})
+})
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -19,7 +21,7 @@ public class ProductGroup {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String name;
 
     @Column(name = "min_quantity")
@@ -33,5 +35,9 @@ public class ProductGroup {
 
     @ManyToMany(mappedBy = "productGroups")
     private List<Product> usedByProducts = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "business_id", nullable = false)
+    private Business business;
 }
 

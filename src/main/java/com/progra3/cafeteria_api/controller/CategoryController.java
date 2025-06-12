@@ -2,7 +2,7 @@ package com.progra3.cafeteria_api.controller;
 
 import com.progra3.cafeteria_api.model.dto.CategoryRequestDTO;
 import com.progra3.cafeteria_api.model.dto.CategoryResponseDTO;
-import com.progra3.cafeteria_api.service.impl.CategoryService;
+import com.progra3.cafeteria_api.service.port.ICategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -26,32 +26,7 @@ import java.util.List;
 @Tag(name = "Categories", description = "Operations related to product categories")
 public class CategoryController {
 
-    private final CategoryService categoryService;
-
-    @Operation(summary = "Get all categories", description = "Returns a list of all registered categories")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Category list retrieved successfully",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = CategoryResponseDTO.class))),
-            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
-    })
-    @GetMapping
-    public List<CategoryResponseDTO> getAllCategories() {
-        return categoryService.getAllCategories();
-    }
-
-    @Operation(summary = "Get a category by ID", description = "Retrieves a category by its unique ID")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Category found",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = CategoryResponseDTO.class))),
-            @ApiResponse(responseCode = "404", description = "Category not found", content = @Content)
-    })
-    @GetMapping("/{id}")
-    public ResponseEntity<CategoryResponseDTO> getCategoryById(
-            @Parameter(description = "ID of the category to retrieve") @PathVariable @NotNull Long id) {
-        return ResponseEntity.ok(categoryService.getCategoryById(id));
-    }
+    private final ICategoryService categoryService;
 
     @Operation(summary = "Create a new category", description = "Registers a new category in the system")
     @ApiResponses(value = {
@@ -77,6 +52,31 @@ public class CategoryController {
             )
             @RequestBody @Valid CategoryRequestDTO categoryRequestDTO) {
         return new ResponseEntity<>(categoryService.createCategory(categoryRequestDTO), HttpStatus.CREATED);
+    }
+
+    @Operation(summary = "Get all categories", description = "Returns a list of all registered categories")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Category list retrieved successfully",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CategoryResponseDTO.class))),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+    })
+    @GetMapping
+    public List<CategoryResponseDTO> getAllCategories() {
+        return categoryService.getAllCategories();
+    }
+
+    @Operation(summary = "Get a category by ID", description = "Retrieves a category by its unique ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Category found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CategoryResponseDTO.class))),
+            @ApiResponse(responseCode = "404", description = "Category not found", content = @Content)
+    })
+    @GetMapping("/{id}")
+    public ResponseEntity<CategoryResponseDTO> getCategoryById(
+            @Parameter(description = "ID of the category to retrieve") @PathVariable @NotNull Long id) {
+        return ResponseEntity.ok(categoryService.getCategoryById(id));
     }
 
     @Operation(summary = "Update an existing category", description = "Modifies the details of an existing category")

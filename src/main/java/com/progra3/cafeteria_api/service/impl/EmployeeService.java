@@ -1,21 +1,20 @@
 package com.progra3.cafeteria_api.service.impl;
 
-import com.progra3.cafeteria_api.exception.*;
+import com.progra3.cafeteria_api.exception.user.*;
 import com.progra3.cafeteria_api.model.dto.EmployeeRequestDTO;
 import com.progra3.cafeteria_api.model.dto.EmployeeResponseDTO;
 import com.progra3.cafeteria_api.model.dto.EmployeeUpdateDTO;
-import com.progra3.cafeteria_api.model.dto.mapper.EmployeeMapper;
 import com.progra3.cafeteria_api.model.entity.Employee;
 import com.progra3.cafeteria_api.model.enums.Role;
+import com.progra3.cafeteria_api.model.mapper.EmployeeMapper;
 import com.progra3.cafeteria_api.repository.EmployeeRepository;
-import com.progra3.cafeteria_api.service.IEmployeeService;
+import com.progra3.cafeteria_api.service.port.IEmployeeService;
 import com.progra3.cafeteria_api.specification.EmployeeSpecification;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import java.util.Optional;
 
@@ -23,16 +22,19 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class EmployeeService implements IEmployeeService{
 
-    private final EmployeeMapper employeeMapper;
     private final EmployeeRepository employeeRepository;
+
+    private final BusinessService businessService;
+
+    private final EmployeeMapper employeeMapper;
 
     @Override
     @Transactional
     public EmployeeResponseDTO createEmployeeOrAdmin(EmployeeRequestDTO dto){
-        boolean adminExists = employeeRepository.existsByRole(Role.ADMIN);
+        boolean adminExists = employeeRepository.existsByRoleAndBusiness_Id(Role.ADMIN, businessService.getCurrentBusinessId());
 
         if(!adminExists){
-            Employee newAdmin = employeeMapper.toEntity(dto);
+            Employee newAdmin = employeeMapper.toEntity(dto, businessService.getCurrentBusiness());
             newAdmin.setRole(Role.ADMIN);
             newAdmin.setDeleted(false);
 
@@ -45,16 +47,16 @@ public class EmployeeService implements IEmployeeService{
             throw new EmployeePermissionException();
         }
 
-        Employee employee = employeeMapper.toEntity(dto);
+        Employee employee = employeeMapper.toEntity(dto, businessService.getCurrentBusiness());
 
         if(employee.getRole() == Role.ADMIN){
-            throw new AdminExistsException();
+            throw new AdminAlreadyExistsException();
         }
 
-        if (employeeRepository.existsByDni(employee.getDni())){
-            employee = employeeRepository.findByDni(employee.getDni());
+        if (employeeRepository.existsByDniAndBusiness_Id(employee.getDni(), businessService.getCurrentBusinessId())) {
+            employee = employeeRepository.findByDniAndBusiness_Id(employee.getDni(), businessService.getCurrentBusinessId());
             if (!employee.getDeleted()){
-                throw new EmployeeActiveException(employee.getDni());
+                throw new EmployeeAlreadyActiveException(employee.getDni());
             }
         }
 
@@ -66,8 +68,8 @@ public class EmployeeService implements IEmployeeService{
     @Override
     public Employee getEntityById (Long employeeId) {
         return Optional.ofNullable(employeeId)
-                .map(customer -> employeeRepository.findById(employeeId)
-                        .orElseThrow(() -> new CustomerNotFoundException(employeeId)))
+                .map(customer -> employeeRepository.findByIdAndBusiness_Id(employeeId, businessService.getCurrentBusinessId())
+                        .orElseThrow(() -> new EmployeeNotFoundException(employeeId)))
                 .orElse(null);
     }
 
@@ -76,14 +78,13 @@ public class EmployeeService implements IEmployeeService{
     public EmployeeResponseDTO deleteEmployee(Long id){
         Employee loggedUser = LoggedUser.get();
         if(loggedUser == null || loggedUser.getRole() != Role.ADMIN){
-            throw new EmployeeDeletionPermission();
+            throw new EmployeeCannotBeDeletedException();
         }
 
-        Employee employee = employeeRepository.findById(id)
-                .orElseThrow(() -> new EmployeeNotFoundException(id));
+        Employee employee = getEntityById(id);
 
         if(employee.getRole() == Role.ADMIN){
-            throw new AdminDeletionException();
+            throw new AdminCannotBeDeletedException();
         }
 
         employee.setDeleted(true);
@@ -100,7 +101,7 @@ public class EmployeeService implements IEmployeeService{
         }
 
         Employee employee = getEntityById(id);
-        employee = employeeMapper.toEntity(dto, employee);
+        employeeMapper.updateEmployeeFromDTO(dto, employee);
 
         return employeeMapper.toDTO(employeeRepository.save(employee));
     }
@@ -118,7 +119,7 @@ public class EmployeeService implements IEmployeeService{
             throw new EmployeePermissionException();
         }
 
-        List<Employee> employees = employeeRepository.findAll();
+        List<Employee> employees = employeeRepository.findByBusiness_Id(businessService.getCurrentBusinessId());
         return employees.stream()
                 .filter(n -> !n.getDeleted())
                 .map(employeeMapper::toDTO)
@@ -140,10 +141,10 @@ public class EmployeeService implements IEmployeeService{
             throw new EmployeePermissionException();
         }
 
-        Specification<Employee> spec = EmployeeSpecification.filterBy(name, lastName, dni, email, phoneNumber, role, deleted);
+        Specification<Employee> spec = EmployeeSpecification.filterBy(name, lastName, dni, email, phoneNumber, role, deleted, businessService.getCurrentBusinessId());
 
         List<Employee> employees = employeeRepository.findAll(spec);
 
-        return employees.stream().filter(n -> !n.getDeleted()).map(employeeMapper::toDTO).collect(Collectors.toList());
+        return employees.stream().filter(n -> !n.getDeleted()).map(employeeMapper::toDTO).toList();
     }
 }

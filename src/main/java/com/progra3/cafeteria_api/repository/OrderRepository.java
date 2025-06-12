@@ -11,8 +11,15 @@ import java.util.Optional;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
-    List<Order> findByEmployee_Id(Long employeeId);
-    List<Order> findByCustomer_Id(Long customerId);
-    Optional<Order> findBySeating_IdAndStatus(Long seatingId, OrderStatus orderStatus);
-    List<Order> findByDateTimeBetween(LocalDateTime start, LocalDateTime end);
+    Optional<Order> findByIdAndBusiness_Id(Long orderId, Long businessId);
+
+    List<Order> findByBusiness_Id(Long id);
+
+    List<Order> findByEmployee_IdAndBusiness_Id(Long employeeId, Long businessId);
+
+    List<Order> findByCustomer_IdAndBusiness_Id(Long customerId, Long businessId);
+
+    Optional<Order> findBySeating_IdAndStatusAndBusiness_Id(Long seatingId, OrderStatus orderStatus, Long businessId);
+
+    List<Order> findByDateTimeBetweenAndBusiness_Id(LocalDateTime start, LocalDateTime end, Long businessId);
 }
