@@ -1,5 +1,6 @@
 package com.progra3.cafeteria_api.model.dto;
 
+import com.progra3.cafeteria_api.validation.ValidEmployeeRequest;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -8,6 +9,7 @@ import lombok.Builder;
 import com.progra3.cafeteria_api.model.enums.*;
 
 @Builder
+@ValidEmployeeRequest
 public record EmployeeUpdateDTO(
 
         @Size(min = 1, max = 50, message = "Name must be between 1 and 50 characters")

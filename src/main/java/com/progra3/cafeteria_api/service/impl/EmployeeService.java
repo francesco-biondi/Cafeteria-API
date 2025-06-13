@@ -8,6 +8,7 @@ import com.progra3.cafeteria_api.model.entity.Employee;
 import com.progra3.cafeteria_api.model.enums.Role;
 import com.progra3.cafeteria_api.model.mapper.EmployeeMapper;
 import com.progra3.cafeteria_api.repository.EmployeeRepository;
+import com.progra3.cafeteria_api.security.BusinessContext;
 import com.progra3.cafeteria_api.service.port.IEmployeeService;
 import com.progra3.cafeteria_api.specification.EmployeeSpecification;
 import jakarta.transaction.Transactional;
@@ -24,42 +25,16 @@ public class EmployeeService implements IEmployeeService{
 
     private final EmployeeRepository employeeRepository;
 
-    private final BusinessService businessService;
+    private final BusinessContext businessContext;
 
     private final EmployeeMapper employeeMapper;
 
     @Override
     @Transactional
-    public EmployeeResponseDTO createEmployeeOrAdmin(EmployeeRequestDTO dto){
-        boolean adminExists = employeeRepository.existsByRoleAndBusiness_Id(Role.ADMIN, businessService.getCurrentBusinessId());
+    public EmployeeResponseDTO createEmployee(EmployeeRequestDTO dto){
 
-        if(!adminExists){
-            Employee newAdmin = employeeMapper.toEntity(dto, businessService.getCurrentBusiness());
-            newAdmin.setRole(Role.ADMIN);
-            newAdmin.setDeleted(false);
-
-            return employeeMapper.toDTO(employeeRepository.save(newAdmin));
-        }
-
-        Employee loggedUser = LoggedUser.get();
-
-        if(loggedUser == null || loggedUser.getRole() != Role.ADMIN){
-            throw new EmployeePermissionException();
-        }
-
-        Employee employee = employeeMapper.toEntity(dto, businessService.getCurrentBusiness());
-
-        if(employee.getRole() == Role.ADMIN){
-            throw new AdminAlreadyExistsException();
-        }
-
-        if (employeeRepository.existsByDniAndBusiness_Id(employee.getDni(), businessService.getCurrentBusinessId())) {
-            employee = employeeRepository.findByDniAndBusiness_Id(employee.getDni(), businessService.getCurrentBusinessId());
-            if (!employee.getDeleted()){
-                throw new EmployeeAlreadyActiveException(employee.getDni());
-            }
-        }
-
+        Employee employee = employeeMapper.toEntity(dto);
+        employee.setBusiness(businessContext.getCurrentBusiness());
         employee.setDeleted(false);
 
         return employeeMapper.toDTO(employeeRepository.save(employee));
@@ -68,7 +43,7 @@ public class EmployeeService implements IEmployeeService{
     @Override
     public Employee getEntityById (Long employeeId) {
         return Optional.ofNullable(employeeId)
-                .map(customer -> employeeRepository.findByIdAndBusiness_Id(employeeId, businessService.getCurrentBusinessId())
+                .map(customer -> employeeRepository.findByIdAndBusiness_Id(employeeId, businessContext.getCurrentBusinessId())
                         .orElseThrow(() -> new EmployeeNotFoundException(employeeId)))
                 .orElse(null);
     }
@@ -76,17 +51,7 @@ public class EmployeeService implements IEmployeeService{
     @Override
     @Transactional
     public EmployeeResponseDTO deleteEmployee(Long id){
-        Employee loggedUser = LoggedUser.get();
-        if(loggedUser == null || loggedUser.getRole() != Role.ADMIN){
-            throw new EmployeeCannotBeDeletedException();
-        }
-
         Employee employee = getEntityById(id);
-
-        if(employee.getRole() == Role.ADMIN){
-            throw new AdminCannotBeDeletedException();
-        }
-
         employee.setDeleted(true);
 
         return employeeMapper.toDTO(employeeRepository.save(employee));
@@ -95,13 +60,8 @@ public class EmployeeService implements IEmployeeService{
     @Override
     @Transactional
     public EmployeeResponseDTO updateEmployee(Long id, EmployeeUpdateDTO dto){
-        Employee loggedUser = LoggedUser.get();
-        if(loggedUser == null || loggedUser.getRole() != Role.ADMIN){
-            throw new EmployeePermissionException();
-        }
-
         Employee employee = getEntityById(id);
-        employeeMapper.updateEmployeeFromDTO(dto, employee);
+        employee = employeeMapper.updateEmployeeFromDTO(dto, employee);
 
         return employeeMapper.toDTO(employeeRepository.save(employee));
     }
@@ -114,12 +74,7 @@ public class EmployeeService implements IEmployeeService{
     @Override
     @Transactional
     public List<EmployeeResponseDTO> getAllEmployees(){
-        Employee loggedUser = LoggedUser.get();
-        if(loggedUser == null || loggedUser.getRole() != Role.ADMIN){
-            throw new EmployeePermissionException();
-        }
-
-        List<Employee> employees = employeeRepository.findByBusiness_Id(businessService.getCurrentBusinessId());
+        List<Employee> employees = employeeRepository.findByBusiness_Id(businessContext.getCurrentBusinessId());
         return employees.stream()
                 .filter(n -> !n.getDeleted())
                 .map(employeeMapper::toDTO)
@@ -136,12 +91,7 @@ public class EmployeeService implements IEmployeeService{
             Role role,
             Boolean deleted
     ){
-        Employee loggedUser = LoggedUser.get();
-        if(loggedUser == null || loggedUser.getRole() != Role.ADMIN){
-            throw new EmployeePermissionException();
-        }
-
-        Specification<Employee> spec = EmployeeSpecification.filterBy(name, lastName, dni, email, phoneNumber, role, deleted, businessService.getCurrentBusinessId());
+        Specification<Employee> spec = EmployeeSpecification.filterBy(name, lastName, dni, email, phoneNumber, role, deleted, businessContext.getCurrentBusinessId());
 
         List<Employee> employees = employeeRepository.findAll(spec);
 

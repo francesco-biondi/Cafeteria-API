@@ -25,7 +25,9 @@ public class ProductOptionService implements IProductOptionService {
     @Override
     public ProductOption createProductOption(ProductGroup productGroup, ProductOptionRequestDTO dto) {
         Product product = productFinderService.getEntityById(dto.productId());
-        ProductOption productOption = productOptionMapper.toEntity(dto, productGroup, product);
+        ProductOption productOption = productOptionMapper.toEntity(dto);
+        productOption.setProductGroup(productGroup);
+        productOption.setProduct(product);
         productOption.setPriceIncrease(dto.priceIncrease() != null ? dto.priceIncrease() : Constant.ZERO_AMOUNT);
 
         return productOptionRepository.save(productOption);
@@ -39,7 +41,7 @@ public class ProductOptionService implements IProductOptionService {
 
     @Override
     public ProductOption updateProductOption(ProductOption productOption, ProductOptionRequestDTO dto) {
-        productOptionMapper.updateProductOptionFromDTO(productOption, dto);
+        productOption = productOptionMapper.updateProductOptionFromDTO(productOption, dto);
         return productOptionRepository.save(productOption);
     }
 }

@@ -9,7 +9,7 @@ import com.progra3.cafeteria_api.model.enums.Role;
 import java.util.List;
 
 public interface IEmployeeService {
-    EmployeeResponseDTO createEmployeeOrAdmin(EmployeeRequestDTO dto);
+    EmployeeResponseDTO createEmployee(EmployeeRequestDTO dto);
     EmployeeResponseDTO getEmployeeById(Long id);
     List<EmployeeResponseDTO> getAllEmployees();
     List<EmployeeResponseDTO> filterEmployees(String name, String lastName, String dni, String email, String phoneNumber, Role role, Boolean deleted);

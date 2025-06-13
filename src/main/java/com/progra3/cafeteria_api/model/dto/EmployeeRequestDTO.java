@@ -1,10 +1,12 @@
 package com.progra3.cafeteria_api.model.dto;
 
 import com.progra3.cafeteria_api.model.enums.*;
+import com.progra3.cafeteria_api.validation.ValidEmployeeRequest;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
 
 @Builder
+@ValidEmployeeRequest
 public record EmployeeRequestDTO(
 
         @NotBlank(message = "Name is required")
@@ -24,7 +26,7 @@ public record EmployeeRequestDTO(
         String email,
 
         @NotBlank(message = "Phone number is required")
-        @Pattern(regexp = "^\\d{10,13}$", message = "Phone number must be between 10 and 13 numeric digits")
+        @Pattern(regexp = "^\\d{9,12}$", message = "Phone number must be between 10 and 13 numeric digits")
         String phoneNumber,
 
         @NotBlank(message = "Password is required")

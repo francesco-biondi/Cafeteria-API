@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-06-03T22:01:56-0300",
+    date = "2025-06-12T19:38:26-0300",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 24.0.1 (Oracle Corporation)"
 )
 @Component
@@ -18,6 +18,8 @@ public class BusinessMapperImpl implements BusinessMapper {
 
     @Autowired
     private AddressMapper addressMapper;
+    @Autowired
+    private EmployeeMapper employeeMapper;
 
     @Override
     public BusinessResponseDTO toDTO(Business business) {
@@ -51,6 +53,7 @@ public class BusinessMapperImpl implements BusinessMapper {
         business.setName( dto.name() );
         business.setCuit( dto.cuit() );
         business.setAddress( addressMapper.toEntity( dto.address() ) );
+        business.setOwner( employeeMapper.toEntity( dto.owner() ) );
 
         return business;
     }

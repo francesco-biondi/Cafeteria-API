@@ -6,6 +6,6 @@ import com.progra3.cafeteria_api.model.entity.Business;
 
 public interface IBusinessService {
     BusinessResponseDTO createBusiness(BusinessRequestDTO dto);
-    Long getCurrentBusinessId();
-    Business getCurrentBusiness();
+
+    Business getEntityById(Long id);
 }

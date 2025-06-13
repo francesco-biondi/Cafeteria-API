@@ -10,6 +10,7 @@ import com.progra3.cafeteria_api.model.entity.Expense;
 import com.progra3.cafeteria_api.model.entity.Supplier;
 import com.progra3.cafeteria_api.model.mapper.ExpenseMapper;
 import com.progra3.cafeteria_api.repository.ExpenseRepository;
+import com.progra3.cafeteria_api.security.BusinessContext;
 import com.progra3.cafeteria_api.service.port.IExpenseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,7 @@ public class ExpenseService implements IExpenseService {
 
     private final ExpenseRepository expenseRepository;
 
-    private final BusinessService businessService;
+    private final BusinessContext businessContext;
     private final SupplierService supplierService;
 
     private final ExpenseMapper expenseMapper;
@@ -35,7 +36,9 @@ public class ExpenseService implements IExpenseService {
     public ExpenseResponseDTO create(ExpenseRequestDTO dto) {
         Supplier supplier = supplierService.getEntityById(dto.supplierId());
 
-        Expense expense = expenseMapper.toEntity(dto, supplier, businessService.getCurrentBusiness());
+        Expense expense = expenseMapper.toEntity(dto);
+        expense.setSupplier(supplier);
+        expense.setBusiness(businessContext.getCurrentBusiness());
         expense.setDateTime(LocalDateTime.now(clock));
 
         return expenseMapper.toDTO(expenseRepository.save(expense));
@@ -43,7 +46,7 @@ public class ExpenseService implements IExpenseService {
 
     @Override
     public List<ExpenseResponseDTO> getAll() {
-        return expenseRepository.findByBusiness_Id(businessService.getCurrentBusinessId())
+        return expenseRepository.findByBusiness_Id(businessContext.getCurrentBusinessId())
                 .stream()
                 .filter(n -> !n.getDeleted())
                 .map(expenseMapper::toDTO)
@@ -64,12 +67,12 @@ public class ExpenseService implements IExpenseService {
         if (start.isAfter(end)){
             throw new InvalidDateException("Start should be earlier than end");
         }
-        return expenseRepository.findByDateTimeBetweenAndBusiness_Id(start, end, businessService.getCurrentBusinessId());
+        return expenseRepository.findByDateTimeBetweenAndBusiness_Id(start, end, businessContext.getCurrentBusinessId());
     }
 
     @Override
     public ExpenseResponseDTO update(Long expenseId, ExpenseUpdateDTO dto) {
-        if (!expenseRepository.existsByIdAndBusiness_Id(expenseId, businessService.getCurrentBusinessId()))
+        if (!expenseRepository.existsByIdAndBusiness_Id(expenseId, businessContext.getCurrentBusinessId()))
             throw new SupplierNotFoundException(expenseId);
 
         Expense expense = getEntityById(expenseId);
@@ -89,7 +92,7 @@ public class ExpenseService implements IExpenseService {
 
     @Override
     public Expense getEntityById (Long expenseId){
-        return expenseRepository.findByIdAndBusiness_Id(expenseId, businessService.getCurrentBusinessId())
+        return expenseRepository.findByIdAndBusiness_Id(expenseId, businessContext.getCurrentBusinessId())
                 .orElseThrow(() -> new ExpenseNotFoundException(expenseId));
     }
 }
