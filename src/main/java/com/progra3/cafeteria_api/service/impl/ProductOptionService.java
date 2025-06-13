@@ -7,7 +7,7 @@ import com.progra3.cafeteria_api.model.entity.Product;
 import com.progra3.cafeteria_api.model.entity.ProductGroup;
 import com.progra3.cafeteria_api.model.entity.ProductOption;
 import com.progra3.cafeteria_api.repository.ProductOptionRepository;
-import com.progra3.cafeteria_api.service.IProductOptionService;
+import com.progra3.cafeteria_api.service.port.IProductOptionService;
 import com.progra3.cafeteria_api.service.helper.Constant;
 import com.progra3.cafeteria_api.service.helper.ProductFinderService;
 import lombok.RequiredArgsConstructor;
@@ -17,13 +17,17 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ProductOptionService implements IProductOptionService {
     private final ProductOptionRepository productOptionRepository;
-    private final ProductOptionMapper productOptionMapper;
+
     private final ProductFinderService productFinderService;
+
+    private final ProductOptionMapper productOptionMapper;
 
     @Override
     public ProductOption createProductOption(ProductGroup productGroup, ProductOptionRequestDTO dto) {
         Product product = productFinderService.getEntityById(dto.productId());
-        ProductOption productOption = productOptionMapper.toEntity(dto, productGroup, product);
+        ProductOption productOption = productOptionMapper.toEntity(dto);
+        productOption.setProduct(product);
+        productOption.setProductGroup(productGroup);
         productOption.setPriceIncrease(dto.priceIncrease() != null ? dto.priceIncrease() : Constant.ZERO_AMOUNT);
 
         return productOptionRepository.save(productOption);
@@ -37,7 +41,7 @@ public class ProductOptionService implements IProductOptionService {
 
     @Override
     public ProductOption updateProductOption(ProductOption productOption, ProductOptionRequestDTO dto) {
-        productOptionMapper.updateProductOptionFromDTO(productOption, dto);
+        productOption = productOptionMapper.updateProductOptionFromDTO(productOption, dto);
         return productOptionRepository.save(productOption);
     }
 }

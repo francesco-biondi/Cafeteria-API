@@ -3,7 +3,6 @@ package com.progra3.cafeteria_api.model.mapper;
 import com.progra3.cafeteria_api.model.dto.ProductComponentResponseDTO;
 import com.progra3.cafeteria_api.model.dto.ProductRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ProductResponseDTO;
-import com.progra3.cafeteria_api.model.entity.Business;
 import com.progra3.cafeteria_api.model.entity.Category;
 import com.progra3.cafeteria_api.model.entity.Product;
 import com.progra3.cafeteria_api.model.entity.ProductComponent;
@@ -16,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-06-03T22:01:56-0300",
+    date = "2025-06-12T23:55:28-0300",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 24.0.1 (Oracle Corporation)"
 )
 @Component
@@ -77,15 +76,12 @@ public class ProductMapperImpl implements ProductMapper {
     }
 
     @Override
-    public Product toEntity(ProductRequestDTO dto, Category category, Business business) {
+    public Product toEntity(ProductRequestDTO dto) {
         if ( dto == null ) {
             return null;
         }
 
         Product product = new Product();
-
-        assignCategory( product, category );
-        assignBusiness( product, business );
 
         product.setName( dto.name() );
         product.setDescription( dto.description() );
@@ -100,12 +96,10 @@ public class ProductMapperImpl implements ProductMapper {
     }
 
     @Override
-    public Product updateProductFromDTO(Product product, ProductRequestDTO dto, Category category) {
+    public Product updateProductFromDTO(Product product, ProductRequestDTO dto) {
         if ( dto == null ) {
             return product;
         }
-
-        assignCategory( product, category );
 
         if ( dto.name() != null ) {
             product.setName( dto.name() );

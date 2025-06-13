@@ -3,14 +3,13 @@ package com.progra3.cafeteria_api.model.mapper;
 import com.progra3.cafeteria_api.model.dto.CustomerRequestDTO;
 import com.progra3.cafeteria_api.model.dto.CustomerResponseDTO;
 import com.progra3.cafeteria_api.model.dto.CustomerUpdateDTO;
-import com.progra3.cafeteria_api.model.entity.Business;
 import com.progra3.cafeteria_api.model.entity.Customer;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-06-03T22:01:56-0300",
+    date = "2025-06-12T23:55:28-0300",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 24.0.1 (Oracle Corporation)"
 )
 @Component
@@ -46,14 +45,12 @@ public class CustomerMapperImpl implements CustomerMapper {
     }
 
     @Override
-    public Customer toEntity(CustomerRequestDTO customerRequestDTO, Business business) {
+    public Customer toEntity(CustomerRequestDTO customerRequestDTO) {
         if ( customerRequestDTO == null ) {
             return null;
         }
 
         Customer customer = new Customer();
-
-        assignBusiness( customer, business );
 
         customer.setName( customerRequestDTO.name() );
         customer.setLastName( customerRequestDTO.lastName() );

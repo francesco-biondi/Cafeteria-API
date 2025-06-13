@@ -3,14 +3,13 @@ package com.progra3.cafeteria_api.model.mapper;
 import com.progra3.cafeteria_api.model.dto.EmployeeRequestDTO;
 import com.progra3.cafeteria_api.model.dto.EmployeeResponseDTO;
 import com.progra3.cafeteria_api.model.dto.EmployeeUpdateDTO;
-import com.progra3.cafeteria_api.model.entity.Business;
 import com.progra3.cafeteria_api.model.entity.Employee;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-06-03T22:01:56-0300",
+    date = "2025-06-12T23:55:29-0300",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 24.0.1 (Oracle Corporation)"
 )
 @Component
@@ -46,20 +45,19 @@ public class EmployeeMapperImpl implements EmployeeMapper {
     }
 
     @Override
-    public Employee toEntity(EmployeeRequestDTO employeeRequestDTO, Business business) {
+    public Employee toEntity(EmployeeRequestDTO employeeRequestDTO) {
         if ( employeeRequestDTO == null ) {
             return null;
         }
 
         Employee employee = new Employee();
 
-        assignBusiness( employee, business );
-
         employee.setName( employeeRequestDTO.name() );
         employee.setLastName( employeeRequestDTO.lastName() );
         employee.setDni( employeeRequestDTO.dni() );
         employee.setPhoneNumber( employeeRequestDTO.phoneNumber() );
         employee.setEmail( employeeRequestDTO.email() );
+        employee.setUsername( employeeRequestDTO.username() );
         employee.setPassword( employeeRequestDTO.password() );
         employee.setRole( employeeRequestDTO.role() );
 
@@ -67,9 +65,9 @@ public class EmployeeMapperImpl implements EmployeeMapper {
     }
 
     @Override
-    public void updateEmployeeFromDTO(EmployeeUpdateDTO employeeUpdateDTO, Employee employee) {
+    public Employee updateEmployeeFromDTO(EmployeeUpdateDTO employeeUpdateDTO, Employee employee) {
         if ( employeeUpdateDTO == null ) {
-            return;
+            return employee;
         }
 
         if ( employeeUpdateDTO.name() != null ) {
@@ -87,11 +85,16 @@ public class EmployeeMapperImpl implements EmployeeMapper {
         if ( employeeUpdateDTO.email() != null ) {
             employee.setEmail( employeeUpdateDTO.email() );
         }
+        if ( employeeUpdateDTO.username() != null ) {
+            employee.setUsername( employeeUpdateDTO.username() );
+        }
         if ( employeeUpdateDTO.password() != null ) {
             employee.setPassword( employeeUpdateDTO.password() );
         }
         if ( employeeUpdateDTO.role() != null ) {
             employee.setRole( employeeUpdateDTO.role() );
         }
+
+        return employee;
     }
 }

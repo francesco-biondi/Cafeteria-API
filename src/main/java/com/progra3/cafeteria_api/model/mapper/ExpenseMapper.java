@@ -12,16 +12,7 @@ import org.mapstruct.*;
 public interface ExpenseMapper {
     @Mapping(target = "date", source = "dateTime")
     ExpenseResponseDTO toDTO(Expense expense);
-    Expense toEntity(ExpenseRequestDTO expenseRequestDTO, @Context Supplier supplier, @Context Business business);
+    Expense toEntity(ExpenseRequestDTO expenseRequestDTO);
     void updateExpenseFromDTO(ExpenseUpdateDTO expenseUpdateDTO, @MappingTarget Expense expense);
 
-    @BeforeMapping
-    default void assignSupplier(@MappingTarget Expense expense, @Context Supplier supplier) {
-        expense.setSupplier(supplier);
-    }
-
-    @BeforeMapping
-    default void assignBusiness(@MappingTarget Expense expense, @Context Business business) {
-        expense.setBusiness(business);
-    }
 }

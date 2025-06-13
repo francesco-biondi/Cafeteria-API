@@ -29,6 +29,10 @@ public class Business {
     @Column(nullable = false)
     private Address address;
 
+    @OneToOne(cascade = CascadeType.ALL, optional = false)
+    @JoinColumn(name = "owner_id", nullable = false)
+    private Employee owner;
+
     @OneToMany(mappedBy = "business", cascade = CascadeType.ALL)
     private List<Employee> employees = new ArrayList<>();
 

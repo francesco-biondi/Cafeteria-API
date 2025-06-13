@@ -10,12 +10,8 @@ import org.mapstruct.*;
 public interface SeatingMapper {
     SeatingResponseDTO toDTO(Seating seating);
 
-    Seating toEntity(SeatingRequestDTO seatingRequestDTO, @Context Business business);
+    Seating toEntity(SeatingRequestDTO seatingRequestDTO);
 
     Seating updateSeatingFromDTO(@MappingTarget Seating seating, SeatingRequestDTO seatingRequestDTO);
 
-    @BeforeMapping
-    default void assignBusiness(@MappingTarget Seating seating, @Context Business business) {
-        seating.setBusiness(business);
-    }
 }

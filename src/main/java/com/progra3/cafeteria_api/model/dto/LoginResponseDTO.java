@@ -1,11 +1,10 @@
 package com.progra3.cafeteria_api.model.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Builder;
 
-@Getter
-@AllArgsConstructor
-public class LoginResponseDTO {
-    private final String token;
-    private final EmployeeResponseDTO employee;
+@Builder
+public record LoginResponseDTO(
+        String token,
+        EmployeeResponseDTO employee
+) {
 }

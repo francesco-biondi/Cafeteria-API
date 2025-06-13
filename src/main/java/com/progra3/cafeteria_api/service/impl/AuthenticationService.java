@@ -10,8 +10,8 @@ import com.progra3.cafeteria_api.model.entity.Employee;
 import com.progra3.cafeteria_api.model.mapper.EmployeeMapper;
 import com.progra3.cafeteria_api.repository.EmployeeRepository;
 import com.progra3.cafeteria_api.security.JwtService;
-import com.progra3.cafeteria_api.service.IAuthenticationService;
-import com.progra3.cafeteria_api.security.CustomUserDetails;
+import com.progra3.cafeteria_api.security.EmployeeDetails;
+import com.progra3.cafeteria_api.service.port.IAuthenticationService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,7 +24,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AuthenticationService implements IAuthenticationService {
 
-    private final BusinessService businessService;
     private final EmployeeMapper employeeMapper;
     private final EmployeeRepository employeeRepository;
     private final PasswordEncoder passwordEncoder;
@@ -34,30 +33,31 @@ public class AuthenticationService implements IAuthenticationService {
     @Transactional
     public LoginResponseDTO login(LoginRequestDTO dto) {
 
-        Long businessId = businessService.getCurrentBusinessId();
-
-        Employee employee = employeeRepository.findByEmailAndBusiness_Id(dto.email(), businessId)
-                .orElseThrow(() -> new EmployeeNotFoundException(dto.email()));
+        Employee employee = employeeRepository.findByUsername(dto.username())
+                .orElseThrow(() -> new EmployeeNotFoundException(dto.username()));
 
         if (!passwordEncoder.matches(dto.password(), employee.getPassword())) {
             throw new InvalidPasswordException();
         }
 
-        if (Boolean.TRUE.equals(employee.getDeleted())) {
+        if (employee.getDeleted()) {
             throw new EmployeeDeletedException();
         }
 
-        CustomUserDetails userDetails = new CustomUserDetails(
-                employee.getEmail() + "|" + businessId,
+        EmployeeDetails userDetails = new EmployeeDetails(
+                employee.getUsername(),
                 employee.getPassword(),
                 List.of(new SimpleGrantedAuthority("ROLE_" + employee.getRole().name())),
-                businessId
+                employee.getBusiness().getId()
         );
 
         String token = jwtService.generateToken(userDetails);
 
         EmployeeResponseDTO employeeDTO = employeeMapper.toDTO(employee);
 
-        return new LoginResponseDTO(token, employeeDTO);
+        return LoginResponseDTO.builder()
+                .token(token)
+                .employee(employeeDTO)
+                .build();
     }
 }

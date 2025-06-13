@@ -6,10 +6,12 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public record SupplierUpdateDTO(
-        @Size(min = 1, max = 50, message = "Name must be between 1 and 50 characters")
+        @Size(min = 1, max = 50, message = "Legal name must be between 1 and 50 characters")
+        @Pattern(regexp = "^\\s*\\S.*$", message = "Legal name cannot be blank or only spaces")
         String legalName,
 
-        @Size(min = 1, max = 50, message = "Name must be between 1 and 50 characters")
+        @Size(min = 1, max = 50, message = "Trade name must be between 1 and 50 characters")
+        @Pattern(regexp = "^\\s*\\S.*$", message = "Trade name cannot be blank or only spaces")
         String tradeName,
 
         @Pattern(

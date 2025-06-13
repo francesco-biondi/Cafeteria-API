@@ -1,7 +1,7 @@
 package com.progra3.cafeteria_api.model.dto;
 
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
@@ -11,9 +11,11 @@ import com.progra3.cafeteria_api.model.enums.*;
 public record EmployeeUpdateDTO(
 
         @Size(min = 1, max = 50, message = "Name must be between 1 and 50 characters")
+        @Pattern(regexp = "^\\s*\\S.*$", message = "Name cannot be blank or only spaces")
         String name,
 
         @Size(min = 1, max = 50, message = "Last name must be between 1 and 50 characters")
+        @Pattern(regexp = "^\\s*\\S.*$", message = "Last name cannot be blank or only spaces")
         String lastName,
 
         @Pattern(regexp = "^\\d{7,8}$", message = "DNI must be between 7 and 8 numeric digits")
@@ -24,6 +26,9 @@ public record EmployeeUpdateDTO(
 
         @Pattern(regexp = "^\\d{10,13}$", message = "Phone number must be between 10 and 13 numeric digits")
         String phoneNumber,
+
+        @Size(min = 5, max = 20, message = "Username must be between 5 and 20 characters")
+        String username,
 
         @Size(min = 8, message = "Password must be at least 8 characters long")
         String password,

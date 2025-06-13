@@ -2,7 +2,7 @@ package com.progra3.cafeteria_api.controller;
 
 import com.progra3.cafeteria_api.model.dto.*;
 import com.progra3.cafeteria_api.model.enums.OrderStatus;
-import com.progra3.cafeteria_api.service.IOrderService;
+import com.progra3.cafeteria_api.service.port.IOrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;

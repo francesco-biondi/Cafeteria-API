@@ -8,7 +8,8 @@ import com.progra3.cafeteria_api.model.dto.CustomerUpdateDTO;
 import com.progra3.cafeteria_api.model.entity.Customer;
 import com.progra3.cafeteria_api.model.mapper.CustomerMapper;
 import com.progra3.cafeteria_api.repository.CustomerRepository;
-import com.progra3.cafeteria_api.service.ICustomerService;
+import com.progra3.cafeteria_api.security.BusinessContext;
+import com.progra3.cafeteria_api.service.port.ICustomerService;
 import com.progra3.cafeteria_api.service.helper.Constant;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,18 +21,19 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CustomerService implements ICustomerService {
 
-    private final BusinessService businessService;
-
     private final CustomerRepository customerRepository;
+
+    private final BusinessContext businessContext;
 
     private final CustomerMapper customerMapper;
 
     @Override
     public CustomerResponseDTO create(CustomerRequestDTO dto) {
-        Customer customer = customerMapper.toEntity(dto, businessService.getCurrentBusiness());
+        Customer customer = customerMapper.toEntity(dto);
+        customer.setBusiness(businessContext.getCurrentBusiness());
 
-        if (customerRepository.existsByDniAndBusiness_Id(customer.getDni(), businessService.getCurrentBusinessId())) {
-            customer = customerRepository.findByDniAndBusiness_Id(customer.getDni(), businessService.getCurrentBusinessId());
+        if (customerRepository.existsByDniAndBusiness_Id(customer.getDni(), businessContext.getCurrentBusinessId())) {
+            customer = customerRepository.findByDniAndBusiness_Id(customer.getDni(), businessContext.getCurrentBusinessId());
             if (!customer.getDeleted()) {
                 throw new CustomerAlreadyActiveException(customer.getDni());
             }
@@ -45,7 +47,7 @@ public class CustomerService implements ICustomerService {
 
     @Override
     public List<CustomerResponseDTO> getAll() {
-        return customerRepository.findByBusiness_Id(businessService.getCurrentBusinessId())
+        return customerRepository.findByBusiness_Id(businessContext.getCurrentBusinessId())
                 .stream()
                 .filter(n -> !n.getDeleted())
                 .map(customerMapper::toDTO)
@@ -83,13 +85,8 @@ public class CustomerService implements ICustomerService {
     @Override
     public Customer getEntityById(Long customerId) {
         return Optional.ofNullable(customerId)
-                .map(customer -> customerRepository.findByIdAndBusiness_Id(customerId, businessService.getCurrentBusinessId())
+                .map(customer -> customerRepository.findByIdAndBusiness_Id(customerId, businessContext.getCurrentBusinessId())
                         .orElseThrow(() -> new CustomerNotFoundException(customerId)))
                 .orElse(null);
-    }
-
-    @Override
-    public CustomerResponseDTO getDtoById(Long id) {
-        return customerMapper.toDTO(getEntityById(id));
     }
 }

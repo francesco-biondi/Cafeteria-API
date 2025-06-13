@@ -11,11 +11,6 @@ import org.mapstruct.*;
 public interface EmployeeMapper {
     @Mapping(target = "role", expression = "java(employee.getRole().name())")
     EmployeeResponseDTO toDTO(Employee employee);
-    Employee toEntity(EmployeeRequestDTO employeeRequestDTO, @Context Business business);
-    void updateEmployeeFromDTO(EmployeeUpdateDTO employeeUpdateDTO, @MappingTarget Employee employee);
-
-    @BeforeMapping
-    default void assignBusiness(@MappingTarget Employee employee, @Context Business business) {
-        employee.setBusiness(business);
-    }
+    Employee toEntity(EmployeeRequestDTO employeeRequestDTO);
+    Employee updateEmployeeFromDTO(EmployeeUpdateDTO employeeUpdateDTO, @MappingTarget Employee employee);
 }

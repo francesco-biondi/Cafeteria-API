@@ -3,7 +3,6 @@ package com.progra3.cafeteria_api.model.mapper;
 import com.progra3.cafeteria_api.model.dto.CategoryRequestDTO;
 import com.progra3.cafeteria_api.model.dto.CategoryResponseDTO;
 import com.progra3.cafeteria_api.model.dto.ProductResponseDTO;
-import com.progra3.cafeteria_api.model.entity.Business;
 import com.progra3.cafeteria_api.model.entity.Category;
 import java.util.List;
 import javax.annotation.processing.Generated;
@@ -12,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-06-03T22:01:56-0300",
+    date = "2025-06-12T23:55:28-0300",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 24.0.1 (Oracle Corporation)"
 )
 @Component
@@ -41,14 +40,12 @@ public class CategoryMapperImpl implements CategoryMapper {
     }
 
     @Override
-    public Category toEntity(CategoryRequestDTO categoryRequestDTO, Business business) {
+    public Category toEntity(CategoryRequestDTO categoryRequestDTO) {
         if ( categoryRequestDTO == null ) {
             return null;
         }
 
         Category category = new Category();
-
-        assignBusiness( category, business );
 
         category.setName( categoryRequestDTO.name() );
 

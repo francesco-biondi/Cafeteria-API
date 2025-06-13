@@ -12,6 +12,9 @@ public record BusinessRequestDTO(
         String cuit,
 
         @Valid
-        AddressRequestDTO address
+        AddressRequestDTO address,
+
+        @Valid
+        EmployeeRequestDTO owner
 ) {
 }

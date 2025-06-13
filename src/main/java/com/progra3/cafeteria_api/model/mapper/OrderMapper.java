@@ -16,30 +16,6 @@ public interface OrderMapper {
     @Mapping(target = "orderType", source = "type")
     OrderResponseDTO toDTO(Order order);
     @Mapping(target = "type", source = "orderType")
-    Order toEntity(OrderRequestDTO orderRequestDTO, @Context Employee employee, @Context Customer customer, @Context Seating seating, @Context Business business);
+    Order toEntity(OrderRequestDTO orderRequestDTO);
 
-    @BeforeMapping
-    default void assignItem(@MappingTarget Order order, @Context List<Item> items) {
-        order.setItems(items);
-    }
-
-    @BeforeMapping
-    default void assignEmployee(@MappingTarget Order order, @Context Employee employee) {
-        order.setEmployee(employee);
-    }
-
-    @BeforeMapping
-    default void assignCustomer(@MappingTarget Order order, @Context Customer customer) {
-        order.setCustomer(customer);
-    }
-
-    @BeforeMapping
-    default void assignSeating(@MappingTarget Order order, @Context Seating seating) {
-        order.setSeating(seating);
-    }
-
-    @BeforeMapping
-    default void assignBusiness(@MappingTarget Order order, @Context Business business) {
-        order.setBusiness(business);
-    }
 }

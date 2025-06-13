@@ -3,7 +3,7 @@ package com.progra3.cafeteria_api.controller;
 import com.progra3.cafeteria_api.model.dto.EmployeeRequestDTO;
 import com.progra3.cafeteria_api.model.dto.EmployeeResponseDTO;
 import com.progra3.cafeteria_api.model.dto.EmployeeUpdateDTO;
-import com.progra3.cafeteria_api.service.IEmployeeService;
+import com.progra3.cafeteria_api.service.port.IEmployeeService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ public class EmployeeController {
 
     @PostMapping
     public ResponseEntity<EmployeeResponseDTO> createEmployee(@RequestBody @Valid EmployeeRequestDTO dto) {
-        EmployeeResponseDTO response = employeeService.createEmployeeOrAdmin(dto);
+        EmployeeResponseDTO response = employeeService.createEmployee(dto);
         return ResponseEntity.ok(response);
     }
 

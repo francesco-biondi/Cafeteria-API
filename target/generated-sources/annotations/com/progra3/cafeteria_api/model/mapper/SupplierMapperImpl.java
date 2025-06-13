@@ -5,7 +5,6 @@ import com.progra3.cafeteria_api.model.dto.SupplierRequestDTO;
 import com.progra3.cafeteria_api.model.dto.SupplierResponseDTO;
 import com.progra3.cafeteria_api.model.dto.SupplierUpdateDTO;
 import com.progra3.cafeteria_api.model.entity.Address;
-import com.progra3.cafeteria_api.model.entity.Business;
 import com.progra3.cafeteria_api.model.entity.Supplier;
 import javax.annotation.processing.Generated;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-06-03T22:01:56-0300",
+    date = "2025-06-12T23:55:28-0300",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 24.0.1 (Oracle Corporation)"
 )
 @Component
@@ -52,14 +51,12 @@ public class SupplierMapperImpl implements SupplierMapper {
     }
 
     @Override
-    public Supplier toEntity(SupplierRequestDTO supplierRequestDTO, Business business) {
+    public Supplier toEntity(SupplierRequestDTO supplierRequestDTO) {
         if ( supplierRequestDTO == null ) {
             return null;
         }
 
         Supplier supplier = new Supplier();
-
-        assignBusiness( supplier, business );
 
         supplier.setLegalName( supplierRequestDTO.legalName() );
         supplier.setTradeName( supplierRequestDTO.tradeName() );

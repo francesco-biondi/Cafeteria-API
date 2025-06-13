@@ -11,12 +11,7 @@ import org.mapstruct.*;
 public interface CustomerMapper {
     CustomerResponseDTO toDTO(Customer customer);
 
-    Customer toEntity(CustomerRequestDTO customerRequestDTO, @Context Business business);
+    Customer toEntity(CustomerRequestDTO customerRequestDTO);
 
     void updateCustomerFromDTO(CustomerUpdateDTO customerUpdateDTO, @MappingTarget Customer customer);
-
-    @BeforeMapping
-    default void assignBusiness(@MappingTarget Customer customer, @Context Business business) {
-        customer.setBusiness(business);
-    }
 }

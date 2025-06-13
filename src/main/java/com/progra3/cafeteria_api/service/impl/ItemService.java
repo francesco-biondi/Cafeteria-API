@@ -2,14 +2,13 @@ package com.progra3.cafeteria_api.service.impl;
 
 import com.progra3.cafeteria_api.exception.order.ItemNotFoundException;
 import com.progra3.cafeteria_api.model.dto.ItemRequestDTO;
-import com.progra3.cafeteria_api.model.dto.ItemResponseDTO;
 import com.progra3.cafeteria_api.model.dto.ItemTransferRequestDTO;
 import com.progra3.cafeteria_api.model.mapper.ItemMapper;
 import com.progra3.cafeteria_api.model.entity.Item;
 import com.progra3.cafeteria_api.model.entity.Order;
 import com.progra3.cafeteria_api.model.entity.Product;
 import com.progra3.cafeteria_api.repository.ItemRepository;
-import com.progra3.cafeteria_api.service.IItemService;
+import com.progra3.cafeteria_api.service.port.IItemService;
 import com.progra3.cafeteria_api.service.helper.ProductFinderService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +28,8 @@ public class ItemService implements IItemService {
     @Override
     public Item createItem(Order order, ItemRequestDTO itemDTO) {
         Product product = productFinderService.getEntityById(itemDTO.productId());
-        Item item = itemMapper.toEntity(itemDTO, product, order);
+        Item item = itemMapper.toEntity(itemDTO);
+        item.setOrder(order);
         item.setDeleted(false);
         calculateTotalPrice(item);
 

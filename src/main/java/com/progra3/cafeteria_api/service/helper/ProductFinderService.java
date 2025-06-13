@@ -3,7 +3,7 @@ package com.progra3.cafeteria_api.service.helper;
 import com.progra3.cafeteria_api.exception.product.ProductNotFoundException;
 import com.progra3.cafeteria_api.model.entity.Product;
 import com.progra3.cafeteria_api.repository.ProductRepository;
-import com.progra3.cafeteria_api.service.impl.BusinessService;
+import com.progra3.cafeteria_api.security.BusinessContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,10 +11,10 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ProductFinderService {
     private final ProductRepository productRepository;
-    private final BusinessService businessService;
+    private final BusinessContext businessContext;
 
     public Product getEntityById(Long productId) {
-        return productRepository.findByIdAndBusiness_IdWithComponents(productId, businessService.getCurrentBusinessId())
+        return productRepository.findByIdAndBusiness_IdWithComponents(productId, businessContext.getCurrentBusinessId())
                 .orElseThrow(() -> new ProductNotFoundException(productId));
     }
 }

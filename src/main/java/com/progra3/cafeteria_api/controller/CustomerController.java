@@ -3,7 +3,7 @@ package com.progra3.cafeteria_api.controller;
 import com.progra3.cafeteria_api.model.dto.CustomerRequestDTO;
 import com.progra3.cafeteria_api.model.dto.CustomerResponseDTO;
 import com.progra3.cafeteria_api.model.dto.CustomerUpdateDTO;
-import com.progra3.cafeteria_api.service.ICustomerService;
+import com.progra3.cafeteria_api.service.port.ICustomerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

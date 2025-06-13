@@ -3,14 +3,13 @@ package com.progra3.cafeteria_api.model.mapper;
 import com.progra3.cafeteria_api.model.dto.ProductOptionRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ProductOptionResponseDTO;
 import com.progra3.cafeteria_api.model.entity.Product;
-import com.progra3.cafeteria_api.model.entity.ProductGroup;
 import com.progra3.cafeteria_api.model.entity.ProductOption;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-06-03T22:01:56-0300",
+    date = "2025-06-12T23:55:29-0300",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 24.0.1 (Oracle Corporation)"
 )
 @Component
@@ -38,15 +37,12 @@ public class ProductOptionMapperImpl implements ProductOptionMapper {
     }
 
     @Override
-    public ProductOption toEntity(ProductOptionRequestDTO dto, ProductGroup productGroup, Product product) {
+    public ProductOption toEntity(ProductOptionRequestDTO dto) {
         if ( dto == null ) {
             return null;
         }
 
         ProductOption productOption = new ProductOption();
-
-        assignProductGroup( productOption, productGroup );
-        assignProduct( productOption, product );
 
         productOption.setMaxQuantity( dto.maxQuantity() );
         productOption.setPriceIncrease( dto.priceIncrease() );

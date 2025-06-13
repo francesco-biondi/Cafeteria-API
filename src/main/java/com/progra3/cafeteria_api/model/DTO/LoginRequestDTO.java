@@ -8,9 +8,8 @@ import lombok.Builder;
 @Builder
 public record LoginRequestDTO(
 
-    @Email(message = "Invalid email format. Expected format: example@domain.com")
-    @NotBlank(message = "Email is required")
-    String email,
+    @NotBlank(message = "Username is required")
+    String username,
 
     @NotBlank(message = "Password is required")
     @Size(min = 8, message = "Password must be at least 8 characters long")

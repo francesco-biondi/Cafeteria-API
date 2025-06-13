@@ -4,7 +4,7 @@ import com.progra3.cafeteria_api.model.dto.ProductOptionRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ProductOptionResponseDTO;
 import com.progra3.cafeteria_api.model.dto.ProductGroupRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ProductGroupResponseDTO;
-import com.progra3.cafeteria_api.service.IProductGroupService;
+import com.progra3.cafeteria_api.service.port.IProductGroupService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;

@@ -13,10 +13,12 @@ import java.util.Optional;
 @Repository
 public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSpecificationExecutor<Employee>{
     Optional<Employee> findByIdAndBusiness_Id(Long id, Long businessId);
+    Optional<Employee> findByUsername(String username);
     List<Employee> findByBusiness_Id(Long businessId);
     Optional<Employee> findByEmailAndBusiness_Id(String email, Long businessId);
     Employee findByDniAndBusiness_Id(String dni, Long businessId);
 
     boolean existsByRoleAndBusiness_Id(Role role, Long businessId);
     boolean existsByDniAndBusiness_Id(String dni, Long businessId);
+
 }

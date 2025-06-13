@@ -3,12 +3,8 @@ package com.progra3.cafeteria_api.model.mapper;
 import com.progra3.cafeteria_api.model.dto.ItemResponseDTO;
 import com.progra3.cafeteria_api.model.dto.OrderRequestDTO;
 import com.progra3.cafeteria_api.model.dto.OrderResponseDTO;
-import com.progra3.cafeteria_api.model.entity.Business;
-import com.progra3.cafeteria_api.model.entity.Customer;
-import com.progra3.cafeteria_api.model.entity.Employee;
 import com.progra3.cafeteria_api.model.entity.Item;
 import com.progra3.cafeteria_api.model.entity.Order;
-import com.progra3.cafeteria_api.model.entity.Seating;
 import com.progra3.cafeteria_api.model.enums.OrderType;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -19,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-06-03T22:01:56-0300",
+    date = "2025-06-12T23:55:28-0300",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 24.0.1 (Oracle Corporation)"
 )
 @Component
@@ -66,17 +62,12 @@ public class OrderMapperImpl implements OrderMapper {
     }
 
     @Override
-    public Order toEntity(OrderRequestDTO orderRequestDTO, Employee employee, Customer customer, Seating seating, Business business) {
+    public Order toEntity(OrderRequestDTO orderRequestDTO) {
         if ( orderRequestDTO == null ) {
             return null;
         }
 
         Order order = new Order();
-
-        assignEmployee( order, employee );
-        assignCustomer( order, customer );
-        assignSeating( order, seating );
-        assignBusiness( order, business );
 
         order.setType( orderRequestDTO.orderType() );
         order.setPeopleCount( orderRequestDTO.peopleCount() );

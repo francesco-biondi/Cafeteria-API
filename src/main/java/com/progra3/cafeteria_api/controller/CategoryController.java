@@ -2,7 +2,7 @@ package com.progra3.cafeteria_api.controller;
 
 import com.progra3.cafeteria_api.model.dto.CategoryRequestDTO;
 import com.progra3.cafeteria_api.model.dto.CategoryResponseDTO;
-import com.progra3.cafeteria_api.service.ICategoryService;
+import com.progra3.cafeteria_api.service.port.ICategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;

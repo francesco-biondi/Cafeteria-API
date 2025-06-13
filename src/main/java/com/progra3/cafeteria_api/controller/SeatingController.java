@@ -2,7 +2,7 @@ package com.progra3.cafeteria_api.controller;
 
 import com.progra3.cafeteria_api.model.dto.SeatingRequestDTO;
 import com.progra3.cafeteria_api.model.dto.SeatingResponseDTO;
-import com.progra3.cafeteria_api.service.ISeatingService;
+import com.progra3.cafeteria_api.service.port.ISeatingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
