@@ -5,6 +5,7 @@ import com.progra3.cafeteria_api.model.dto.CategoryResponseDTO;
 import com.progra3.cafeteria_api.service.port.ICategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -33,6 +34,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "201", description = "Category created successfully",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = CategoryResponseDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid category data", content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     @PostMapping
@@ -58,7 +60,7 @@ public class CategoryController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Category list retrieved successfully",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = CategoryResponseDTO.class))),
+                            array = @ArraySchema(schema = @Schema(implementation = CategoryResponseDTO.class)))),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     @GetMapping
