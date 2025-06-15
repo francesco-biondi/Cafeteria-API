@@ -5,6 +5,9 @@ import com.progra3.cafeteria_api.model.dto.ProductRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ProductResponseDTO;
 import com.progra3.cafeteria_api.model.entity.Product;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.util.List;
 
 public interface IProductService {
@@ -22,7 +25,7 @@ public interface IProductService {
 
     ProductResponseDTO getProductById(Long id);
 
-    List<ProductResponseDTO> getAllProducts();
+    Page<ProductResponseDTO> getProducts(String name, Long categoryId, Integer minStock, Integer maxStock, Boolean composite, Pageable pageable);
 
     Product getEntityById (Long productId);
 
