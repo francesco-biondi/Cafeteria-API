@@ -9,13 +9,11 @@ import com.progra3.cafeteria_api.model.enums.Role;
 import com.progra3.cafeteria_api.model.mapper.EmployeeMapper;
 import com.progra3.cafeteria_api.repository.EmployeeRepository;
 import com.progra3.cafeteria_api.service.port.IEmployeeService;
-import com.progra3.cafeteria_api.specification.EmployeeSpecification;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import java.util.List;
-
 import java.util.Optional;
 
 @Service
@@ -113,38 +111,21 @@ public class EmployeeService implements IEmployeeService{
 
     @Override
     @Transactional
-    public List<EmployeeResponseDTO> getAllEmployees(){
+    public Page<EmployeeResponseDTO> getEmployees(String name, String lastName, String dni, String email, Role role, Pageable pageable){
         Employee loggedUser = LoggedUser.get();
         if(loggedUser == null || loggedUser.getRole() != Role.ADMIN){
             throw new EmployeePermissionException();
         }
 
-        List<Employee> employees = employeeRepository.findByBusiness_Id(businessService.getCurrentBusinessId());
-        return employees.stream()
-                .filter(n -> !n.getDeleted())
-                .map(employeeMapper::toDTO)
-                .toList();
-    }
+        Page<Employee> employees = employeeRepository.findByBusiness_Id(
+                name,
+                lastName,
+                dni,
+                email,
+                role,
+                businessService.getCurrentBusinessId(),
+                pageable);
 
-    @Override
-    public List<EmployeeResponseDTO> filterEmployees(
-            String name,
-            String lastName,
-            String dni,
-            String email,
-            String phoneNumber,
-            Role role,
-            Boolean deleted
-    ){
-        Employee loggedUser = LoggedUser.get();
-        if(loggedUser == null || loggedUser.getRole() != Role.ADMIN){
-            throw new EmployeePermissionException();
-        }
-
-        Specification<Employee> spec = EmployeeSpecification.filterBy(name, lastName, dni, email, phoneNumber, role, deleted, businessService.getCurrentBusinessId());
-
-        List<Employee> employees = employeeRepository.findAll(spec);
-
-        return employees.stream().filter(n -> !n.getDeleted()).map(employeeMapper::toDTO).toList();
+        return employees.map(employeeMapper::toDTO);
     }
 }
