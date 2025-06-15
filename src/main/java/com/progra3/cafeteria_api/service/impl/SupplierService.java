@@ -10,6 +10,8 @@ import com.progra3.cafeteria_api.model.entity.Supplier;
 import com.progra3.cafeteria_api.repository.SupplierRepository;
 import com.progra3.cafeteria_api.service.port.ISupplierService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -43,12 +45,15 @@ public class SupplierService implements ISupplierService {
     }
 
     @Override
-    public List<SupplierResponseDTO> getAll() {
-        return supplierRepository.findByBusiness_Id(businessService.getCurrentBusinessId())
-                .stream()
-                .filter(n -> !n.getDeleted())
-                .map(supplierMapper::toDTO)
-                .toList();
+    public Page<SupplierResponseDTO> getSuppliers(String tradeName, String legalName, String cuit, Pageable pageable) {
+        Page<Supplier> suppliers = supplierRepository.findByBusiness_Id(
+                tradeName,
+                legalName,
+                cuit,
+                businessService.getCurrentBusinessId(),
+                pageable);
+
+        return suppliers.map(supplierMapper::toDTO);
     }
 
     @Override
