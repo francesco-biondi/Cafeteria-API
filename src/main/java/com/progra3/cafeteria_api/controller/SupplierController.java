@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 
@@ -36,6 +37,7 @@ public class SupplierController {
             @ApiResponse(responseCode = "201", description = "Supplier created successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content)
     })
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     @PostMapping
     public ResponseEntity<SupplierResponseDTO> createSupplier(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -52,6 +54,7 @@ public class SupplierController {
 
     @Operation(summary = "Get all suppliers", description = "Retrieves a list of all suppliers")
     @ApiResponse(responseCode = "200", description = "List of suppliers returned successfully")
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN', 'CASHIER')")
     @GetMapping
     public ResponseEntity<Page<SupplierResponseDTO>> getSuppliers(
             @RequestParam(required = false) String tradeName,
@@ -71,6 +74,7 @@ public class SupplierController {
             @ApiResponse(responseCode = "200", description = "Supplier found"),
             @ApiResponse(responseCode = "404", description = "Supplier not found", content = @Content)
     })
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN', 'CASHIER')")
     @GetMapping("/{id}")
     public ResponseEntity<SupplierResponseDTO> getSupplierById(
             @Parameter(description = "ID of the supplier to retrieve", required = true)
@@ -84,6 +88,7 @@ public class SupplierController {
             @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content),
             @ApiResponse(responseCode = "404", description = "Supplier not found", content = @Content)
     })
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     @PatchMapping("/{id}")
     public ResponseEntity<SupplierResponseDTO> updateSupplier(
             @Parameter(description = "ID of the supplier to update", required = true)
@@ -102,6 +107,7 @@ public class SupplierController {
             @ApiResponse(responseCode = "204", description = "Supplier deleted successfully"),
             @ApiResponse(responseCode = "404", description = "Supplier not found", content = @Content)
     })
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteSupplier(
             @Parameter(description = "ID of the supplier to delete", required = true)

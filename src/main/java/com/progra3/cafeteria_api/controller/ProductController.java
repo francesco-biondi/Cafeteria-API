@@ -21,6 +21,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
@@ -40,6 +41,7 @@ public class ProductController {
     @ApiResponse(responseCode = "201", description = "Product created successfully",
             content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = ProductResponseDTO.class)))
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     @PostMapping
     public ResponseEntity<ProductResponseDTO> createProduct(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -68,6 +70,7 @@ public class ProductController {
                             schema = @Schema(implementation = ProductResponseDTO.class))),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN', 'CASHIER', 'WAITER')")
     @GetMapping
     public ResponseEntity<Page<ProductResponseDTO>> getProducts(
             @RequestParam(required = false) String name,
@@ -91,6 +94,7 @@ public class ProductController {
                             schema = @Schema(implementation = ProductResponseDTO.class))),
             @ApiResponse(responseCode = "404", description = "Product not found", content = @Content)
     })
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN', 'CASHIER', 'WAITER')")
     @GetMapping("/{id}")
     public ResponseEntity<ProductResponseDTO> getProductById(
             @Parameter(description = "ID of the product to retrieve") @PathVariable @NotNull Long id) {
@@ -104,6 +108,7 @@ public class ProductController {
                             schema = @Schema(implementation = ProductResponseDTO.class))),
             @ApiResponse(responseCode = "404", description = "Product not found", content = @Content)
     })
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<ProductResponseDTO> updateProduct(
             @Parameter(description = "ID of the product to update") @PathVariable Long id,
@@ -131,6 +136,7 @@ public class ProductController {
             @ApiResponse(responseCode = "204", description = "Product deleted successfully", content = @Content),
             @ApiResponse(responseCode = "404", description = "Product not found", content = @Content)
     })
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<ProductResponseDTO> deleteProduct(
             @Parameter(description = "ID of the product to delete") @PathVariable @NotNull Long id) {
@@ -145,6 +151,7 @@ public class ProductController {
                             schema = @Schema(implementation = ProductResponseDTO.class))),
             @ApiResponse(responseCode = "404", description = "Product or group not found", content = @Content)
     })
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     @PutMapping("/{id}/groups/{groupId}")
     public ResponseEntity<ProductResponseDTO> assignGroupToProduct(
             @Parameter(description = "ID of the product") @PathVariable Long id,
@@ -160,6 +167,7 @@ public class ProductController {
                             schema = @Schema(implementation = ProductResponseDTO.class))),
             @ApiResponse(responseCode = "404", description = "Product or group not found", content = @Content)
     })
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     @DeleteMapping("/{id}/groups/{groupId}")
     public ResponseEntity<ProductResponseDTO> removeGroupFromProduct(
             @Parameter(description = "ID of the product") @PathVariable Long id,
@@ -176,6 +184,7 @@ public class ProductController {
             @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
             @ApiResponse(responseCode = "404", description = "Product not found", content = @Content)
     })
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     @PutMapping("/{id}/components")
     public ResponseEntity<ProductResponseDTO> addComponents(
             @Parameter(description = "ID of the product") @PathVariable Long id,
@@ -197,6 +206,7 @@ public class ProductController {
                             schema = @Schema(implementation = ProductResponseDTO.class))),
             @ApiResponse(responseCode = "404", description = "Product or component not found", content = @Content)
     })
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     @PutMapping("/{id}/components/{componentId}")
     public ResponseEntity<ProductResponseDTO> updateComponent(
             @Parameter(description = "ID of the product") @PathVariable Long id,
@@ -214,6 +224,7 @@ public class ProductController {
                             schema = @Schema(implementation = ProductResponseDTO.class))),
             @ApiResponse(responseCode = "404", description = "Product or component not found", content = @Content)
     })
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     @DeleteMapping("/{id}/components/{componentId}")
     public ResponseEntity<ProductResponseDTO> removeComponent(
             @Parameter(description = "ID of the product") @PathVariable Long id,

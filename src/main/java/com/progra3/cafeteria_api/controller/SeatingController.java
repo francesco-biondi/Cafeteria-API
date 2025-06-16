@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -31,6 +32,7 @@ public class SeatingController {
             @ApiResponse(responseCode = "201", description = "Seating created successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content)
     })
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     @PostMapping
     public ResponseEntity<SeatingResponseDTO> createSeating(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -47,6 +49,7 @@ public class SeatingController {
 
     @Operation(summary = "Get all seatings", description = "Retrieves all seating entries")
     @ApiResponse(responseCode = "200", description = "List of seatings retrieved successfully")
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN', 'CASHIER', 'WAITER')")
     @GetMapping
     public ResponseEntity<List<SeatingResponseDTO>> getAllSeating() {
         return ResponseEntity.ok(seatingService.getAll());
@@ -57,6 +60,7 @@ public class SeatingController {
             @ApiResponse(responseCode = "200", description = "Seating found"),
             @ApiResponse(responseCode = "404", description = "Seating not found", content = @Content)
     })
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN', 'CASHIER', 'WAITER')")
     @GetMapping("/{id}")
     public ResponseEntity<SeatingResponseDTO> getSeatingById(
             @Parameter(description = "ID of the seating to retrieve", required = true)
@@ -69,6 +73,7 @@ public class SeatingController {
             @ApiResponse(responseCode = "200", description = "Seating found"),
             @ApiResponse(responseCode = "404", description = "Seating not found", content = @Content)
     })
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN', 'CASHIER', 'WAITER')")
     @GetMapping("/number")
     public ResponseEntity<SeatingResponseDTO> getSeatingByNumber(
             @Parameter(description = "Number of the seating to retrieve", required = true)
@@ -82,6 +87,7 @@ public class SeatingController {
             @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content),
             @ApiResponse(responseCode = "404", description = "Seating not found", content = @Content)
     })
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<SeatingResponseDTO> updateSeating(
             @Parameter(description = "ID of the seating to update", required = true)
@@ -101,6 +107,7 @@ public class SeatingController {
             @ApiResponse(responseCode = "200", description = "Seating deleted successfully"),
             @ApiResponse(responseCode = "404", description = "Seating not found", content = @Content)
     })
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<SeatingResponseDTO> deleteSeating(
             @Parameter(description = "ID of the seating to delete", required = true)

@@ -21,6 +21,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.time.LocalDateTime;
@@ -43,6 +44,7 @@ public class ExpenseController {
             @ApiResponse(responseCode = "400", description = "Invalid expense data", content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN', 'CASHIER')")
     @PostMapping
     public ResponseEntity<ExpenseResponseDTO> createExpense(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -73,6 +75,7 @@ public class ExpenseController {
                             array = @ArraySchema(schema = @Schema(implementation = ExpenseResponseDTO.class)))),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN', 'CASHIER')")
     @GetMapping
     public ResponseEntity<Page<ExpenseResponseDTO>> getExpenses(
             @RequestParam(required = false) Long supplierId,
@@ -96,6 +99,7 @@ public class ExpenseController {
                             schema = @Schema(implementation = ExpenseResponseDTO.class))),
             @ApiResponse(responseCode = "404", description = "Expense not found", content = @Content)
     })
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN', 'CASHIER')")
     @GetMapping("/{id}")
     public ResponseEntity<ExpenseResponseDTO> getExpenseById(
             @Parameter(description = "ID of the expense to retrieve") @PathVariable Long id) {
@@ -110,6 +114,7 @@ public class ExpenseController {
             @ApiResponse(responseCode = "400", description = "Invalid data", content = @Content),
             @ApiResponse(responseCode = "404", description = "Expense not found", content = @Content)
     })
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN', 'CASHIER')")
     @PatchMapping("/{id}")
     public ResponseEntity<ExpenseResponseDTO> updateExpense(
             @Parameter(description = "ID of the expense to update") @PathVariable Long id,
@@ -135,6 +140,7 @@ public class ExpenseController {
             @ApiResponse(responseCode = "204", description = "Expense deleted successfully", content = @Content),
             @ApiResponse(responseCode = "404", description = "Expense not found", content = @Content)
     })
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN', 'CASHIER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteExpense(
             @Parameter(description = "ID of the expense to delete") @PathVariable Long id) {

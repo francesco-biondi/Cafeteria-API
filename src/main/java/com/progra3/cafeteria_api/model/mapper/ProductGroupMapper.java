@@ -2,7 +2,6 @@ package com.progra3.cafeteria_api.model.mapper;
 
 import com.progra3.cafeteria_api.model.dto.ProductGroupRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ProductGroupResponseDTO;
-import com.progra3.cafeteria_api.model.entity.Business;
 import com.progra3.cafeteria_api.model.entity.ProductGroup;
 import org.mapstruct.*;
 

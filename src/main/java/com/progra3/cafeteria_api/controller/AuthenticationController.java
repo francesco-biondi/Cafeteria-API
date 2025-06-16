@@ -1,6 +1,5 @@
 package com.progra3.cafeteria_api.controller;
 
-import com.progra3.cafeteria_api.model.dto.EmployeeResponseDTO;
 import com.progra3.cafeteria_api.model.dto.LoginRequestDTO;
 import com.progra3.cafeteria_api.service.port.IAuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,6 +9,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import com.progra3.cafeteria_api.model.dto.LoginResponseDTO;
+import com.progra3.cafeteria_api.service.port.IAuthenticationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +36,7 @@ public class AuthenticationController {
             @ApiResponse(responseCode = "401", description = "Invalid credentials", content = @Content)
     })
     @PostMapping("/login")
-    public ResponseEntity<EmployeeResponseDTO> login(
+    public ResponseEntity<LoginResponseDTO> login(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Login credentials",
                     required = true,
@@ -50,20 +51,7 @@ public class AuthenticationController {
                     )
             )
             @Valid @RequestBody LoginRequestDTO requestDTO) {
-        EmployeeResponseDTO response = authenticationService.login(requestDTO);
+        LoginResponseDTO response = authenticationService.login(requestDTO);
         return ResponseEntity.ok(response);
-    }
-
-    @Operation(summary = "Employee logout", description = "Ends the current employee session")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Logout successful", content = @Content(
-                    mediaType = "text/plain",
-                    examples = @ExampleObject(value = "Logout successful")
-            ))
-    })
-    @PostMapping("/logout")
-    public ResponseEntity<String> logout() {
-        authenticationService.logout();
-        return ResponseEntity.ok("Logout successful");
     }
 }

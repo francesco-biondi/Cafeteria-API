@@ -20,6 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.time.LocalDate;
@@ -32,12 +33,15 @@ public class AuditController {
 
     private final IAuditService auditService;
 
+
     private final SortUtils sortUtils;
+
 
     @Operation(summary = "Create a new audit", description = "Registers a new audit entry in the system")
     @ApiResponse(responseCode = "201", description = "Audit created successfully",
             content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = AuditResponseDTO.class)))
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN', 'CASHIER')")
     @PostMapping
     public ResponseEntity<AuditResponseDTO> createAudit(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -62,6 +66,7 @@ public class AuditController {
                 .body(auditResponseDTO);
     }
 
+
     @Operation(summary = "Get all audits", description = "Returns a list of all audit entries")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Audit list retrieved successfully",
@@ -69,6 +74,7 @@ public class AuditController {
                             array = @ArraySchema(schema = @Schema(implementation = AuditResponseDTO.class)))),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN', 'CASHIER')")
     @GetMapping
     public ResponseEntity<Page<AuditResponseDTO>> getAudits(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
@@ -82,6 +88,7 @@ public class AuditController {
         return ResponseEntity.ok(audits);
     }
 
+
     @Operation(summary = "Get an audit by ID", description = "Retrieves a specific audit entry by its unique ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Audit found",
@@ -89,11 +96,13 @@ public class AuditController {
                             schema = @Schema(implementation = AuditResponseDTO.class))),
             @ApiResponse(responseCode = "404", description = "Audit not found", content = @Content)
     })
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN', 'CASHIER')")
     @GetMapping("/{id}")
     public ResponseEntity<AuditResponseDTO> getAuditById(
             @Parameter(description = "ID of the audit to retrieve") @PathVariable Long id) {
         return ResponseEntity.ok(auditService.getById(id));
     }
+
 
     @Operation(summary = "Finalize an audit", description = "Marks an audit entry as finalized")
     @ApiResponses(value = {
@@ -102,11 +111,13 @@ public class AuditController {
                             schema = @Schema(implementation = AuditResponseDTO.class))),
             @ApiResponse(responseCode = "404", description = "Audit not found", content = @Content)
     })
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN', 'CASHIER')")
     @PatchMapping("/{id}")
     public ResponseEntity<AuditResponseDTO> finalizeAudit(
             @Parameter(description = "ID of the audit to finalize") @PathVariable Long id) {
         return ResponseEntity.ok(auditService.finalize(id));
     }
+
 
     @Operation(summary = "Cancel an audit", description = "Marks an audit entry as cancelled")
     @ApiResponses(value = {
@@ -115,6 +126,7 @@ public class AuditController {
                             schema = @Schema(implementation = AuditResponseDTO.class))),
             @ApiResponse(responseCode = "404", description = "Audit not found", content = @Content)
     })
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN', 'CASHIER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<AuditResponseDTO> cancelAudit(
             @Parameter(description = "ID of the audit to cancel") @PathVariable Long id) {

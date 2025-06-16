@@ -2,8 +2,6 @@ package com.progra3.cafeteria_api.model.mapper;
 
 import com.progra3.cafeteria_api.model.dto.ProductRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ProductResponseDTO;
-import com.progra3.cafeteria_api.model.entity.Business;
-import com.progra3.cafeteria_api.model.entity.Category;
 import com.progra3.cafeteria_api.model.entity.Product;
 import com.progra3.cafeteria_api.model.entity.ProductGroup;
 import org.mapstruct.*;
@@ -21,7 +19,7 @@ public interface ProductMapper {
 
     Product toEntity(ProductRequestDTO dto);
 
-    Product updateProductFromDTO(@MappingTarget Product product, ProductRequestDTO dto, @Context Category category);
+    Product updateProductFromDTO(@MappingTarget Product product, ProductRequestDTO dto);
 
     default List<String> map(Set<ProductGroup> groups) {
         return groups.stream()

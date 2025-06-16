@@ -3,7 +3,6 @@ package com.progra3.cafeteria_api.model.dto;
 import com.progra3.cafeteria_api.validation.ValidEmployeeRequest;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
@@ -42,6 +41,9 @@ public record EmployeeUpdateDTO(
                 pattern = "^\\d{10,13}$", nullable = true)
         @Pattern(regexp = "^\\d{10,13}$", message = "Phone number must be between 10 and 13 numeric digits")
         String phoneNumber,
+
+        @Size(min = 5, max = 20, message = "Username must be between 5 and 20 characters")
+        String username,
 
         @Schema(description = "Password for the employee account, minimum 8 characters", example = "password123", nullable = true)
         @Size(min = 8, message = "Password must be at least 8 characters long")

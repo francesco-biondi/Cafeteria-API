@@ -43,8 +43,8 @@ public class AuditService implements IAuditService {
         verifyAuditStatus(businessContext.getCurrentBusinessId());
 
         Audit audit = auditMapper.toEntity(dto);
-
         audit.setBusiness(businessContext.getCurrentBusiness());
+
         audit.setStartTime(LocalDateTime.now(clock));
         audit.setAuditStatus(AuditStatus.IN_PROGRESS);
         audit.setRealCash(Constant.ZERO_AMOUNT);

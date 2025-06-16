@@ -35,6 +35,11 @@ public record EmployeeRequestDTO(
         @Pattern(regexp = "^\\d{9,12}$", message = "Phone number must be between 9 and 12 numeric digits")
         String phoneNumber,
 
+        @Schema(description = "Username for the employee account", example = "username123")
+        @NotBlank(message = "Username is required")
+        @Size(min = 5, max = 20, message = "Username must be between 5 and 20 characters")
+        String username,
+
         @Schema(description = "Password for the employee account", minLength = 8, required = true)
         @NotBlank(message = "Password is required")
         @Size(min = 8, message = "Password must be at least 8 characters long")

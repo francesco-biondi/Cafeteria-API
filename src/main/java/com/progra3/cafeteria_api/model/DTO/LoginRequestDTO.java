@@ -14,6 +14,9 @@ public record LoginRequestDTO(
         @NotBlank(message = "Email is required")
         String email,
 
+        @NotBlank(message = "Username is required")
+        String username,
+
         @Schema(description = "User password for authentication", example = "MySecret123")
         @NotBlank(message = "Password is required")
         @Size(min = 8, message = "Password must be at least 8 characters long")

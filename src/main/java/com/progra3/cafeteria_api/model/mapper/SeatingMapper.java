@@ -2,7 +2,6 @@ package com.progra3.cafeteria_api.model.mapper;
 
 import com.progra3.cafeteria_api.model.dto.SeatingRequestDTO;
 import com.progra3.cafeteria_api.model.dto.SeatingResponseDTO;
-import com.progra3.cafeteria_api.model.entity.Business;
 import com.progra3.cafeteria_api.model.entity.Seating;
 import org.mapstruct.*;
 

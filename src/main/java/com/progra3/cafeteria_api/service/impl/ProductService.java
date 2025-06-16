@@ -39,8 +39,8 @@ public class ProductService implements IProductService {
     public ProductResponseDTO createProduct(ProductRequestDTO productRequestDTO) {
         Category category = categoryService.getEntityById(productRequestDTO.categoryId());
         Product product = productMapper.toEntity(productRequestDTO);
-        product.setBusiness(businessContext.getCurrentBusiness());
         product.setCategory(category);
+        product.setBusiness(businessContext.getCurrentBusiness());
 
         product.setDeleted(false);
         product.setComposite(false);
@@ -75,7 +75,8 @@ public class ProductService implements IProductService {
     public ProductResponseDTO updateProduct(Long id, ProductRequestDTO productRequestDTO) {
         Category category = categoryService.getEntityById(productRequestDTO.categoryId());
         Product updatedProduct = getEntityById(id);
-        updatedProduct = productMapper.updateProductFromDTO(updatedProduct, productRequestDTO, category);
+        updatedProduct = productMapper.updateProductFromDTO(updatedProduct, productRequestDTO);
+        updatedProduct.setCategory(category);
 
         return productMapper.toDTO(productRepository.save(updatedProduct));
     }

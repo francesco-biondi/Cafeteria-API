@@ -17,6 +17,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -35,6 +36,7 @@ public class ProductGroupController {
             @ApiResponse(responseCode = "201", description = "Product group created successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content)
     })
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     @PostMapping
     public ResponseEntity<ProductGroupResponseDTO> createProductGroup(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -49,6 +51,7 @@ public class ProductGroupController {
 
     @Operation(summary = "Get all product groups", description = "Returns a list of all product groups")
     @ApiResponse(responseCode = "200", description = "List of product groups retrieved successfully")
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN', 'CASHIER', 'WAITER')")
     @GetMapping
     public ResponseEntity<List<ProductGroupResponseDTO>> getAllProductGroups() {
         return ResponseEntity.ok(productGroupService.getAllProductGroups());
@@ -59,6 +62,7 @@ public class ProductGroupController {
             @ApiResponse(responseCode = "200", description = "Product group found"),
             @ApiResponse(responseCode = "404", description = "Product group not found", content = @Content)
     })
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN', 'CASHIER', 'WAITER')")
     @GetMapping("/{id}")
     public ResponseEntity<ProductGroupResponseDTO> getProductGroupById(
             @Parameter(description = "ID of the product group to retrieve", required = true)
@@ -72,6 +76,7 @@ public class ProductGroupController {
             @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content),
             @ApiResponse(responseCode = "404", description = "Product group not found", content = @Content)
     })
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<ProductGroupResponseDTO> updateProductGroup(
             @Parameter(description = "ID of the product group to update", required = true)
@@ -90,6 +95,7 @@ public class ProductGroupController {
             @ApiResponse(responseCode = "204", description = "Product group deleted successfully"),
             @ApiResponse(responseCode = "404", description = "Product group not found", content = @Content)
     })
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProductGroup(
             @Parameter(description = "ID of the product group to delete", required = true)
@@ -104,6 +110,7 @@ public class ProductGroupController {
             @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content),
             @ApiResponse(responseCode = "404", description = "Product group not found", content = @Content)
     })
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     @PostMapping("/{id}/options")
     public ResponseEntity<List<ProductOptionResponseDTO>> addOptions(
             @Parameter(description = "ID of the product group to add options to", required = true)
@@ -122,6 +129,7 @@ public class ProductGroupController {
             @ApiResponse(responseCode = "200", description = "Options retrieved successfully"),
             @ApiResponse(responseCode = "404", description = "Product group not found", content = @Content)
     })
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN', 'CASHIER', 'WAITER')")
     @GetMapping("/{id}/options")
     public ResponseEntity<List<ProductOptionResponseDTO>> getOptions(
             @Parameter(description = "ID of the product group to retrieve options from", required = true)
@@ -135,6 +143,7 @@ public class ProductGroupController {
             @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content),
             @ApiResponse(responseCode = "404", description = "Product group or option not found", content = @Content)
     })
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     @PutMapping("/{id}/options/{optionId}")
     public ResponseEntity<ProductOptionResponseDTO> updateOption(
             @Parameter(description = "ID of the product group", required = true)
@@ -155,6 +164,7 @@ public class ProductGroupController {
             @ApiResponse(responseCode = "200", description = "Product option removed successfully"),
             @ApiResponse(responseCode = "404", description = "Product group or option not found", content = @Content)
     })
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     @DeleteMapping("/{id}/options/{optionId}")
     public ResponseEntity<ProductOptionResponseDTO> removeOption(
             @Parameter(description = "ID of the product group", required = true)

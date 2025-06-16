@@ -20,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 
@@ -41,6 +42,7 @@ public class CustomerController {
             @ApiResponse(responseCode = "400", description = "Invalid customer data", content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN', 'CASHIER')")
     @PostMapping
     public ResponseEntity<CustomerResponseDTO> createCustomer(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -72,6 +74,7 @@ public class CustomerController {
                             array = @ArraySchema(schema = @Schema(implementation = CustomerResponseDTO.class)))),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN', 'CASHIER')")
     @GetMapping
     public ResponseEntity<Page<CustomerResponseDTO>> getCustomers(
             @RequestParam(required = false) String name,
@@ -94,6 +97,7 @@ public class CustomerController {
                             schema = @Schema(implementation = CustomerResponseDTO.class))),
             @ApiResponse(responseCode = "404", description = "Customer not found", content = @Content)
     })
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN', 'CASHIER')")
     @GetMapping("/{id}")
     public ResponseEntity<CustomerResponseDTO> getCustomerById(
             @Parameter(description = "ID of the customer to retrieve") @PathVariable Long id) {
@@ -108,6 +112,7 @@ public class CustomerController {
             @ApiResponse(responseCode = "404", description = "Customer not found", content = @Content),
             @ApiResponse(responseCode = "400", description = "Invalid update data", content = @Content)
     })
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN', 'CASHIER')")
     @PatchMapping("/{id}")
     public ResponseEntity<CustomerResponseDTO> updateCustomer(
             @Parameter(description = "ID of the customer to update") @PathVariable Long id,
@@ -133,6 +138,7 @@ public class CustomerController {
             @ApiResponse(responseCode = "204", description = "Customer deleted successfully", content = @Content),
             @ApiResponse(responseCode = "404", description = "Customer not found", content = @Content)
     })
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN', 'CASHIER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCustomer(
             @Parameter(description = "ID of the customer to delete") @PathVariable Long id) {

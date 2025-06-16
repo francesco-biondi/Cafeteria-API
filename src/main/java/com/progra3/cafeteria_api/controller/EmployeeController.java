@@ -21,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import com.progra3.cafeteria_api.model.enums.Role;
 
@@ -42,6 +43,7 @@ public class EmployeeController {
             @ApiResponse(responseCode = "400", description = "Invalid employee data", content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     @PostMapping
     public ResponseEntity<EmployeeResponseDTO> createEmployee(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -74,6 +76,7 @@ public class EmployeeController {
                             array = @ArraySchema(schema = @Schema(implementation = EmployeeResponseDTO.class)))),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     @GetMapping
     public ResponseEntity<Page<EmployeeResponseDTO>> getEmployees(
             @RequestParam(required = false) String name,
@@ -97,6 +100,7 @@ public class EmployeeController {
                             schema = @Schema(implementation = EmployeeResponseDTO.class))),
             @ApiResponse(responseCode = "404", description = "Employee not found", content = @Content)
     })
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<EmployeeResponseDTO> getEmployeeById(
             @Parameter(description = "ID of the employee to retrieve") @PathVariable Long id) {
@@ -111,6 +115,7 @@ public class EmployeeController {
             @ApiResponse(responseCode = "400", description = "Invalid data", content = @Content),
             @ApiResponse(responseCode = "404", description = "Employee not found", content = @Content)
     })
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     @PatchMapping("/{id}")
     public ResponseEntity<EmployeeResponseDTO> updateEmployee(
             @Parameter(description = "ID of the employee to update") @PathVariable Long id,
@@ -132,6 +137,7 @@ public class EmployeeController {
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<EmployeeResponseDTO> deleteEmployee(@PathVariable @NotNull Long id){
         EmployeeResponseDTO response = employeeService.deleteEmployee(id);

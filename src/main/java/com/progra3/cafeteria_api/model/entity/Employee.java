@@ -18,6 +18,9 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class Employee extends Person{
 
+    @Column(nullable = false, unique = true)
+    private String username;
+
     @Column(nullable = false)
     private String password;
 

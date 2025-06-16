@@ -29,7 +29,6 @@ public class CategoryService implements ICategoryService {
     public CategoryResponseDTO createCategory(CategoryRequestDTO categoryRequestDTO) {
         Category category = categoryMapper.toEntity(categoryRequestDTO);
         category.setBusiness(businessContext.getCurrentBusiness());
-
         return categoryMapper.toDTO(categoryRepository.save(category));
     }
 

@@ -26,8 +26,8 @@ public class ProductOptionService implements IProductOptionService {
     public ProductOption createProductOption(ProductGroup productGroup, ProductOptionRequestDTO dto) {
         Product product = productFinderService.getEntityById(dto.productId());
         ProductOption productOption = productOptionMapper.toEntity(dto);
-        productOption.setProductGroup(productGroup);
         productOption.setProduct(product);
+        productOption.setProductGroup(productGroup);
         productOption.setPriceIncrease(dto.priceIncrease() != null ? dto.priceIncrease() : Constant.ZERO_AMOUNT);
 
         return productOptionRepository.save(productOption);

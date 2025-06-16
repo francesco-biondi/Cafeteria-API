@@ -12,10 +12,10 @@ import com.progra3.cafeteria_api.security.BusinessContext;
 import com.progra3.cafeteria_api.service.port.IEmployeeService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import java.util.List;
 
 import java.util.Optional;
 
@@ -29,13 +29,21 @@ public class EmployeeService implements IEmployeeService{
 
     private final EmployeeMapper employeeMapper;
 
+    private final PasswordEncoder passwordEncoder;
+
     @Override
     @Transactional
     public EmployeeResponseDTO createEmployee(EmployeeRequestDTO dto){
 
+        if (dto.role().equals(Role.OWNER)){
+            throw new OwnerAlreadyExistsException();
+        }
+
         Employee employee = employeeMapper.toEntity(dto);
         employee.setBusiness(businessContext.getCurrentBusiness());
         employee.setDeleted(false);
+        employee.setUsername(employee.getUsername() + "@" + employee.getBusiness().getName().toLowerCase().replace(" ", "_"));
+        employee.setPassword(passwordEncoder.encode(employee.getPassword()));
 
         return employeeMapper.toDTO(employeeRepository.save(employee));
     }
@@ -62,6 +70,10 @@ public class EmployeeService implements IEmployeeService{
     public EmployeeResponseDTO updateEmployee(Long id, EmployeeUpdateDTO dto){
         Employee employee = getEntityById(id);
         employee = employeeMapper.updateEmployeeFromDTO(dto, employee);
+
+        if (dto.password() != null && !dto.password().isBlank()) {
+            employee.setPassword(passwordEncoder.encode(dto.password()));
+        }
 
         return employeeMapper.toDTO(employeeRepository.save(employee));
     }

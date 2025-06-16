@@ -272,8 +272,8 @@ public class GlobalHandler extends ResponseEntityExceptionHandler {
         );
     }
 
-    @ExceptionHandler(AdminAlreadyExistsException.class)
-    public ResponseEntity<ResponseMessage> handleAdminAlreadyExistsException(AdminAlreadyExistsException ex){
+    @ExceptionHandler(OwnerAlreadyExistsException.class)
+    public ResponseEntity<ResponseMessage> handleAdminAlreadyExistsException(OwnerAlreadyExistsException ex){
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
                 ResponseMessage.builder()
                         .message(ex.getMessage())
@@ -283,8 +283,8 @@ public class GlobalHandler extends ResponseEntityExceptionHandler {
                 );
     }
 
-    @ExceptionHandler(AdminCannotBeDeletedException.class)
-    public ResponseEntity<ResponseMessage> handleAdminCannotBeDeletedException(AdminCannotBeDeletedException ex){
+    @ExceptionHandler(OwnerCannotBeDeletedException.class)
+    public ResponseEntity<ResponseMessage> handleAdminCannotBeDeletedException(OwnerCannotBeDeletedException ex){
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
                 ResponseMessage.builder()
                         .message(ex.getMessage())

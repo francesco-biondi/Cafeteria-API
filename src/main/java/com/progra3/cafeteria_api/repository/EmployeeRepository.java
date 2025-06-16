@@ -32,6 +32,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSp
                                      Long businessId,
                                      Pageable pageable);
 
+    Optional<Employee> findByUsername(String username);
     Optional<Employee> findByEmailAndBusiness_Id(String email, Long businessId);
     Employee findByDniAndBusiness_Id(String dni, Long businessId);
 
