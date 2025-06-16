@@ -1,5 +1,6 @@
 package com.progra3.cafeteria_api.controller;
 
+import com.progra3.cafeteria_api.model.dto.EmployeeResponseDTO;
 import com.progra3.cafeteria_api.model.dto.LoginRequestDTO;
 import com.progra3.cafeteria_api.service.port.IAuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,7 +11,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import com.progra3.cafeteria_api.model.dto.LoginResponseDTO;
-import com.progra3.cafeteria_api.service.port.IAuthenticationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

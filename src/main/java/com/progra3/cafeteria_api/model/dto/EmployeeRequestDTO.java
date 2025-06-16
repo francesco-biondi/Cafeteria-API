@@ -1,13 +1,11 @@
 package com.progra3.cafeteria_api.model.dto;
 
 import com.progra3.cafeteria_api.model.enums.*;
-import com.progra3.cafeteria_api.validation.ValidEmployeeRequest;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
 
 @Builder
-@ValidEmployeeRequest
 public record EmployeeRequestDTO(
 
         @Schema(description = "First name of the employee", example = "Juan", minLength = 1, maxLength = 50, required = true)

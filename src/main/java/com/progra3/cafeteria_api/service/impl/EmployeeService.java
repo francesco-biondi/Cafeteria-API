@@ -86,11 +86,6 @@ public class EmployeeService implements IEmployeeService{
     @Override
     @Transactional
     public Page<EmployeeResponseDTO> getEmployees(String name, String lastName, String dni, String email, Role role, Pageable pageable){
-        Employee loggedUser = LoggedUser.get();
-        if(loggedUser == null || loggedUser.getRole() != Role.ADMIN){
-            throw new EmployeePermissionException();
-        }
-
         Page<Employee> employees = employeeRepository.findByBusiness_Id(
                 name,
                 lastName,
