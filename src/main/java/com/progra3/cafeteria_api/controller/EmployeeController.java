@@ -1,6 +1,6 @@
 package com.progra3.cafeteria_api.controller;
 
-import com.progra3.cafeteria_api.controller.helper.SortUtils;
+import com.progra3.cafeteria_api.service.helper.SortUtils;
 import com.progra3.cafeteria_api.model.dto.EmployeeRequestDTO;
 import com.progra3.cafeteria_api.model.dto.EmployeeResponseDTO;
 import com.progra3.cafeteria_api.model.dto.EmployeeUpdateDTO;
@@ -11,11 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.Arrays;
-import java.util.List;
 import com.progra3.cafeteria_api.model.enums.Role;
 
 @RestController

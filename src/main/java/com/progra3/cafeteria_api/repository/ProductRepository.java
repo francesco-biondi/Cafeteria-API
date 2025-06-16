@@ -1,6 +1,5 @@
 package com.progra3.cafeteria_api.repository;
 
-import com.progra3.cafeteria_api.model.entity.Category;
 import com.progra3.cafeteria_api.model.entity.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,13 +14,13 @@ import java.util.Optional;
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
     @Query("SELECT p FROM Product p WHERE " +
+            "p.business.id = :businessId AND " +
+            "p.deleted = false AND" +
             "(:name IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%'))) AND " +
             "(:categoryId IS NULL OR p.category.id = :categoryId) AND " +
             "(:minStock IS NULL OR p.stock <= :minStock) AND " +
             "(:maxStock IS NULL OR p.stock >= :maxStock) AND " +
-            "(:composite IS NULL OR p.composite = :composite) AND " +
-            "p.business.id = :businessId AND " +
-            "p.deleted = false")
+            "(:composite IS NULL OR p.composite = :composite) ")
     Page<Product> findByBusiness_Id(@Param("name") String name,
                                     @Param("categoryId") Long categoryId,
                                     @Param("minStock") Integer minStock,

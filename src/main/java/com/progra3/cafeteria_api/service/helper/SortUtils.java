@@ -1,4 +1,4 @@
-package com.progra3.cafeteria_api.controller.helper;
+package com.progra3.cafeteria_api.service.helper;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;

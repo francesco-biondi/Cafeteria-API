@@ -1,6 +1,6 @@
 package com.progra3.cafeteria_api.controller;
 
-import com.progra3.cafeteria_api.controller.helper.SortUtils;
+import com.progra3.cafeteria_api.service.helper.SortUtils;
 import com.progra3.cafeteria_api.model.dto.SupplierRequestDTO;
 import com.progra3.cafeteria_api.model.dto.SupplierResponseDTO;
 import com.progra3.cafeteria_api.model.dto.SupplierUpdateDTO;
@@ -12,7 +12,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.net.URI;
 
 @RestController

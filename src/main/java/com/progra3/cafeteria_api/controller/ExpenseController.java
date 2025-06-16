@@ -1,10 +1,9 @@
 package com.progra3.cafeteria_api.controller;
 
-import com.progra3.cafeteria_api.controller.helper.SortUtils;
+import com.progra3.cafeteria_api.service.helper.SortUtils;
 import com.progra3.cafeteria_api.model.dto.ExpenseRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ExpenseResponseDTO;
 import com.progra3.cafeteria_api.model.dto.ExpenseUpdateDTO;
-import com.progra3.cafeteria_api.model.entity.Expense;
 import com.progra3.cafeteria_api.service.port.IExpenseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,10 +13,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.net.URI;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor

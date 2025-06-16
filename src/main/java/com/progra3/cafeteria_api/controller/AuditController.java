@@ -1,6 +1,6 @@
 package com.progra3.cafeteria_api.controller;
 
-import com.progra3.cafeteria_api.controller.helper.SortUtils;
+import com.progra3.cafeteria_api.service.helper.SortUtils;
 import com.progra3.cafeteria_api.model.dto.AuditRequestDTO;
 import com.progra3.cafeteria_api.model.dto.AuditResponseDTO;
 import com.progra3.cafeteria_api.service.port.IAuditService;

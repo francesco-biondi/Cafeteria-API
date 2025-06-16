@@ -15,10 +15,9 @@ public interface AuditRepository extends JpaRepository<Audit, Long> {
     Optional<Audit> findTopByBusiness_IdOrderByIdDesc(Long business_id);
 
     @Query("SELECT a FROM Audit a WHERE " +
-            "(:startDate IS NULL OR a.closeTime >= :startDate) AND " +
-            "(:endDate IS NULL OR a.closeTime <= :endDate) AND " +
             "a.business.id = :businessId AND " +
-            "a.deleted = false")
+            "(:startDate IS NULL OR a.closeTime >= :startDate) AND " +
+            "(:endDate IS NULL OR a.closeTime <= :endDate) ")
     Page<Audit> findByBusiness_Id(@Param("startDate") LocalDateTime startDate,
                                     @Param("endDate") LocalDateTime endDate,
                                     @Param("businessId") Long businessId,

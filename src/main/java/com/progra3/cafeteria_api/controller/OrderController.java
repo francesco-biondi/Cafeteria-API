@@ -1,6 +1,6 @@
 package com.progra3.cafeteria_api.controller;
 
-import com.progra3.cafeteria_api.controller.helper.SortUtils;
+import com.progra3.cafeteria_api.service.helper.SortUtils;
 import com.progra3.cafeteria_api.model.dto.*;
 import com.progra3.cafeteria_api.model.enums.OrderStatus;
 import com.progra3.cafeteria_api.service.port.IOrderService;

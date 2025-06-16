@@ -17,12 +17,12 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     Optional<Order> findByIdAndBusiness_Id(Long orderId, Long businessId);
 
     @Query("SELECT o FROM Order o WHERE " +
+            "o.business.id = :businessId AND " +
             "(:customerId IS NULL OR o.customer.id = :customerId) AND " +
             "(:employeeId IS NULL OR o.employee.id = :employeeId) AND " +
             "(:startDate IS NULL OR o.dateTime >= :startDate) AND " +
             "(:endDate IS NULL OR o.dateTime <= :endDate) AND " +
-            "(:status IS NULL OR o.status = :status) AND " +
-            "o.business.id = :businessId ")
+            "(:status IS NULL OR o.status = :status) ")
     Page<Order> findByBusiness_Id(@Param("startDate") LocalDateTime startDate,
                                     @Param("endDate") LocalDateTime endDate,
                                     @Param("customerId") Long customerId,
