@@ -7,6 +7,7 @@ import com.progra3.cafeteria_api.model.dto.ProductResponseDTO;
 import com.progra3.cafeteria_api.service.port.IProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -137,45 +138,86 @@ public class ProductController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Assign a group to a product", description = "Links a group to a product by ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Group assigned successfully",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProductResponseDTO.class))),
+            @ApiResponse(responseCode = "404", description = "Product or group not found", content = @Content)
+    })
     @PutMapping("/{id}/groups/{groupId}")
     public ResponseEntity<ProductResponseDTO> assignGroupToProduct(
-            @PathVariable Long id,
-            @PathVariable Long groupId) {
+            @Parameter(description = "ID of the product") @PathVariable Long id,
+            @Parameter(description = "ID of the group to assign") @PathVariable Long groupId) {
         ProductResponseDTO response = productService.assignGroupToProduct(id, groupId);
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Remove a group from a product", description = "Unlinks a group from a product by ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Group removed successfully",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProductResponseDTO.class))),
+            @ApiResponse(responseCode = "404", description = "Product or group not found", content = @Content)
+    })
     @DeleteMapping("/{id}/groups/{groupId}")
     public ResponseEntity<ProductResponseDTO> removeGroupFromProduct(
-            @PathVariable Long id,
-            @PathVariable Long groupId) {
+            @Parameter(description = "ID of the product") @PathVariable Long id,
+            @Parameter(description = "ID of the group to remove") @PathVariable Long groupId) {
         ProductResponseDTO response = productService.removeGroupFromProduct(id, groupId);
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Add components to a product", description = "Adds one or more components to a product")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Components added successfully",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProductResponseDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Product not found", content = @Content)
+    })
     @PutMapping("/{id}/components")
     public ResponseEntity<ProductResponseDTO> addComponents(
-            @PathVariable Long id,
+            @Parameter(description = "ID of the product") @PathVariable Long id,
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "List of components to add",
+                    required = true,
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = ProductComponentRequestDTO.class)))
+            )
             @RequestBody List<@Valid ProductComponentRequestDTO> components
     ) {
         ProductResponseDTO response = productService.addComponentsToProduct(id, components);
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Update a product component", description = "Updates the quantity of a specific component in a product")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Component updated successfully",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProductResponseDTO.class))),
+            @ApiResponse(responseCode = "404", description = "Product or component not found", content = @Content)
+    })
     @PutMapping("/{id}/components/{componentId}")
     public ResponseEntity<ProductResponseDTO> updateComponent(
-            @PathVariable Long id,
-            @PathVariable Long componentId,
-            @RequestParam Integer quantity
+            @Parameter(description = "ID of the product") @PathVariable Long id,
+            @Parameter(description = "ID of the component to update") @PathVariable Long componentId,
+            @Parameter(description = "New quantity for the component") @RequestParam Integer quantity
     ) {
         ProductResponseDTO response = productService.updateProductComponent(id, componentId, quantity);
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Remove a component from a product", description = "Deletes a specific component from a product")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Component removed successfully",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProductResponseDTO.class))),
+            @ApiResponse(responseCode = "404", description = "Product or component not found", content = @Content)
+    })
     @DeleteMapping("/{id}/components/{componentId}")
     public ResponseEntity<ProductResponseDTO> removeComponent(
-            @PathVariable Long id,
-            @PathVariable Long componentId
+            @Parameter(description = "ID of the product") @PathVariable Long id,
+            @Parameter(description = "ID of the component to remove") @PathVariable Long componentId
     ) {
         ProductResponseDTO response = productService.removeComponentFromProduct(id, componentId);
         return ResponseEntity.ok(response);

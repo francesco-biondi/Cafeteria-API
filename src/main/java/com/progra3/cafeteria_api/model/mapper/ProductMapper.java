@@ -19,19 +19,9 @@ public interface ProductMapper {
 
     List<ProductResponseDTO> toDTOList(List<Product> products);
 
-    Product toEntity(ProductRequestDTO dto, @Context Category category, @Context Business business);
+    Product toEntity(ProductRequestDTO dto);
 
     Product updateProductFromDTO(@MappingTarget Product product, ProductRequestDTO dto, @Context Category category);
-
-    @BeforeMapping
-    default void assignCategory(@MappingTarget Product product, @Context Category category) {
-        if (category != null) product.setCategory(category);
-    }
-
-    @BeforeMapping
-    default void assignBusiness(@MappingTarget Product product, @Context Business business) {
-        if (business != null) product.setBusiness(business);
-    }
 
     default List<String> map(Set<ProductGroup> groups) {
         return groups.stream()

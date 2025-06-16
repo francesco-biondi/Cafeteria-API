@@ -10,10 +10,5 @@ import org.mapstruct.*;
 public interface CategoryMapper {
     CategoryResponseDTO toDTO(Category category);
 
-    Category toEntity(CategoryRequestDTO categoryRequestDTO, @Context Business business);
-
-    @BeforeMapping
-    default void assignBusiness(@MappingTarget Category category, @Context Business business) {
-        category.setBusiness(business);
-    }
+    Category toEntity(CategoryRequestDTO categoryRequestDTO);
 }

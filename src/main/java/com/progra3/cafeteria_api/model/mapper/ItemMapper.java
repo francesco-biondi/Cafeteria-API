@@ -13,19 +13,7 @@ public interface ItemMapper {
     @Mapping(target = "orderId", source = "order.id")
     ItemResponseDTO toDTO(Item item);
 
-    @Mapping(target = "unitPrice", expression = "java(item.getProduct().getPrice())")
-    Item toEntity(ItemRequestDTO dto, @Context Product product, @Context Order order);
+    Item toEntity(ItemRequestDTO dto);
 
-    @Mapping(target = "unitPrice", expression = "java(item.getProduct().getPrice())")
     Item updateItemFromDTO(ItemRequestDTO itemDTO, @MappingTarget Item item);
-
-    @BeforeMapping
-    default void assignProduct(@MappingTarget Item item, @Context Product product) {
-        item.setProduct(product);
-    }
-
-    @BeforeMapping
-    default void assignOrder(@MappingTarget Item item, @Context Order order) {
-        item.setOrder(order);
-    }
 }

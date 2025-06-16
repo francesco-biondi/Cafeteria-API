@@ -8,6 +8,7 @@ import com.progra3.cafeteria_api.model.dto.SupplierUpdateDTO;
 import com.progra3.cafeteria_api.model.mapper.SupplierMapper;
 import com.progra3.cafeteria_api.model.entity.Supplier;
 import com.progra3.cafeteria_api.repository.SupplierRepository;
+import com.progra3.cafeteria_api.security.BusinessContext;
 import com.progra3.cafeteria_api.service.port.ISupplierService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,13 +24,14 @@ public class SupplierService implements ISupplierService {
 
     private final SupplierRepository supplierRepository;
 
-    private final BusinessService businessService;
+    private final BusinessContext businessContext;
 
     private final SupplierMapper supplierMapper;
 
     @Override
     public SupplierResponseDTO create(SupplierRequestDTO dto) {
-        Supplier supplier = supplierMapper.toEntity(dto, businessService.getCurrentBusiness());
+        Supplier supplier = supplierMapper.toEntity(dto);
+        supplier.setBusiness(businessContext.getCurrentBusiness());
 
         if (supplier.getCuit() != null){
             Optional<Supplier> existingSupplier = validateSupplier(supplier);
@@ -50,7 +52,7 @@ public class SupplierService implements ISupplierService {
                 tradeName,
                 legalName,
                 cuit,
-                businessService.getCurrentBusinessId(),
+                businessContext.getCurrentBusinessId(),
                 pageable);
 
         return suppliers.map(supplierMapper::toDTO);
@@ -83,7 +85,7 @@ public class SupplierService implements ISupplierService {
 
     @Override
     public Supplier getEntityById(Long supplierId) {
-        Supplier supplier = supplierRepository.findByIdAndBusiness_Id(supplierId, businessService.getCurrentBusinessId())
+        Supplier supplier = supplierRepository.findByIdAndBusiness_Id(supplierId, businessContext.getCurrentBusinessId())
                 .orElseThrow(() -> new SupplierNotFoundException(supplierId));
 
         if (supplier.getDeleted()) throw new SupplierNotFoundException(supplier.getId());
@@ -93,7 +95,7 @@ public class SupplierService implements ISupplierService {
 
     private Optional<Supplier> validateSupplier(Supplier supplier){
 
-        Optional<Supplier> optionalSupplier = supplierRepository.findByCuitAndBusiness_Id(supplier.getCuit(), businessService.getCurrentBusinessId());
+        Optional<Supplier> optionalSupplier = supplierRepository.findByCuitAndBusiness_Id(supplier.getCuit(), businessContext.getCurrentBusinessId());
 
         if (optionalSupplier.isPresent()) {
 

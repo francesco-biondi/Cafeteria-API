@@ -11,7 +11,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface IEmployeeService {
-    EmployeeResponseDTO createEmployeeOrAdmin(EmployeeRequestDTO dto);
+    EmployeeResponseDTO createEmployee(EmployeeRequestDTO dto);
     EmployeeResponseDTO getEmployeeById(Long id);
     Page<EmployeeResponseDTO> getEmployees(String name, String lastName, String dni, String email, Role role, Pageable pageable);
     EmployeeResponseDTO updateEmployee(Long id, EmployeeUpdateDTO updateDTO);

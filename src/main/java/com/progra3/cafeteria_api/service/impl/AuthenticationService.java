@@ -9,6 +9,7 @@ import com.progra3.cafeteria_api.model.entity.Employee;
 import com.progra3.cafeteria_api.model.dto.LoginRequestDTO;
 import com.progra3.cafeteria_api.model.mapper.EmployeeMapper;
 import com.progra3.cafeteria_api.repository.EmployeeRepository;
+import com.progra3.cafeteria_api.security.BusinessContext;
 import com.progra3.cafeteria_api.service.port.IAuthenticationService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthenticationService implements IAuthenticationService{
 
-    private final BusinessService businessService;
+    private final BusinessContext businessContext;
     private final EmployeeMapper employeeMapper;
     private final EmployeeRepository employeeRepository;
 
@@ -27,7 +28,7 @@ public class AuthenticationService implements IAuthenticationService{
     @Transactional
     public EmployeeResponseDTO login(LoginRequestDTO dto){
 
-        Employee employee = employeeRepository.findByEmailAndBusiness_Id(dto.email(), businessService.getCurrentBusinessId())
+        Employee employee = employeeRepository.findByEmailAndBusiness_Id(dto.email(), businessContext.getCurrentBusinessId())
                 .orElseThrow(() -> new EmployeeNotFoundException(dto.email()));
 
         if(!employee.getPassword().equals(dto.password())){

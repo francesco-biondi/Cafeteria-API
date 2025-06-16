@@ -15,12 +15,7 @@ public interface ProductGroupMapper {
 
     List<ProductGroupResponseDTO> toDTOList(List<ProductGroup> productGroups);
 
-    ProductGroup toEntity(ProductGroupRequestDTO productGroupRequestDTO, @Context Business business);
+    ProductGroup toEntity(ProductGroupRequestDTO productGroupRequestDTO);
 
     ProductGroup updateProductGroupFromDTO(@MappingTarget ProductGroup productGroup, ProductGroupRequestDTO productGroupRequestDTO);
-
-    @BeforeMapping
-    default void assignBusiness(@MappingTarget ProductGroup productGroup, @Context Business business) {
-        productGroup.setBusiness(business);
-    }
 }

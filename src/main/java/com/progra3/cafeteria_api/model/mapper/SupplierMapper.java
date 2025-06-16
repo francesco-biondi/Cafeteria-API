@@ -11,12 +11,7 @@ import org.mapstruct.*;
 public interface SupplierMapper {
     SupplierResponseDTO toDTO(Supplier supplier);
 
-    Supplier toEntity(SupplierRequestDTO supplierRequestDTO, @Context Business business);
+    Supplier toEntity(SupplierRequestDTO supplierRequestDTO);
 
     Supplier updateSupplierFromDTO(SupplierUpdateDTO supplierUpdateDTO, @MappingTarget Supplier supplier);
-
-    @BeforeMapping
-    default void assignBusiness(@MappingTarget Supplier supplier, @Context Business business) {
-        supplier.setBusiness(business);
-    }
 }

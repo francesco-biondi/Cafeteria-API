@@ -16,6 +16,7 @@ import com.progra3.cafeteria_api.model.entity.*;
 import com.progra3.cafeteria_api.model.enums.OrderStatus;
 import com.progra3.cafeteria_api.model.enums.SeatingStatus;
 import com.progra3.cafeteria_api.repository.OrderRepository;
+import com.progra3.cafeteria_api.security.BusinessContext;
 import com.progra3.cafeteria_api.service.port.IOrderService;
 import com.progra3.cafeteria_api.service.helper.Constant;
 import jakarta.transaction.Transactional;
@@ -36,7 +37,7 @@ public class OrderService implements IOrderService {
 
     private final OrderRepository orderRepository;
 
-    private final BusinessService businessService;
+    private final BusinessContext businessContext;
     private final EmployeeService employeeService;
     private final CustomerService customerService;
     private final SeatingService seatingService;
@@ -78,7 +79,7 @@ public class OrderService implements IOrderService {
                 customerId,
                 employeeId,
                 status,
-                businessService.getCurrentBusinessId(),
+                businessContext.getCurrentBusinessId(),
                 pageable);
         return orders.map(orderMapper::toDTO);
     }
@@ -88,7 +89,7 @@ public class OrderService implements IOrderService {
         if (start.isAfter(end)) {
             throw new InvalidDateException("Start should be earlier than end");
         }
-        return orderRepository.findByDateTimeBetweenAndBusiness_Id(start, end, businessService.getCurrentBusinessId());
+        return orderRepository.findByDateTimeBetweenAndBusiness_Id(start, end, businessContext.getCurrentBusinessId());
     }
 
     @Transactional
@@ -245,7 +246,13 @@ public class OrderService implements IOrderService {
                 )
                 .orElse(null);
 
-        Order order = orderMapper.toEntity(dto, employee, customer, seating, businessService.getCurrentBusiness());
+        Order order = orderMapper.toEntity(dto);
+
+        order.setBusiness(businessContext.getCurrentBusiness());
+        order.setEmployee(employee);
+        order.setCustomer(customer);
+        order.setSeating(seating);
+
         order.setDateTime(LocalDateTime.now(clock));
         order.setDiscount(Optional.ofNullable(customer).map(Customer::getDiscount).orElse(Constant.NO_DISCOUNT));
         order.setStatus(OrderStatus.ACTIVE);
@@ -260,7 +267,7 @@ public class OrderService implements IOrderService {
                         Optional.ofNullable(destinationDto.seatingId())
                                 .orElseThrow(() -> new IllegalArgumentException("Seating ID is required")),
                         OrderStatus.ACTIVE,
-                        businessService.getCurrentBusinessId())
+                        businessContext.getCurrentBusinessId())
                 .orElseGet(() -> {
                     Order newOrder = createNewOrder(destinationDto);
                     newOrder.setPeopleCount(0);
@@ -275,7 +282,7 @@ public class OrderService implements IOrderService {
 
     @Override
     public Order getEntityById(Long orderId) {
-        return orderRepository.findByIdAndBusiness_Id(orderId, businessService.getCurrentBusinessId())
+        return orderRepository.findByIdAndBusiness_Id(orderId, businessContext.getCurrentBusinessId())
                 .orElseThrow(() -> new OrderNotFoundException(orderId));
     }
 
