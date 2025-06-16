@@ -1,6 +1,5 @@
 package com.progra3.cafeteria_api.model.dto;
 
-import com.progra3.cafeteria_api.validation.ValidEmployeeRequest;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
@@ -9,7 +8,6 @@ import lombok.Builder;
 import com.progra3.cafeteria_api.model.enums.*;
 
 @Builder
-@ValidEmployeeRequest
 public record EmployeeUpdateDTO(
 
         @Schema(description = "First name of the employee", example = "Juan",

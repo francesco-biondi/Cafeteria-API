@@ -8,12 +8,6 @@ import lombok.Builder;
 
 @Builder
 public record LoginRequestDTO(
-
-        @Schema(description = "User email for authentication", example = "user@example.com")
-        @Email(message = "Invalid email format. Expected format: example@domain.com")
-        @NotBlank(message = "Email is required")
-        String email,
-
         @NotBlank(message = "Username is required")
         String username,
 
