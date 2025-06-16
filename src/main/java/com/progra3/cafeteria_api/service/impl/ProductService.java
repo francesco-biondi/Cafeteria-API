@@ -14,9 +14,10 @@ import com.progra3.cafeteria_api.security.BusinessContext;
 import com.progra3.cafeteria_api.service.port.IProductService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.progra3.cafeteria_api.model.enums.CompositionType.*;
 
@@ -56,11 +57,17 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public List<ProductResponseDTO> getAllProducts() {
-        return productRepository.findByBusiness_Id(businessContext.getCurrentBusinessId())
-                .stream()
-                .map(productMapper::toDTO)
-                .collect(Collectors.toList());
+    public Page<ProductResponseDTO> getProducts(String name, Long categoryId, Integer minStock, Integer maxStock, Boolean composite, Pageable pageable) {
+        Page<Product> products = productRepository.findByBusiness_Id(
+                name,
+                categoryId,
+                minStock,
+                maxStock,
+                composite,
+                businessContext.getCurrentBusinessId(),
+                pageable);
+
+        return products.map(productMapper::toDTO);
     }
 
     @Transactional

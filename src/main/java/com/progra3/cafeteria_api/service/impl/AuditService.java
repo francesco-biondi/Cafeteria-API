@@ -14,10 +14,14 @@ import com.progra3.cafeteria_api.security.BusinessContext;
 import com.progra3.cafeteria_api.service.port.IAuditService;
 import com.progra3.cafeteria_api.service.helper.Constant;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -53,11 +57,24 @@ public class AuditService implements IAuditService {
     }
 
     @Override
-    public List<AuditResponseDTO> getAll() {
-        return auditRepository.findByBusiness_Id(businessContext.getCurrentBusinessId())
-                .stream()
-                .map(auditMapper::toDTO)
-                .toList();
+    public Page<AuditResponseDTO> getAudits(LocalDate startDate, LocalDate endDate, Pageable pageable) {
+        LocalDateTime startDateTime = null;
+        LocalDateTime endDateTime = null;
+
+        if (startDate != null) {
+            startDateTime = startDate.atStartOfDay();
+        }
+        if (endDate != null) {
+            endDateTime = endDate.atTime(LocalTime.MAX);
+        }
+
+        Page<Audit> audits = auditRepository.findByBusiness_Id(
+                startDateTime,
+                endDateTime,
+                businessContext.getCurrentBusinessId(),
+                pageable);
+
+        return audits.map(auditMapper::toDTO);
     }
 
     @Override

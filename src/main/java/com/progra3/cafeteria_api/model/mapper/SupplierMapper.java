@@ -3,7 +3,6 @@ package com.progra3.cafeteria_api.model.mapper;
 import com.progra3.cafeteria_api.model.dto.SupplierRequestDTO;
 import com.progra3.cafeteria_api.model.dto.SupplierResponseDTO;
 import com.progra3.cafeteria_api.model.dto.SupplierUpdateDTO;
-import com.progra3.cafeteria_api.model.entity.Business;
 import com.progra3.cafeteria_api.model.entity.Supplier;
 import org.mapstruct.*;
 
@@ -14,5 +13,4 @@ public interface SupplierMapper {
     Supplier toEntity(SupplierRequestDTO supplierRequestDTO);
 
     Supplier updateSupplierFromDTO(SupplierUpdateDTO supplierUpdateDTO, @MappingTarget Supplier supplier);
-
 }

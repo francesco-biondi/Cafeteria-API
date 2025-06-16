@@ -21,9 +21,13 @@ import com.progra3.cafeteria_api.service.port.IOrderService;
 import com.progra3.cafeteria_api.service.helper.Constant;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.time.Clock;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,11 +62,26 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public List<OrderResponseDTO> getAll() {
-        return orderRepository.findByBusiness_Id(businessContext.getCurrentBusinessId())
-                .stream()
-                .map(orderMapper::toDTO)
-                .toList();
+    public Page<OrderResponseDTO> getOrders(LocalDate startDate, LocalDate endDate, Long customerId, Long employeeId, OrderStatus status, Pageable pageable) {
+        LocalDateTime startDateTime = null;
+        LocalDateTime endDateTime = null;
+
+        if (startDate != null) {
+            startDateTime = startDate.atStartOfDay();
+        }
+        if (endDate != null) {
+            endDateTime = endDate.atTime(LocalTime.MAX);
+        }
+
+        Page<Order> orders = orderRepository.findByBusiness_Id(
+                startDateTime,
+                endDateTime,
+                customerId,
+                employeeId,
+                status,
+                businessContext.getCurrentBusinessId(),
+                pageable);
+        return orders.map(orderMapper::toDTO);
     }
 
     @Override
@@ -228,10 +247,12 @@ public class OrderService implements IOrderService {
                 .orElse(null);
 
         Order order = orderMapper.toEntity(dto);
+
+        order.setBusiness(businessContext.getCurrentBusiness());
         order.setEmployee(employee);
         order.setCustomer(customer);
         order.setSeating(seating);
-        order.setBusiness(businessContext.getCurrentBusiness());
+
         order.setDateTime(LocalDateTime.now(clock));
         order.setDiscount(Optional.ofNullable(customer).map(Customer::getDiscount).orElse(Constant.NO_DISCOUNT));
         order.setStatus(OrderStatus.ACTIVE);

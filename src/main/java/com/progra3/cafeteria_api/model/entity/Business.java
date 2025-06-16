@@ -29,7 +29,7 @@ public class Business {
     @Column(nullable = false)
     private Address address;
 
-    @OneToOne(cascade = CascadeType.ALL, optional = false)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false)
     @JoinColumn(name = "owner_id", nullable = false)
     private Employee owner;
 

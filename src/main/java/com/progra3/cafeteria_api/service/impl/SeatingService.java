@@ -32,6 +32,7 @@ public class SeatingService implements ISeatingService {
     public SeatingResponseDTO create(SeatingRequestDTO seatingRequestDTO) {
         Seating seating = seatingMapper.toEntity(seatingRequestDTO);
         seating.setBusiness(businessContext.getCurrentBusiness());
+
         seatingRepository.findByNumberAndBusiness_Id(seating.getNumber(), businessContext.getCurrentBusinessId())
                 .ifPresent(s -> {
                     if(!s.getDeleted()) throw new SeatingAlreadyExistsException(seating.getNumber());
