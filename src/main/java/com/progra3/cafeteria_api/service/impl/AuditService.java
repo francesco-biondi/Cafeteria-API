@@ -10,7 +10,7 @@ import com.progra3.cafeteria_api.model.entity.Order;
 import com.progra3.cafeteria_api.model.enums.AuditStatus;
 import com.progra3.cafeteria_api.model.mapper.AuditMapper;
 import com.progra3.cafeteria_api.repository.AuditRepository;
-import com.progra3.cafeteria_api.security.BusinessContext;
+import com.progra3.cafeteria_api.security.EmployeeContext;
 import com.progra3.cafeteria_api.service.port.IAuditService;
 import com.progra3.cafeteria_api.service.helper.Constant;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ public class AuditService implements IAuditService {
 
     private final AuditRepository auditRepository;
 
-    private final BusinessContext businessContext;
+    private final EmployeeContext employeeContext;
     private final ExpenseService expenseService;
     private final OrderService orderService;
 
@@ -40,10 +40,10 @@ public class AuditService implements IAuditService {
 
     @Override
     public AuditResponseDTO create(AuditRequestDTO dto) {
-        verifyAuditStatus(businessContext.getCurrentBusinessId());
+        verifyAuditStatus(employeeContext.getCurrentBusinessId());
 
         Audit audit = auditMapper.toEntity(dto);
-        audit.setBusiness(businessContext.getCurrentBusiness());
+        audit.setBusiness(employeeContext.getCurrentBusiness());
 
         audit.setStartTime(LocalDateTime.now(clock));
         audit.setAuditStatus(AuditStatus.IN_PROGRESS);
@@ -71,7 +71,7 @@ public class AuditService implements IAuditService {
         Page<Audit> audits = auditRepository.findByBusiness_Id(
                 startDateTime,
                 endDateTime,
-                businessContext.getCurrentBusinessId(),
+                employeeContext.getCurrentBusinessId(),
                 pageable);
 
         return audits.map(auditMapper::toDTO);
@@ -112,7 +112,7 @@ public class AuditService implements IAuditService {
 
     @Override
     public Audit getEntityById(Long auditId) {
-        return auditRepository.findByIdAndBusiness_Id(auditId, businessContext.getCurrentBusinessId())
+        return auditRepository.findByIdAndBusiness_Id(auditId, employeeContext.getCurrentBusinessId())
                 .orElseThrow(() -> new AuditNotFoundException(auditId));
     }
 

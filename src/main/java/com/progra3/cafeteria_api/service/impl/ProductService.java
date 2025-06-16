@@ -10,7 +10,7 @@ import com.progra3.cafeteria_api.model.entity.Product;
 import com.progra3.cafeteria_api.model.entity.ProductComponent;
 import com.progra3.cafeteria_api.model.entity.ProductGroup;
 import com.progra3.cafeteria_api.repository.ProductRepository;
-import com.progra3.cafeteria_api.security.BusinessContext;
+import com.progra3.cafeteria_api.security.EmployeeContext;
 import com.progra3.cafeteria_api.service.port.IProductService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class ProductService implements IProductService {
 
     private final ProductRepository productRepository;
 
-    private final BusinessContext businessContext;
+    private final EmployeeContext employeeContext;
     private final CategoryService categoryService;
     private final ProductGroupService productGroupService;
     private final ProductComponentService productComponentService;
@@ -40,7 +40,7 @@ public class ProductService implements IProductService {
         Category category = categoryService.getEntityById(productRequestDTO.categoryId());
         Product product = productMapper.toEntity(productRequestDTO);
         product.setCategory(category);
-        product.setBusiness(businessContext.getCurrentBusiness());
+        product.setBusiness(employeeContext.getCurrentBusiness());
 
         product.setDeleted(false);
         product.setComposite(false);
@@ -51,7 +51,7 @@ public class ProductService implements IProductService {
 
     @Override
     public ProductResponseDTO getProductById(Long id) {
-        Product product = productRepository.findByIdAndBusiness_IdWithComponents(id, businessContext.getCurrentBusinessId())
+        Product product = productRepository.findByIdAndBusiness_IdWithComponents(id, employeeContext.getCurrentBusinessId())
                 .orElseThrow(() -> new ProductNotFoundException(id));
         return productMapper.toDTO(product);
     }
@@ -64,7 +64,7 @@ public class ProductService implements IProductService {
                 minStock,
                 maxStock,
                 composite,
-                businessContext.getCurrentBusinessId(),
+                employeeContext.getCurrentBusinessId(),
                 pageable);
 
         return products.map(productMapper::toDTO);
@@ -98,7 +98,7 @@ public class ProductService implements IProductService {
 
     @Override
     public Product getEntityById(Long productId) {
-        return productRepository.findByIdAndBusiness_IdWithComponents(productId, businessContext.getCurrentBusinessId())
+        return productRepository.findByIdAndBusiness_IdWithComponents(productId, employeeContext.getCurrentBusinessId())
                 .orElseThrow(() -> new ProductNotFoundException(productId));
     }
 

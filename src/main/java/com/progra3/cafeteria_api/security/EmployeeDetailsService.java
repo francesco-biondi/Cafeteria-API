@@ -26,6 +26,7 @@ public class EmployeeDetailsService implements UserDetailsService {
         return new EmployeeDetails(
                 username,
                 employee.getPassword(),
+                employee.getId(),
                 List.of(new SimpleGrantedAuthority("ROLE_" + employee.getRole().name())),
                 employee.getBusiness().getId()
         );

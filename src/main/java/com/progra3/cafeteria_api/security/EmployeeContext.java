@@ -9,9 +9,14 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class BusinessContext {
+public class EmployeeContext {
 
     private final BusinessService businessService;
+
+    public Long getCurrentEmployeeId() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return ((EmployeeDetails) auth.getPrincipal()).getId();
+    }
 
     public Long getCurrentBusinessId() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
