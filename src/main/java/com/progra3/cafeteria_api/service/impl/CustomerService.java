@@ -12,6 +12,8 @@ import com.progra3.cafeteria_api.security.BusinessContext;
 import com.progra3.cafeteria_api.service.port.ICustomerService;
 import com.progra3.cafeteria_api.service.helper.Constant;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -46,12 +48,15 @@ public class CustomerService implements ICustomerService {
 
 
     @Override
-    public List<CustomerResponseDTO> getAll() {
-        return customerRepository.findByBusiness_Id(businessContext.getCurrentBusinessId())
-                .stream()
-                .filter(n -> !n.getDeleted())
-                .map(customerMapper::toDTO)
-                .toList();
+    public Page<CustomerResponseDTO> getCustomers(String name, String lastName, String dni, String email, Pageable pageable) {
+        Page<Customer> customers = customerRepository.findByBusiness_Id(
+                name,
+                lastName,
+                dni,
+                email,
+                businessContext.getCurrentBusinessId(), pageable);
+
+        return customers.map(customerMapper::toDTO);
     }
 
     @Override

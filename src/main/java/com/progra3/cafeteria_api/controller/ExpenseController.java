@@ -1,5 +1,6 @@
 package com.progra3.cafeteria_api.controller;
 
+import com.progra3.cafeteria_api.service.helper.SortUtils;
 import com.progra3.cafeteria_api.model.dto.ExpenseRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ExpenseResponseDTO;
 import com.progra3.cafeteria_api.model.dto.ExpenseUpdateDTO;
@@ -15,11 +16,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.net.URI;
-import java.util.List;
+import java.time.LocalDateTime;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,6 +32,8 @@ import java.util.List;
 public class ExpenseController {
 
     private final IExpenseService expenseService;
+
+    private final SortUtils sortUtils;
 
     @Operation(summary = "Create a new expense", description = "Registers a new expense in the system")
     @ApiResponses(value = {
@@ -68,8 +74,19 @@ public class ExpenseController {
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     @GetMapping
-    public ResponseEntity<List<ExpenseResponseDTO>> getAllExpense() {
-        return ResponseEntity.ok(expenseService.getAll());
+    public ResponseEntity<Page<ExpenseResponseDTO>> getExpenses(
+            @RequestParam(required = false) Long supplierId,
+            @RequestParam(required = false) Double minAmount,
+            @RequestParam(required = false) Double maxAmount,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "dateTime,asc") String sort
+    ){
+        Pageable pageable = PageRequest.of(page, size, sortUtils.buildSort(sort));
+        Page<ExpenseResponseDTO> expenses = expenseService.getExpenses(supplierId, minAmount, maxAmount, startDate, endDate, pageable);
+        return ResponseEntity.ok(expenses);
     }
 
     @Operation(summary = "Get an expense by ID", description = "Retrieves an expense by its unique ID")

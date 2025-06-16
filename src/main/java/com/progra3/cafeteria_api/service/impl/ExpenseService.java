@@ -13,6 +13,8 @@ import com.progra3.cafeteria_api.repository.ExpenseRepository;
 import com.progra3.cafeteria_api.security.BusinessContext;
 import com.progra3.cafeteria_api.service.port.IExpenseService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
@@ -45,12 +47,17 @@ public class ExpenseService implements IExpenseService {
     }
 
     @Override
-    public List<ExpenseResponseDTO> getAll() {
-        return expenseRepository.findByBusiness_Id(businessContext.getCurrentBusinessId())
-                .stream()
-                .filter(n -> !n.getDeleted())
-                .map(expenseMapper::toDTO)
-                .toList();
+    public Page<ExpenseResponseDTO> getExpenses(Long supplierId, Double minAmount, Double maxAmount, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable) {
+        Page<Expense> expenses = expenseRepository.findByBusiness_Id(
+                supplierId,
+                minAmount,
+                maxAmount,
+                startDate,
+                endDate,
+                businessContext.getCurrentBusinessId(),
+                pageable);
+
+        return expenses.map(expenseMapper::toDTO);
     }
 
     @Override

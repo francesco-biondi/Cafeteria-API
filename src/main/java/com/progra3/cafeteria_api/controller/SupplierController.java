@@ -1,5 +1,6 @@
 package com.progra3.cafeteria_api.controller;
 
+import com.progra3.cafeteria_api.service.helper.SortUtils;
 import com.progra3.cafeteria_api.model.dto.SupplierRequestDTO;
 import com.progra3.cafeteria_api.model.dto.SupplierResponseDTO;
 import com.progra3.cafeteria_api.model.dto.SupplierUpdateDTO;
@@ -13,11 +14,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.net.URI;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,6 +28,8 @@ import java.util.List;
 public class SupplierController {
 
     private final ISupplierService supplierService;
+
+    private final SortUtils sortUtils;
 
     @Operation(summary = "Create a new supplier", description = "Creates a new supplier with the given data")
     @ApiResponses({
@@ -49,8 +53,17 @@ public class SupplierController {
     @Operation(summary = "Get all suppliers", description = "Retrieves a list of all suppliers")
     @ApiResponse(responseCode = "200", description = "List of suppliers returned successfully")
     @GetMapping
-    public ResponseEntity<List<SupplierResponseDTO>> getAllSuppliers() {
-        return ResponseEntity.ok(supplierService.getAll());
+    public ResponseEntity<Page<SupplierResponseDTO>> getSuppliers(
+            @RequestParam(required = false) String tradeName,
+            @RequestParam(required = false) String legalName,
+            @RequestParam(required = false) String cuit,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "tradeName,asc") String sort
+    ){
+        Pageable pageable = PageRequest.of(page, size, sortUtils.buildSort(sort));
+        Page<SupplierResponseDTO> suppliers = supplierService.getSuppliers(tradeName, legalName, cuit, pageable);
+        return ResponseEntity.ok(suppliers);
     }
 
     @Operation(summary = "Get supplier by ID", description = "Retrieves the supplier details for the given ID")

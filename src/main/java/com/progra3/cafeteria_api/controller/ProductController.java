@@ -1,5 +1,6 @@
 package com.progra3.cafeteria_api.controller;
 
+import com.progra3.cafeteria_api.service.helper.SortUtils;
 import com.progra3.cafeteria_api.model.dto.ProductComponentRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ProductRequestDTO;
 import com.progra3.cafeteria_api.model.dto.ProductResponseDTO;
@@ -15,6 +16,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +33,8 @@ import java.util.List;
 public class ProductController {
 
     private final IProductService productService;
+
+    private final SortUtils sortUtils;
 
     @Operation(summary = "Create a new product", description = "Registers a new product in the system")
     @ApiResponse(responseCode = "201", description = "Product created successfully",
@@ -63,8 +69,19 @@ public class ProductController {
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     @GetMapping
-    public List<ProductResponseDTO> getAllProducts() {
-        return productService.getAllProducts();
+    public ResponseEntity<Page<ProductResponseDTO>> getProducts(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) Integer minStock,
+            @RequestParam(required = false) Integer maxStock,
+            @RequestParam(required = false) boolean composite,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "name,asc") String sort
+    ) {
+        Pageable pageable = PageRequest.of(page, size, sortUtils.buildSort(sort));
+        Page<ProductResponseDTO> products = productService.getProducts(name, categoryId, minStock, maxStock, composite, pageable);
+        return ResponseEntity.ok(products);
     }
 
     @Operation(summary = "Get a product by ID", description = "Retrieves a product by its unique ID")

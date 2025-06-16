@@ -1,5 +1,6 @@
 package com.progra3.cafeteria_api.controller;
 
+import com.progra3.cafeteria_api.service.helper.SortUtils;
 import com.progra3.cafeteria_api.model.dto.CustomerRequestDTO;
 import com.progra3.cafeteria_api.model.dto.CustomerResponseDTO;
 import com.progra3.cafeteria_api.model.dto.CustomerUpdateDTO;
@@ -15,11 +16,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.net.URI;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,6 +30,8 @@ import java.util.List;
 public class CustomerController {
 
     private final ICustomerService customerService;
+
+    private final SortUtils sortUtils;
 
     @Operation(summary = "Create a new customer", description = "Registers a new customer in the system")
     @ApiResponses(value = {
@@ -69,8 +73,18 @@ public class CustomerController {
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     @GetMapping
-    public ResponseEntity<List<CustomerResponseDTO>> getAllCustomers() {
-        return ResponseEntity.ok(customerService.getAll());
+    public ResponseEntity<Page<CustomerResponseDTO>> getCustomers(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String lastName,
+            @RequestParam(required = false) String dni,
+            @RequestParam(required = false) String email,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "name,asc") String sort
+    ){
+        Pageable pageable = PageRequest.of(page, size, sortUtils.buildSort(sort));
+        Page<CustomerResponseDTO> employees = customerService.getCustomers(name, lastName, dni, email, pageable);
+        return ResponseEntity.ok(employees);
     }
 
     @Operation(summary = "Get a customer by ID", description = "Retrieves a customer by its unique ID")

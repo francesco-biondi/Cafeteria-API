@@ -1,5 +1,6 @@
 package com.progra3.cafeteria_api.controller;
 
+import com.progra3.cafeteria_api.service.helper.SortUtils;
 import com.progra3.cafeteria_api.model.dto.*;
 import com.progra3.cafeteria_api.model.enums.OrderStatus;
 import com.progra3.cafeteria_api.service.port.IOrderService;
@@ -16,11 +17,14 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -30,6 +34,8 @@ import java.util.List;
 public class OrderController {
 
     private final IOrderService orderService;
+
+    private final SortUtils sortUtils;
 
     @Operation(summary = "Create a new order", description = "Creates a new order with optional customer and employee IDs. The order starts in ACTIVE state.")
     @ApiResponses({
@@ -79,8 +85,19 @@ public class OrderController {
     @Operation(summary = "Get all orders", description = "Retrieves a list of all orders in the system")
     @ApiResponse(responseCode = "200", description = "List of orders returned successfully")
     @GetMapping
-    public ResponseEntity<List<OrderResponseDTO>> getAllOrders() {
-        return ResponseEntity.ok(orderService.getAll());
+    public ResponseEntity<Page<OrderResponseDTO>> getOrders(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(required = false) Long customerId,
+            @RequestParam(required = false) Long employeeId,
+            @RequestParam(required = false) OrderStatus status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "dateTime,asc") String sort
+    ) {
+        Pageable pageable = PageRequest.of(page, size, sortUtils.buildSort(sort));
+        Page<OrderResponseDTO> orders = orderService.getOrders(startDate, endDate, customerId, employeeId, status, pageable);
+        return ResponseEntity.ok(orders);
     }
 
     @Operation(summary = "Get an order by ID", description = "Retrieves the details of a specific order based on its ID")

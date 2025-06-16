@@ -1,5 +1,6 @@
 package com.progra3.cafeteria_api.controller;
 
+import com.progra3.cafeteria_api.service.helper.SortUtils;
 import com.progra3.cafeteria_api.model.dto.AuditRequestDTO;
 import com.progra3.cafeteria_api.model.dto.AuditResponseDTO;
 import com.progra3.cafeteria_api.service.port.IAuditService;
@@ -14,11 +15,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.net.URI;
-import java.util.List;
+import java.time.LocalDate;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,6 +31,8 @@ import java.util.List;
 public class AuditController {
 
     private final IAuditService auditService;
+
+    private final SortUtils sortUtils;
 
     @Operation(summary = "Create a new audit", description = "Registers a new audit entry in the system")
     @ApiResponse(responseCode = "201", description = "Audit created successfully",
@@ -64,8 +70,16 @@ public class AuditController {
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     @GetMapping
-    public ResponseEntity<List<AuditResponseDTO>> getAllAudits() {
-        return ResponseEntity.ok(auditService.getAll());
+    public ResponseEntity<Page<AuditResponseDTO>> getAudits(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "closeTime,asc") String sort
+    ){
+        Pageable pageable = PageRequest.of(page, size, sortUtils.buildSort(sort));
+        Page<AuditResponseDTO> audits = auditService.getAudits(startDate, endDate, pageable);
+        return ResponseEntity.ok(audits);
     }
 
     @Operation(summary = "Get an audit by ID", description = "Retrieves a specific audit entry by its unique ID")

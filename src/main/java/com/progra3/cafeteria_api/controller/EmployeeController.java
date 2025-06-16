@@ -1,5 +1,6 @@
 package com.progra3.cafeteria_api.controller;
 
+import com.progra3.cafeteria_api.service.helper.SortUtils;
 import com.progra3.cafeteria_api.model.dto.EmployeeRequestDTO;
 import com.progra3.cafeteria_api.model.dto.EmployeeResponseDTO;
 import com.progra3.cafeteria_api.model.dto.EmployeeUpdateDTO;
@@ -16,9 +17,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
 import com.progra3.cafeteria_api.model.enums.Role;
 
 @RestController
@@ -28,6 +31,8 @@ import com.progra3.cafeteria_api.model.enums.Role;
 public class EmployeeController {
 
     private final IEmployeeService employeeService;
+
+    private final SortUtils sortUtils;
 
     @Operation(summary = "Create a new employee", description = "Registers a new employee in the system")
     @ApiResponses(value = {
@@ -70,8 +75,18 @@ public class EmployeeController {
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     @GetMapping
-    public ResponseEntity<List<EmployeeResponseDTO>> getAllEmployees() {
-        List<EmployeeResponseDTO> employees = employeeService.getAllEmployees();
+    public ResponseEntity<Page<EmployeeResponseDTO>> getEmployees(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String lastName,
+            @RequestParam(required = false) String dni,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) Role role,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "name,asc") String sort
+    ) {
+        Pageable pageable = PageRequest.of(page, size, sortUtils.buildSort(sort));
+        Page<EmployeeResponseDTO> employees = employeeService.getEmployees(name, lastName, dni, email, role, pageable);
         return ResponseEntity.ok(employees);
     }
 
@@ -86,26 +101,6 @@ public class EmployeeController {
     public ResponseEntity<EmployeeResponseDTO> getEmployeeById(
             @Parameter(description = "ID of the employee to retrieve") @PathVariable Long id) {
         return ResponseEntity.ok(employeeService.getEmployeeById(id));
-    }
-
-    @Operation(summary = "Filter employees", description = "Filters employees based on optional query parameters")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Filtered employees retrieved successfully",
-                    content = @Content(mediaType = "application/json",
-                            array = @ArraySchema(schema = @Schema(implementation = EmployeeResponseDTO.class)))),
-            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
-    })
-    @GetMapping("/filter")
-    public List<EmployeeResponseDTO> filterEmployees(
-            @Parameter(description = "Employee's first name") @RequestParam(required = false) String name,
-            @Parameter(description = "Employee's last name") @RequestParam(required = false) String lastName,
-            @Parameter(description = "Employee's DNI") @RequestParam(required = false) String dni,
-            @Parameter(description = "Employee's email") @RequestParam(required = false) String email,
-            @Parameter(description = "Employee's phone number") @RequestParam(required = false) String phoneNumber,
-            @Parameter(description = "Employee's role") @RequestParam(required = false) Role role,
-            @Parameter(description = "Filter by deleted status") @RequestParam(required = false) Boolean deleted
-    ) {
-        return employeeService.filterEmployees(name, lastName, dni, email, phoneNumber, role, deleted);
     }
 
     @Operation(summary = "Update an employee", description = "Partially updates an employee's information")
@@ -137,16 +132,8 @@ public class EmployeeController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "Delete an employee", description = "Marks an employee as deleted")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Employee deleted successfully",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = EmployeeResponseDTO.class))),
-            @ApiResponse(responseCode = "404", description = "Employee not found", content = @Content)
-    })
     @DeleteMapping("/{id}")
-    public ResponseEntity<EmployeeResponseDTO> deleteEmployee(
-            @Parameter(description = "ID of the employee to delete") @PathVariable @NotNull Long id) {
+    public ResponseEntity<EmployeeResponseDTO> deleteEmployee(@PathVariable @NotNull Long id){
         EmployeeResponseDTO response = employeeService.deleteEmployee(id);
         return ResponseEntity.ok(response);
     }
