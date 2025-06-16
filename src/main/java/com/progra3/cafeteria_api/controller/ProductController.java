@@ -16,6 +16,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ public class ProductController {
 
     private final IProductService productService;
 
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     @Operation(summary = "Create a new product", description = "Registers a new product in the system")
     @ApiResponse(responseCode = "201", description = "Product created successfully",
             content = @Content(mediaType = "application/json",
@@ -54,6 +56,7 @@ public class ProductController {
         return new ResponseEntity<>(productService.createProduct(productRequestDTO), HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN', 'CASHIER', 'WAITER')")
     @Operation(summary = "Get all products", description = "Returns a list of all registered products")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Product list retrieved successfully",
@@ -66,6 +69,7 @@ public class ProductController {
         return productService.getAllProducts();
     }
 
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN', 'CASHIER', 'WAITER')")
     @Operation(summary = "Get a product by ID", description = "Retrieves a product by its unique ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Product found",
@@ -79,6 +83,7 @@ public class ProductController {
         return ResponseEntity.ok(productService.getProductById(id));
     }
 
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     @Operation(summary = "Update an existing product", description = "Modifies the details of an existing product")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Product updated successfully",
@@ -108,6 +113,7 @@ public class ProductController {
         return new ResponseEntity<>(productService.updateProduct(id, productRequestDTO), HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     @Operation(summary = "Delete a product", description = "Deletes a product by its ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Product deleted successfully", content = @Content),
@@ -120,6 +126,7 @@ public class ProductController {
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     @PutMapping("/{id}/groups/{groupId}")
     public ResponseEntity<ProductResponseDTO> assignGroupToProduct(
             @PathVariable Long id,
@@ -128,6 +135,7 @@ public class ProductController {
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     @DeleteMapping("/{id}/groups/{groupId}")
     public ResponseEntity<ProductResponseDTO> removeGroupFromProduct(
             @PathVariable Long id,
@@ -136,6 +144,7 @@ public class ProductController {
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     @PutMapping("/{id}/components")
     public ResponseEntity<ProductResponseDTO> addComponents(
             @PathVariable Long id,
@@ -145,6 +154,7 @@ public class ProductController {
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     @PutMapping("/{id}/components/{componentId}")
     public ResponseEntity<ProductResponseDTO> updateComponent(
             @PathVariable Long id,
@@ -155,6 +165,7 @@ public class ProductController {
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     @DeleteMapping("/{id}/components/{componentId}")
     public ResponseEntity<ProductResponseDTO> removeComponent(
             @PathVariable Long id,

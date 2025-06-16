@@ -72,6 +72,10 @@ public class EmployeeService implements IEmployeeService{
         Employee employee = getEntityById(id);
         employee = employeeMapper.updateEmployeeFromDTO(dto, employee);
 
+        if (dto.password() != null && !dto.password().isBlank()) {
+            employee.setPassword(passwordEncoder.encode(dto.password()));
+        }
+
         return employeeMapper.toDTO(employeeRepository.save(employee));
     }
 

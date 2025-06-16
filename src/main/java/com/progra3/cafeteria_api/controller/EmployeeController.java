@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import com.progra3.cafeteria_api.model.enums.Role;
@@ -19,23 +20,27 @@ public class EmployeeController {
 
     private final IEmployeeService employeeService;
 
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     @PostMapping
     public ResponseEntity<EmployeeResponseDTO> createEmployee(@RequestBody @Valid EmployeeRequestDTO dto) {
         EmployeeResponseDTO response = employeeService.createEmployee(dto);
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     @GetMapping
     public ResponseEntity<List<EmployeeResponseDTO>> getAllEmployees() {
         List<EmployeeResponseDTO> employees = employeeService.getAllEmployees();
         return ResponseEntity.ok(employees);
     }
 
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<EmployeeResponseDTO> getEmployeeById(@PathVariable Long id) {
         return ResponseEntity.ok(employeeService.getEmployeeById(id));
     }
 
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     @GetMapping("/filter")
     public List<EmployeeResponseDTO> filterEmployees(
             @RequestParam(required = false) String name,
@@ -49,12 +54,14 @@ public class EmployeeController {
         return employeeService.filterEmployees(name, lastName, dni, email, phoneNumber, role, deleted);
     }
 
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     @PatchMapping("/{id}")
     public ResponseEntity<EmployeeResponseDTO> updateEmployee(@PathVariable Long id, @RequestBody @Valid EmployeeUpdateDTO dto){
         EmployeeResponseDTO response = employeeService.updateEmployee(id, dto);
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<EmployeeResponseDTO> deleteEmployee(@PathVariable @NotNull Long id){
         EmployeeResponseDTO response = employeeService.deleteEmployee(id);

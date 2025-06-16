@@ -16,6 +16,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,6 +29,7 @@ public class CategoryController {
 
     private final ICategoryService categoryService;
 
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     @Operation(summary = "Create a new category", description = "Registers a new category in the system")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Category created successfully",
@@ -54,6 +56,7 @@ public class CategoryController {
         return new ResponseEntity<>(categoryService.createCategory(categoryRequestDTO), HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN', 'CASHIER', 'WAITER')")
     @Operation(summary = "Get all categories", description = "Returns a list of all registered categories")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Category list retrieved successfully",
@@ -66,6 +69,7 @@ public class CategoryController {
         return categoryService.getAllCategories();
     }
 
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN', 'CASHIER', 'WAITER')")
     @Operation(summary = "Get a category by ID", description = "Retrieves a category by its unique ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Category found",
@@ -79,6 +83,7 @@ public class CategoryController {
         return ResponseEntity.ok(categoryService.getCategoryById(id));
     }
 
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     @Operation(summary = "Update an existing category", description = "Modifies the details of an existing category")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Category updated successfully",
@@ -106,6 +111,7 @@ public class CategoryController {
         return new ResponseEntity<>(categoryService.updateCategory(id, categoryRequestDTO), HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     @Operation(summary = "Delete a category", description = "Deletes a category by its ID, if it has no associated products")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Category deleted successfully", content = @Content),

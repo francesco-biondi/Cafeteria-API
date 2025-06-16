@@ -13,6 +13,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -26,6 +27,7 @@ public class OrderController {
 
     private final IOrderService orderService;
 
+    @PreAuthorize("hasAnyRole('CASHIER', 'WAITER')")
     @Operation(summary = "Create a new destinationOrder", description = "Creates a new destinationOrder with optional customer and employee IDs. The destinationOrder starts in ACTIVE state.")
     @ApiResponse(responseCode = "201", description = "Order successfully created")
     @PostMapping
@@ -36,6 +38,7 @@ public class OrderController {
                 .body(responseDTO);
     }
 
+    @PreAuthorize("hasAnyRole('CASHIER', 'WAITER')")
     @Operation(summary = "Add multiple items to an order", description = "Adds multiple items to the order. The items will be included in the total and subtotal calculations.")
     @ApiResponse(responseCode = "201", description = "Items successfully added to the order")
     @PostMapping("/{id}/items")
@@ -48,6 +51,7 @@ public class OrderController {
                 .body(orderResponseDTO);
     }
 
+    @PreAuthorize("hasRole('CASHIER')")
     @Operation(summary = "Get all orders", description = "Retrieves a list of all orders in the system")
     @ApiResponse(responseCode = "200", description = "List of orders returned successfully")
     @GetMapping
@@ -55,6 +59,7 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getAll());
     }
 
+    @PreAuthorize("hasRole('CASHIER')")
     @Operation(summary = "Get an destinationOrder by ID", description = "Retrieves the details of a specific destinationOrder based on its ID")
     @ApiResponse(responseCode = "200", description = "Order found and returned")
     @ApiResponse(responseCode = "404", description = "Order not found")
@@ -63,6 +68,7 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getById(id));
     }
 
+    @PreAuthorize("hasRole('CASHIER')")
     @Operation(summary = "Get items from an destinationOrder", description = "Returns all items associated with a given destinationOrder ID")
     @ApiResponse(responseCode = "200", description = "List of items returned successfully")
     @GetMapping("/{id}/items")
@@ -70,6 +76,7 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getItems(id));
     }
 
+    @PreAuthorize("hasAnyRole('CASHIER', 'WAITER')")
     @Operation(summary = "Update an destinationOrder", description = "Updates basic fields of an existing destinationOrder")
     @ApiResponse(responseCode = "200", description = "Order updated successfully")
     @PutMapping("/{id}")
@@ -77,6 +84,7 @@ public class OrderController {
         return ResponseEntity.ok(orderService.update(id, dto));
     }
 
+    @PreAuthorize("hasRole('CASHIER')")
     @Operation(summary = "Update the discount of an destinationOrder", description = "Updates the discount value of an destinationOrder")
     @ApiResponse(responseCode = "200", description = "Discount updated successfully")
     @PatchMapping("/{id}")
@@ -87,6 +95,7 @@ public class OrderController {
         return ResponseEntity.ok(orderService.updateDiscount(id, discount));
     }
 
+    @PreAuthorize("hasAnyRole('CASHIER', 'WAITER')")
     @Operation(summary = "Update an item in an destinationOrder", description = "Modifies the comment and quantity of an existing item within an destinationOrder")
     @ApiResponse(responseCode = "200", description = "Item updated successfully")
     @PutMapping("/{orderId}/items/{itemId}")
@@ -97,6 +106,7 @@ public class OrderController {
         return ResponseEntity.ok(orderService.updateItem(orderId, itemId, dto));
     }
 
+    @PreAuthorize("hasAnyRole('CASHIER', 'WAITER')")
     @Operation(summary = "Remove an item from an destinationOrder", description = "Performs a logical delete of the item from the destinationOrder. It will no longer affect the total.")
     @ApiResponse(responseCode = "200", description = "Item marked as deleted")
     @DeleteMapping("/{orderId}/items/{itemId}")
@@ -106,6 +116,7 @@ public class OrderController {
         return ResponseEntity.ok(orderService.removeItem(orderId, itemId));
     }
 
+    @PreAuthorize("hasRole('CASHIER')")
     @Operation(summary = "Split an destinationOrder", description = "Splits an destinationOrder into two separate orders based on the provided items")
     @ApiResponse(responseCode = "200", description = "Order split successfully")
     @PatchMapping("/{orderId}/split")
@@ -115,6 +126,7 @@ public class OrderController {
         return ResponseEntity.ok(orderService.transferItemsBetweenOrders(orderId, dto));
     }
 
+    @PreAuthorize("hasRole('CASHIER')")
     @Operation(summary = "Finalize an destinationOrder", description = "Marks the destinationOrder as finalized, preventing further changes")
     @ApiResponse(responseCode = "200", description = "Order finalized successfully")
     @PatchMapping("/{id}/finalize")
@@ -122,6 +134,7 @@ public class OrderController {
         return ResponseEntity.ok(orderService.updateStatus(id, OrderStatus.FINALIZED));
     }
 
+    @PreAuthorize("hasRole('CASHIER')")
     @Operation(summary = "Mark an destinationOrder as billed", description = "Updates the destinationOrder status to BILLED, indicating the bill was printed")
     @ApiResponse(responseCode = "200", description = "Order status updated to BILLED")
     @PatchMapping("/{id}/bill")
@@ -129,6 +142,7 @@ public class OrderController {
         return ResponseEntity.ok(orderService.updateStatus(id, OrderStatus.BILLED));
     }
 
+    @PreAuthorize("hasRole('CASHIER')")
     @Operation(summary = "Cancel an destinationOrder", description = "Marks the destinationOrder as CANCELED and excludes it from further operations")
     @ApiResponse(responseCode = "200", description = "Order canceled successfully")
     @DeleteMapping("/{id}/cancel")
