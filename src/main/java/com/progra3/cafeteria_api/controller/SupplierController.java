@@ -52,18 +52,45 @@ public class SupplierController {
                 .body(responseDTO);
     }
 
-    @Operation(summary = "Get all suppliers", description = "Retrieves a list of all suppliers")
-    @ApiResponse(responseCode = "200", description = "List of suppliers returned successfully")
+    @Operation(
+            summary = "Get all suppliers",
+            description = "Retrieves a paginated list of all suppliers, optionally filtered by trade name, legal name, or CUIT."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "List of suppliers returned successfully",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Page.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid input parameters", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Access denied", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+    })
     @PreAuthorize("hasAnyRole('OWNER', 'ADMIN', 'CASHIER')")
     @GetMapping
     public ResponseEntity<Page<SupplierResponseDTO>> getSuppliers(
-            @RequestParam(required = false) String tradeName,
-            @RequestParam(required = false) String legalName,
-            @RequestParam(required = false) String cuit,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "tradeName,asc") String sort
-    ){
+            @RequestParam(required = false)
+            @Schema(description = "Filter by trade name (partial match)", example = "Comercial XYZ")
+            String tradeName,
+
+            @RequestParam(required = false)
+            @Schema(description = "Filter by legal name (partial match)", example = "Empresa S.A.")
+            String legalName,
+
+            @RequestParam(required = false)
+            @Schema(description = "Filter by CUIT in format XX-XXXXXXXX-X", example = "30-12345678-9")
+            String cuit,
+
+            @RequestParam(defaultValue = "0")
+            @Schema(description = "Page number for pagination (0-based)", example = "0")
+            int page,
+
+            @RequestParam(defaultValue = "10")
+            @Schema(description = "Number of suppliers per page", example = "10")
+            int size,
+
+            @RequestParam(defaultValue = "tradeName,asc")
+            @Schema(description = "Sorting criteria in the format 'field,direction'", example = "tradeName,asc")
+            String sort
+    ) {
         Pageable pageable = PageRequest.of(page, size, sortUtils.buildSort(sort));
         Page<SupplierResponseDTO> suppliers = supplierService.getSuppliers(tradeName, legalName, cuit, pageable);
         return ResponseEntity.ok(suppliers);

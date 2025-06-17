@@ -50,37 +50,68 @@ public class ProductController {
                     content = @Content(
                             schema = @Schema(implementation = ProductRequestDTO.class),
                             examples = @ExampleObject(value = """
-                                    {
-                                      "name": "Smartphone",
-                                      "description": "Latest model with 128GB storage",
-                                      "price": 699.99,
-                                      "stock": 50
-                                    }
-                                    """)
+                                {
+                                  "categoryId": 3,
+                                  "name": "Café Latte",
+                                  "description": "Delicious coffee with milk",
+                                  "price": 150.0,
+                                  "cost": 100.0,
+                                  "controlStock": true,
+                                  "stock": 25
+                                }
+                                """)
                     )
             )
             @RequestBody @Valid ProductRequestDTO productRequestDTO) {
         return new ResponseEntity<>(productService.createProduct(productRequestDTO), HttpStatus.CREATED);
     }
 
-    @Operation(summary = "Get all products", description = "Returns a list of all registered products")
+    @Operation(
+            summary = "Get all products",
+            description = "Retrieves a paginated list of all registered products, optionally filtered by name, category, stock range, or composite status."
+    )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Product list retrieved successfully",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ProductResponseDTO.class))),
+                            schema = @Schema(implementation = Page.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid input parameters", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Access denied", content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     @PreAuthorize("hasAnyRole('OWNER', 'ADMIN', 'CASHIER', 'WAITER')")
     @GetMapping
     public ResponseEntity<Page<ProductResponseDTO>> getProducts(
-            @RequestParam(required = false) String name,
-            @RequestParam(required = false) Long categoryId,
-            @RequestParam(required = false) Integer minStock,
-            @RequestParam(required = false) Integer maxStock,
-            @RequestParam(required = false) boolean composite,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "name,asc") String sort
+            @RequestParam(required = false)
+            @Schema(description = "Filter by product name (partial match)", example = "Café Latte")
+            String name,
+
+            @RequestParam(required = false)
+            @Schema(description = "Filter by category ID", example = "3")
+            Long categoryId,
+
+            @RequestParam(required = false)
+            @Schema(description = "Minimum stock quantity for filtering", example = "10")
+            Integer minStock,
+
+            @RequestParam(required = false)
+            @Schema(description = "Maximum stock quantity for filtering", example = "100")
+            Integer maxStock,
+
+            @RequestParam(required = false)
+            @Schema(description = "Filter by composite product status (true for composite, false for non-composite)", example = "false")
+            boolean composite,
+
+            @RequestParam(defaultValue = "0")
+            @Schema(description = "Page number for pagination (0-based)", example = "0")
+            int page,
+
+            @RequestParam(defaultValue = "10")
+            @Schema(description = "Number of products per page", example = "10")
+            int size,
+
+            @RequestParam(defaultValue = "name,asc")
+            @Schema(description = "Sorting criteria in the format 'field,direction'", example = "name,asc")
+            String sort
     ) {
         Pageable pageable = PageRequest.of(page, size, sortUtils.buildSort(sort));
         Page<ProductResponseDTO> products = productService.getProducts(name, categoryId, minStock, maxStock, composite, pageable);
@@ -118,13 +149,16 @@ public class ProductController {
                     content = @Content(
                             schema = @Schema(implementation = ProductRequestDTO.class),
                             examples = @ExampleObject(value = """
-                                    {
-                                      "name": "Smartphone Pro",
-                                      "description": "Updated model with better features",
-                                      "price": 799.99,
-                                      "stock": 30
-                                    }
-                                    """)
+                                {
+                                  "categoryId": 3,
+                                  "name": "Smartphone Pro",
+                                  "description": "Updated model with better features",
+                                  "price": 799.99,
+                                  "cost": 500.0,
+                                  "controlStock": true,
+                                  "stock": 30
+                                }
+                                """)
                     )
             )
             @RequestBody @Valid ProductRequestDTO productRequestDTO) {

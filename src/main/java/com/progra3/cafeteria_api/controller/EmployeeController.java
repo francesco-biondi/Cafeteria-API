@@ -52,16 +52,16 @@ public class EmployeeController {
                     content = @Content(
                             schema = @Schema(implementation = EmployeeRequestDTO.class),
                             examples = @ExampleObject(value = """
-                                    {
-                                      "name": "Alice",
-                                      "lastName": "Smith",
-                                      "dni": "12345678",
-                                      "email": "alice.smith@example.com",
-                                      "phoneNumber": "1122334455",
-                                      "role": "WAITER",
-                                      "password": "securePassword"
-                                    }
-                                    """)
+                                {
+                                  "name": "Alice",
+                                  "lastName": "Smith",
+                                  "dni": "12345678",
+                                  "email": "alice.smith@example.com",
+                                  "phoneNumber": "541123456789",
+                                  "role": "WAITER",
+                                  "password": "securePassword"
+                                }
+                                """)
                     )
             )
             @RequestBody @Valid EmployeeRequestDTO dto) {
@@ -69,23 +69,42 @@ public class EmployeeController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "Get all employees", description = "Retrieves a list of all employees")
+    @Operation(
+            summary = "Get all employees",
+            description = "Retrieves a paginated list of employees, optionally filtered by name, last name, DNI, email, or role."
+    )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Employees retrieved successfully",
                     content = @Content(mediaType = "application/json",
                             array = @ArraySchema(schema = @Schema(implementation = EmployeeResponseDTO.class)))),
+            @ApiResponse(responseCode = "400", description = "Invalid request parameters", content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     @GetMapping
     public ResponseEntity<Page<EmployeeResponseDTO>> getEmployees(
+            @Parameter(description = "Filter by employee name (optional)", example = "Alice")
             @RequestParam(required = false) String name,
+
+            @Parameter(description = "Filter by employee last name (optional)", example = "Smith")
             @RequestParam(required = false) String lastName,
+
+            @Parameter(description = "Filter by employee DNI (optional)", example = "12345678")
             @RequestParam(required = false) String dni,
+
+            @Parameter(description = "Filter by employee email (optional)", example = "alice.smith@example.com")
             @RequestParam(required = false) String email,
+
+            @Parameter(description = "Filter by employee role (optional)", example = "WAITER")
             @RequestParam(required = false) Role role,
+
+            @Parameter(description = "Page number for pagination (default is 0)", example = "0")
             @RequestParam(defaultValue = "0") int page,
+
+            @Parameter(description = "Number of records per page (default is 10)", example = "10")
             @RequestParam(defaultValue = "10") int size,
+
+            @Parameter(description = "Sorting criteria in the format 'field,direction' (default is 'name,asc')", example = "name,asc")
             @RequestParam(defaultValue = "name,asc") String sort
     ) {
         Pageable pageable = PageRequest.of(page, size, sortUtils.buildSort(sort));
@@ -125,11 +144,17 @@ public class EmployeeController {
                     content = @Content(
                             schema = @Schema(implementation = EmployeeUpdateDTO.class),
                             examples = @ExampleObject(value = """
-                                    {
-                                      "email": "new.email@example.com",
-                                      "phoneNumber": "1199887766"
-                                    }
-                                    """)
+                                {
+                                  "name": "John",
+                                  "lastName": "Doe",
+                                  "dni": "87654321",
+                                  "email": "john.doe@example.com",
+                                  "phoneNumber": "541198765432",
+                                  "username": "johndoe",
+                                  "password": "newSecurePassword",
+                                  "role": "ADMIN"
+                                }
+                                """)
                     )
             )
             @RequestBody @Valid EmployeeUpdateDTO dto) {
@@ -137,6 +162,13 @@ public class EmployeeController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Delete an employee", description = "Marks an employee as deleted")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Employee deleted successfully",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = EmployeeResponseDTO.class))),
+            @ApiResponse(responseCode = "404", description = "Employee not found", content = @Content)
+    })
     @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<EmployeeResponseDTO> deleteEmployee(@PathVariable @NotNull Long id){

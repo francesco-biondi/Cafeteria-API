@@ -51,13 +51,14 @@ public class CustomerController {
                     content = @Content(
                             schema = @Schema(implementation = CustomerRequestDTO.class),
                             examples = @ExampleObject(value = """
-                                    {
-                                      "firstName": "John",
-                                      "lastName": "Doe",
-                                      "email": "john.doe@example.com",
-                                      "phone": "123456789"
-                                    }
-                                    """)
+                                {
+                                  "name": "John",
+                                  "lastName": "Doe",
+                                  "dni": "12345678",
+                                  "phoneNumber": "541112345678",
+                                  "email": "john.doe@example.com"
+                                }
+                                """)
                     )
             )
             @Valid @RequestBody CustomerRequestDTO dto) {
@@ -67,27 +68,44 @@ public class CustomerController {
                 .body(responseDTO);
     }
 
-    @Operation(summary = "Get all customers", description = "Returns a list of all registered customers")
+    @Operation(
+            summary = "Get all customers",
+            description = "Retrieves a paginated list of all registered customers, optionally filtered by name, last name, DNI, or email."
+    )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Customer list retrieved successfully",
                     content = @Content(mediaType = "application/json",
                             array = @ArraySchema(schema = @Schema(implementation = CustomerResponseDTO.class)))),
+            @ApiResponse(responseCode = "400", description = "Invalid request parameters", content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     @PreAuthorize("hasAnyRole('OWNER', 'ADMIN', 'CASHIER')")
     @GetMapping
     public ResponseEntity<Page<CustomerResponseDTO>> getCustomers(
+            @Parameter(description = "Filter by customer name (optional)", example = "John")
             @RequestParam(required = false) String name,
+
+            @Parameter(description = "Filter by customer last name (optional)", example = "Doe")
             @RequestParam(required = false) String lastName,
+
+            @Parameter(description = "Filter by customer DNI (optional)", example = "12345678")
             @RequestParam(required = false) String dni,
+
+            @Parameter(description = "Filter by customer email (optional)", example = "john.doe@example.com")
             @RequestParam(required = false) String email,
+
+            @Parameter(description = "Page number for pagination (default is 0)", example = "0")
             @RequestParam(defaultValue = "0") int page,
+
+            @Parameter(description = "Number of records per page (default is 10)", example = "10")
             @RequestParam(defaultValue = "10") int size,
+
+            @Parameter(description = "Sorting criteria in the format 'field,direction' (default is 'name,asc')", example = "name,asc")
             @RequestParam(defaultValue = "name,asc") String sort
-    ){
+    ) {
         Pageable pageable = PageRequest.of(page, size, sortUtils.buildSort(sort));
-        Page<CustomerResponseDTO> employees = customerService.getCustomers(name, lastName, dni, email, pageable);
-        return ResponseEntity.ok(employees);
+        Page<CustomerResponseDTO> customers = customerService.getCustomers(name, lastName, dni, email, pageable);
+        return ResponseEntity.ok(customers);
     }
 
     @Operation(summary = "Get a customer by ID", description = "Retrieves a customer by its unique ID")
@@ -122,11 +140,12 @@ public class CustomerController {
                     content = @Content(
                             schema = @Schema(implementation = CustomerUpdateDTO.class),
                             examples = @ExampleObject(value = """
-                                    {
-                                      "email": "new.email@example.com",
-                                      "phone": "987654321"
-                                    }
-                                    """)
+                                {
+                                  "email": "new.email@example.com",
+                                  "phoneNumber": "541198765432",
+                                  "discount": 15
+                                }
+                                """)
                     )
             )
             @Valid @RequestBody CustomerUpdateDTO dto) {
