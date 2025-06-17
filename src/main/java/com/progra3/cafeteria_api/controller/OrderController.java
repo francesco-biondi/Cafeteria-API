@@ -44,12 +44,14 @@ public class OrderController {
                     content = @Content(
                             schema = @Schema(implementation = OrderRequestDTO.class),
                             examples = @ExampleObject(value = """
-                    {
-                      "customerId": 123,
-                      "employeeId": 45,
-                      "items": []
-                    }
-                    """)
+                        {
+                          "seatingId": 5,
+                          "employeeId": 45,
+                          "customerId": 123,
+                          "orderType": "TABLE",
+                          "peopleCount": 3
+                        }
+                        """)
                     )
             )
             @RequestBody @Valid OrderRequestDTO dto) {
