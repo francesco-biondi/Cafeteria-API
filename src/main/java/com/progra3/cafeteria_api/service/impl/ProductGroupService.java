@@ -12,7 +12,7 @@ import com.progra3.cafeteria_api.model.mapper.ProductOptionMapper;
 import com.progra3.cafeteria_api.model.entity.ProductGroup;
 import com.progra3.cafeteria_api.model.entity.ProductOption;
 import com.progra3.cafeteria_api.repository.ProductGroupRepository;
-import com.progra3.cafeteria_api.security.BusinessContext;
+import com.progra3.cafeteria_api.security.EmployeeContext;
 import com.progra3.cafeteria_api.service.port.IProductGroupService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,7 +25,7 @@ public class ProductGroupService implements IProductGroupService {
 
     private final ProductGroupRepository productGroupRepository;
 
-    private final BusinessContext businessContext;
+    private final EmployeeContext employeeContext;
     private final ProductOptionService productOptionService;
 
     private final ProductGroupMapper productGroupMapper;
@@ -34,14 +34,14 @@ public class ProductGroupService implements IProductGroupService {
     @Override
     public ProductGroupResponseDTO createProductGroup(ProductGroupRequestDTO dto) {
         ProductGroup productGroup = productGroupMapper.toEntity(dto);
-        productGroup.setBusiness(businessContext.getCurrentBusiness());
+        productGroup.setBusiness(employeeContext.getCurrentBusiness());
 
         return productGroupMapper.toDTO(productGroupRepository.save(productGroup));
     }
 
     @Override
     public ProductGroup getEntityById(Long productGroupId) {
-        return productGroupRepository.findByIdAndBusiness_Id(productGroupId, businessContext.getCurrentBusinessId())
+        return productGroupRepository.findByIdAndBusiness_Id(productGroupId, employeeContext.getCurrentBusinessId())
                 .orElseThrow(() -> new ProductGroupNotFoundException(productGroupId));
     }
 
@@ -54,7 +54,7 @@ public class ProductGroupService implements IProductGroupService {
 
     @Override
     public List<ProductGroupResponseDTO> getAllProductGroups() {
-        List<ProductGroup> productGroups = productGroupRepository.findByBusiness_Id(businessContext.getCurrentBusinessId());
+        List<ProductGroup> productGroups = productGroupRepository.findByBusiness_Id(employeeContext.getCurrentBusinessId());
 
         return productGroupMapper.toDTOList(productGroups);
     }

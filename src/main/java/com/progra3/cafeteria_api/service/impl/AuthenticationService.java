@@ -47,6 +47,7 @@ public class AuthenticationService implements IAuthenticationService {
         EmployeeDetails userDetails = new EmployeeDetails(
                 employee.getUsername(),
                 employee.getPassword(),
+                employee.getId(),
                 List.of(new SimpleGrantedAuthority("ROLE_" + employee.getRole().name())),
                 employee.getBusiness().getId()
         );

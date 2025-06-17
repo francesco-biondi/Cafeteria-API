@@ -8,7 +8,7 @@ import com.progra3.cafeteria_api.model.entity.Employee;
 import com.progra3.cafeteria_api.model.enums.Role;
 import com.progra3.cafeteria_api.model.mapper.EmployeeMapper;
 import com.progra3.cafeteria_api.repository.EmployeeRepository;
-import com.progra3.cafeteria_api.security.BusinessContext;
+import com.progra3.cafeteria_api.security.EmployeeContext;
 import com.progra3.cafeteria_api.service.port.IEmployeeService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ public class EmployeeService implements IEmployeeService{
 
     private final EmployeeRepository employeeRepository;
 
-    private final BusinessContext businessContext;
+    private final EmployeeContext employeeContext;
 
     private final EmployeeMapper employeeMapper;
 
@@ -40,7 +40,7 @@ public class EmployeeService implements IEmployeeService{
         }
 
         Employee employee = employeeMapper.toEntity(dto);
-        employee.setBusiness(businessContext.getCurrentBusiness());
+        employee.setBusiness(employeeContext.getCurrentBusiness());
         employee.setDeleted(false);
         employee.setUsername(employee.getUsername() + "@" + employee.getBusiness().getName().toLowerCase().replace(" ", "_"));
         employee.setPassword(passwordEncoder.encode(employee.getPassword()));
@@ -51,7 +51,7 @@ public class EmployeeService implements IEmployeeService{
     @Override
     public Employee getEntityById (Long employeeId) {
         return Optional.ofNullable(employeeId)
-                .map(customer -> employeeRepository.findByIdAndBusiness_Id(employeeId, businessContext.getCurrentBusinessId())
+                .map(customer -> employeeRepository.findByIdAndBusiness_Id(employeeId, employeeContext.getCurrentBusinessId())
                         .orElseThrow(() -> new EmployeeNotFoundException(employeeId)))
                 .orElse(null);
     }
@@ -92,7 +92,7 @@ public class EmployeeService implements IEmployeeService{
                 dni,
                 email,
                 role,
-                businessContext.getCurrentBusinessId(),
+                employeeContext.getCurrentBusinessId(),
                 pageable);
 
         return employees.map(employeeMapper::toDTO);

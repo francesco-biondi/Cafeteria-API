@@ -10,7 +10,7 @@ import com.progra3.cafeteria_api.model.enums.OrderStatus;
 import com.progra3.cafeteria_api.model.enums.SeatingStatus;
 import com.progra3.cafeteria_api.model.mapper.SeatingMapper;
 import com.progra3.cafeteria_api.repository.SeatingRepository;
-import com.progra3.cafeteria_api.security.BusinessContext;
+import com.progra3.cafeteria_api.security.EmployeeContext;
 import com.progra3.cafeteria_api.service.port.ISeatingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,16 +24,16 @@ public class SeatingService implements ISeatingService {
 
     private final SeatingRepository seatingRepository;
 
-    private final BusinessContext businessContext;
+    private final EmployeeContext employeeContext;
 
     private final SeatingMapper seatingMapper;
 
     @Override
     public SeatingResponseDTO create(SeatingRequestDTO seatingRequestDTO) {
         Seating seating = seatingMapper.toEntity(seatingRequestDTO);
-        seating.setBusiness(businessContext.getCurrentBusiness());
+        seating.setBusiness(employeeContext.getCurrentBusiness());
 
-        seatingRepository.findByNumberAndBusiness_Id(seating.getNumber(), businessContext.getCurrentBusinessId())
+        seatingRepository.findByNumberAndBusiness_Id(seating.getNumber(), employeeContext.getCurrentBusinessId())
                 .ifPresent(s -> {
                     if(!s.getDeleted()) throw new SeatingAlreadyExistsException(seating.getNumber());
                 });
@@ -50,14 +50,14 @@ public class SeatingService implements ISeatingService {
     @Override
     public Seating getEntityById(Long id) {
         return Optional.ofNullable(id)
-                .map(customer -> seatingRepository.findByIdAndBusiness_Id(id, businessContext.getCurrentBusinessId())
+                .map(customer -> seatingRepository.findByIdAndBusiness_Id(id, employeeContext.getCurrentBusinessId())
                         .orElseThrow(() -> new SeatingNotFoundException(id)))
                 .orElse(null);
     }
 
     @Override
     public List<SeatingResponseDTO> getAll() {
-        return seatingRepository.findByBusiness_Id(businessContext.getCurrentBusinessId())
+        return seatingRepository.findByBusiness_Id(employeeContext.getCurrentBusinessId())
                 .stream()
                 .map(seatingMapper::toDTO)
                 .toList();
@@ -106,7 +106,7 @@ public class SeatingService implements ISeatingService {
 
     @Override
     public SeatingResponseDTO getByNumber(Integer number) {
-        return seatingMapper.toDTO(seatingRepository.findByNumberAndBusiness_Id(number, businessContext.getCurrentBusinessId())
+        return seatingMapper.toDTO(seatingRepository.findByNumberAndBusiness_Id(number, employeeContext.getCurrentBusinessId())
                 .orElseThrow(() -> new SeatingNotFoundException(number)));
     }
 

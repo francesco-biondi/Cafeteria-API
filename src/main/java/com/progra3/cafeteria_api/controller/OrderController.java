@@ -43,7 +43,7 @@ public class OrderController {
             @ApiResponse(responseCode = "201", description = "Order successfully created"),
             @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content)
     })
-    @PreAuthorize("hasAnyRole('CASHIER', 'WAITER')")
+    @PreAuthorize("hasAnyRole('CASHIER', 'WAITER', 'OWNER', 'ADMIN')")
     @PostMapping
     public ResponseEntity<OrderResponseDTO> createOrder(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -75,7 +75,7 @@ public class OrderController {
             @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content),
             @ApiResponse(responseCode = "404", description = "Order not found", content = @Content)
     })
-    @PreAuthorize("hasAnyRole('CASHIER', 'WAITER')")
+    @PreAuthorize("hasAnyRole('CASHIER', 'WAITER', 'OWNER', 'ADMIN')")
     @PostMapping("/{id}/items")
     public ResponseEntity<OrderResponseDTO> addItems(
             @Parameter(description = "ID of the order to add items to")
@@ -98,7 +98,7 @@ public class OrderController {
             @ApiResponse(responseCode = "400", description = "Invalid input parameters", content = @Content),
             @ApiResponse(responseCode = "403", description = "Access denied", content = @Content)
     })
-    @PreAuthorize("hasRole('CASHIER')")
+    @PreAuthorize("hasAnyRole('CASHIER', 'OWNER', 'ADMIN')")
     @GetMapping
     public ResponseEntity<Page<OrderResponseDTO>> getOrders(
             @RequestParam(required = false)
@@ -145,7 +145,7 @@ public class OrderController {
             @ApiResponse(responseCode = "200", description = "Order found and returned"),
             @ApiResponse(responseCode = "404", description = "Order not found", content = @Content)
     })
-    @PreAuthorize("hasRole('CASHIER')")
+    @PreAuthorize("hasAnyRole('CASHIER', 'OWNER', 'ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<OrderResponseDTO> getOrderById(
             @Parameter(description = "ID of the order to retrieve")
@@ -158,7 +158,7 @@ public class OrderController {
             @ApiResponse(responseCode = "200", description = "List of items returned successfully"),
             @ApiResponse(responseCode = "404", description = "Order not found", content = @Content)
     })
-    @PreAuthorize("hasRole('CASHIER')")
+    @PreAuthorize("hasAnyRole('CASHIER', 'OWNER', 'ADMIN')")
     @GetMapping("/{id}/items")
     public ResponseEntity<List<ItemResponseDTO>> getItems(
             @Parameter(description = "ID of the order to retrieve items from")
@@ -172,7 +172,7 @@ public class OrderController {
             @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content),
             @ApiResponse(responseCode = "404", description = "Order not found", content = @Content)
     })
-    @PreAuthorize("hasAnyRole('CASHIER', 'WAITER')")
+    @PreAuthorize("hasAnyRole('CASHIER', 'WAITER', 'OWNER', 'ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<OrderResponseDTO> updateOrder(
             @Parameter(description = "ID of the order to update")
@@ -187,7 +187,7 @@ public class OrderController {
             @ApiResponse(responseCode = "400", description = "Invalid discount value", content = @Content),
             @ApiResponse(responseCode = "404", description = "Order not found", content = @Content)
     })
-    @PreAuthorize("hasRole('CASHIER')")
+    @PreAuthorize("hasAnyRole('CASHIER', 'OWNER', 'ADMIN')")
     @PatchMapping("/{id}")
     public ResponseEntity<OrderResponseDTO> updateDiscount(
             @Parameter(description = "ID of the order to update discount")
@@ -202,7 +202,7 @@ public class OrderController {
             @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content),
             @ApiResponse(responseCode = "404", description = "Order or item not found", content = @Content)
     })
-    @PreAuthorize("hasAnyRole('CASHIER', 'WAITER')")
+    @PreAuthorize("hasAnyRole('CASHIER', 'WAITER', 'OWNER', 'ADMIN')")
     @PutMapping("/{orderId}/items/{itemId}")
     public ResponseEntity<ItemResponseDTO> updateItem(
             @Parameter(description = "ID of the order")
@@ -218,7 +218,7 @@ public class OrderController {
             @ApiResponse(responseCode = "200", description = "Item marked as deleted"),
             @ApiResponse(responseCode = "404", description = "Order or item not found", content = @Content)
     })
-    @PreAuthorize("hasAnyRole('CASHIER', 'WAITER')")
+    @PreAuthorize("hasAnyRole('CASHIER', 'WAITER', 'OWNER', 'ADMIN')")
     @DeleteMapping("/{orderId}/items/{itemId}")
     public ResponseEntity<ItemResponseDTO> removeItem(
             @Parameter(description = "ID of the order")
@@ -234,7 +234,7 @@ public class OrderController {
             @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content),
             @ApiResponse(responseCode = "404", description = "Order not found", content = @Content)
     })
-    @PreAuthorize("hasRole('CASHIER')")
+    @PreAuthorize("hasAnyRole('CASHIER', 'OWNER', 'ADMIN')")
     @PatchMapping("/{orderId}/split")
     public ResponseEntity<List<OrderResponseDTO>> splitOrder(
             @Parameter(description = "ID of the order to split")
@@ -248,7 +248,7 @@ public class OrderController {
             @ApiResponse(responseCode = "200", description = "Order finalized successfully"),
             @ApiResponse(responseCode = "404", description = "Order not found", content = @Content)
     })
-    @PreAuthorize("hasRole('CASHIER')")
+    @PreAuthorize("hasAnyRole('CASHIER', 'OWNER', 'ADMIN')")
     @PatchMapping("/{id}/finalize")
     public ResponseEntity<OrderResponseDTO> finalizeOrder(
             @Parameter(description = "ID of the order to finalize")
@@ -261,7 +261,7 @@ public class OrderController {
             @ApiResponse(responseCode = "200", description = "Order status updated to BILLED"),
             @ApiResponse(responseCode = "404", description = "Order not found", content = @Content)
     })
-    @PreAuthorize("hasRole('CASHIER')")
+    @PreAuthorize("hasAnyRole('CASHIER', 'OWNER', 'ADMIN')")
     @PatchMapping("/{id}/bill")
     public ResponseEntity<OrderResponseDTO> billOrder(
             @Parameter(description = "ID of the order to mark as billed")
@@ -274,7 +274,7 @@ public class OrderController {
             @ApiResponse(responseCode = "200", description = "Order canceled successfully"),
             @ApiResponse(responseCode = "404", description = "Order not found", content = @Content)
     })
-    @PreAuthorize("hasRole('CASHIER')")
+    @PreAuthorize("hasAnyRole('CASHIER', 'OWNER', 'ADMIN')")
     @DeleteMapping("/{id}/cancel")
     public ResponseEntity<OrderResponseDTO> cancelOrder(
             @Parameter(description = "ID of the order to cancel")

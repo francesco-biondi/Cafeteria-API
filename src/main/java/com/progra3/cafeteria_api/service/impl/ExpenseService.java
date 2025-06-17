@@ -1,5 +1,6 @@
 package com.progra3.cafeteria_api.service.impl;
 
+import com.progra3.cafeteria_api.event.ExpenseCreatedEvent;
 import com.progra3.cafeteria_api.exception.expense.ExpenseNotFoundException;
 import com.progra3.cafeteria_api.exception.utilities.InvalidDateException;
 import com.progra3.cafeteria_api.exception.supplier.SupplierNotFoundException;
@@ -10,9 +11,10 @@ import com.progra3.cafeteria_api.model.entity.Expense;
 import com.progra3.cafeteria_api.model.entity.Supplier;
 import com.progra3.cafeteria_api.model.mapper.ExpenseMapper;
 import com.progra3.cafeteria_api.repository.ExpenseRepository;
-import com.progra3.cafeteria_api.security.BusinessContext;
+import com.progra3.cafeteria_api.security.EmployeeContext;
 import com.progra3.cafeteria_api.service.port.IExpenseService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -27,8 +29,10 @@ public class ExpenseService implements IExpenseService {
 
     private final ExpenseRepository expenseRepository;
 
-    private final BusinessContext businessContext;
+    private final EmployeeContext employeeContext;
     private final SupplierService supplierService;
+
+    private final ApplicationEventPublisher eventPublisher;
 
     private final ExpenseMapper expenseMapper;
 
@@ -40,8 +44,9 @@ public class ExpenseService implements IExpenseService {
 
         Expense expense = expenseMapper.toEntity(dto);
         expense.setSupplier(supplier);
-        expense.setBusiness(businessContext.getCurrentBusiness());
+        expense.setBusiness(employeeContext.getCurrentBusiness());
         expense.setDateTime(LocalDateTime.now(clock));
+        eventPublisher.publishEvent(new ExpenseCreatedEvent(expense));
 
         return expenseMapper.toDTO(expenseRepository.save(expense));
     }
@@ -54,7 +59,7 @@ public class ExpenseService implements IExpenseService {
                 maxAmount,
                 startDate,
                 endDate,
-                businessContext.getCurrentBusinessId(),
+                employeeContext.getCurrentBusinessId(),
                 pageable);
 
         return expenses.map(expenseMapper::toDTO);
@@ -74,12 +79,12 @@ public class ExpenseService implements IExpenseService {
         if (start.isAfter(end)){
             throw new InvalidDateException("Start should be earlier than end");
         }
-        return expenseRepository.findByDateTimeBetweenAndBusiness_Id(start, end, businessContext.getCurrentBusinessId());
+        return expenseRepository.findByDateTimeBetweenAndBusiness_Id(start, end, employeeContext.getCurrentBusinessId());
     }
 
     @Override
     public ExpenseResponseDTO update(Long expenseId, ExpenseUpdateDTO dto) {
-        if (!expenseRepository.existsByIdAndBusiness_Id(expenseId, businessContext.getCurrentBusinessId()))
+        if (!expenseRepository.existsByIdAndBusiness_Id(expenseId, employeeContext.getCurrentBusinessId()))
             throw new SupplierNotFoundException(expenseId);
 
         Expense expense = getEntityById(expenseId);
@@ -99,7 +104,7 @@ public class ExpenseService implements IExpenseService {
 
     @Override
     public Expense getEntityById (Long expenseId){
-        return expenseRepository.findByIdAndBusiness_Id(expenseId, businessContext.getCurrentBusinessId())
+        return expenseRepository.findByIdAndBusiness_Id(expenseId, employeeContext.getCurrentBusinessId())
                 .orElseThrow(() -> new ExpenseNotFoundException(expenseId));
     }
 }

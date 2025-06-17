@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-06-12T19:38:26-0300",
+    date = "2025-06-16T20:41:22-0300",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 24.0.1 (Oracle Corporation)"
 )
 @Component
@@ -96,7 +96,7 @@ public class ProductMapperImpl implements ProductMapper {
     }
 
     @Override
-    public Product updateProductFromDTO(Product product, ProductRequestDTO dto, Category category) {
+    public Product updateProductFromDTO(Product product, ProductRequestDTO dto) {
         if ( dto == null ) {
             return product;
         }
