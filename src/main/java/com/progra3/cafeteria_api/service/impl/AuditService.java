@@ -45,12 +45,11 @@ public class AuditService implements IAuditService {
 
     @Override
     public AuditResponseDTO create(AuditRequestDTO dto) {
-        verifyAuditStatus(employeeContext.getCurrentBusinessId());
 
         Audit audit = auditMapper.toEntity(dto);
         audit.setBusiness(employeeContext.getCurrentBusiness());
 
-        audit.setStartTime(dto.startTime() != null ? dto.startTime() : LocalDateTime.now(clock));
+        audit.setStartTime(dto.startTime());
         audit.setAuditStatus(AuditStatus.IN_PROGRESS);
         audit.setRealCash(Constant.ZERO_AMOUNT);
 
@@ -64,6 +63,8 @@ public class AuditService implements IAuditService {
 
         recalculateAudit(audit);
         audit.setDeleted(false);
+
+        validateNewAudit(audit);
 
         return auditMapper.toDTO(auditRepository.save(audit));
     }
@@ -142,26 +143,27 @@ public class AuditService implements IAuditService {
         audit.setBalanceGap(audit.getRealCash() - (audit.getTotal() + audit.getInitialCash() - audit.getTotalExpensed()));
     }
 
-    public double calculateTotal(Audit audit) {
+    private double calculateTotal(Audit audit) {
         return audit.getOrders().stream()
                 .filter(order -> order.getStatus().equals(OrderStatus.FINALIZED))
                 .mapToDouble(Order::getTotal)
                 .sum();
     }
 
-    public double calculateExpenseTotal(Audit audit) {
+    private double calculateExpenseTotal(Audit audit) {
         return audit.getExpenses().stream()
                 .filter(expense -> !expense.getDeleted())
                 .mapToDouble(Expense::getAmount)
                 .sum();
     }
 
-    private void verifyAuditStatus(Long businessId) {
-        if (auditRepository.existsByBusiness_Id(businessId)) {
-            auditRepository.findByBusiness_IdAndAuditStatus(businessId, AuditStatus.IN_PROGRESS)
-                    .ifPresent(audit -> {
-                        throw new AuditInProgressException();
-                    });
+    private void validateNewAudit(Audit newAudit) {
+        getInProgressAudit().ifPresent(audit -> {
+            throw new AuditInProgressException();
+        });
+
+        if (newAudit.getStartTime().isAfter(LocalDateTime.now(clock))) {
+            throw new IllegalArgumentException("The start time of the audit cannot be in the future.");
         }
     }
 }
