@@ -43,12 +43,26 @@ public class BusinessController {
                     content = @Content(
                             schema = @Schema(implementation = BusinessRequestDTO.class),
                             examples = @ExampleObject(value = """
-                                    {
-                                      "name": "CoffeeCloud",
-                                      "address": "123 Main Street",
-                                      "cuit": "20-12345678-9"
-                                    }
-                                    """)
+                                {
+                                  "name": "CoffeeCloud",
+                                  "cuit": "20-12345678-9",
+                                  "address": {
+                                    "street": "Av. Corrientes 1234",
+                                    "city": "Buenos Aires",
+                                    "province": "Buenos Aires",
+                                    "zipCode": "1406"
+                                  },
+                                  "owner": {
+                                    "name": "Juan",
+                                    "lastName": "Pérez",
+                                    "dni": "12345678",
+                                    "email": "juan.perez@example.com",
+                                    "phoneNumber": "541123456789",
+                                    "password": "password123",
+                                    "role": "ADMIN"
+                                  }
+                                }
+                                """)
                     )
             )
             @RequestBody @Valid BusinessRequestDTO dto) {
