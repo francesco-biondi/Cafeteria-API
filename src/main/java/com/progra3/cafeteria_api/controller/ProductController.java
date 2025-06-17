@@ -42,13 +42,16 @@ public class ProductController {
                     content = @Content(
                             schema = @Schema(implementation = ProductRequestDTO.class),
                             examples = @ExampleObject(value = """
-                                    {
-                                      "name": "Smartphone",
-                                      "description": "Latest model with 128GB storage",
-                                      "price": 699.99,
-                                      "stock": 50
-                                    }
-                                    """)
+                                {
+                                  "categoryId": 3,
+                                  "name": "Smartphone",
+                                  "description": "Latest model with 128GB storage",
+                                  "price": 699.99,
+                                  "cost": 500.00,
+                                  "controlStock": true,
+                                  "stock": 50
+                                }
+                                """)
                     )
             )
             @RequestBody @Valid ProductRequestDTO productRequestDTO) {
@@ -96,13 +99,16 @@ public class ProductController {
                     content = @Content(
                             schema = @Schema(implementation = ProductRequestDTO.class),
                             examples = @ExampleObject(value = """
-                                    {
-                                      "name": "Smartphone Pro",
-                                      "description": "Updated model with better features",
-                                      "price": 799.99,
-                                      "stock": 30
-                                    }
-                                    """)
+                                {
+                                  "categoryId": 3,
+                                  "name": "Smartphone Pro",
+                                  "description": "Updated model with better features",
+                                  "price": 799.99,
+                                  "cost": 600.00,
+                                  "controlStock": true,
+                                  "stock": 30
+                                }
+                                """)
                     )
             )
             @RequestBody @Valid ProductRequestDTO productRequestDTO) {
