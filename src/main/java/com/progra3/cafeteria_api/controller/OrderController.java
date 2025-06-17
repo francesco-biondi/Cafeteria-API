@@ -52,12 +52,14 @@ public class OrderController {
                     content = @Content(
                             schema = @Schema(implementation = OrderRequestDTO.class),
                             examples = @ExampleObject(value = """
-                    {
-                      "customerId": 123,
-                      "employeeId": 45,
-                      "items": []
-                    }
-                    """)
+                                {
+                                  "seatingId": 5,
+                                  "employeeId": 45,
+                                  "customerId": 123,
+                                  "orderType": "TABLE",
+                                  "peopleCount": 4
+                                }
+                                """)
                     )
             )
             @RequestBody @Valid OrderRequestDTO dto) {
@@ -85,19 +87,53 @@ public class OrderController {
                 .body(orderResponseDTO);
     }
 
-    @Operation(summary = "Get all orders", description = "Retrieves a list of all orders in the system")
-    @ApiResponse(responseCode = "200", description = "List of orders returned successfully")
+    @Operation(
+            summary = "Get all orders",
+            description = "Retrieves a paginated list of all orders in the system, optionally filtered by date range, customer, employee, or status."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "List of orders returned successfully",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Page.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid input parameters", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Access denied", content = @Content)
+    })
     @PreAuthorize("hasRole('CASHIER')")
     @GetMapping
     public ResponseEntity<Page<OrderResponseDTO>> getOrders(
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-            @RequestParam(required = false) Long customerId,
-            @RequestParam(required = false) Long employeeId,
-            @RequestParam(required = false) OrderStatus status,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "dateTime,asc") String sort
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            @Schema(description = "Start date for filtering orders (inclusive)", example = "2024-01-01")
+            LocalDate startDate,
+
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            @Schema(description = "End date for filtering orders (inclusive)", example = "2024-12-31")
+            LocalDate endDate,
+
+            @RequestParam(required = false)
+            @Schema(description = "ID of the customer to filter orders by", example = "123")
+            Long customerId,
+
+            @RequestParam(required = false)
+            @Schema(description = "ID of the employee to filter orders by", example = "45")
+            Long employeeId,
+
+            @RequestParam(required = false)
+            @Schema(description = "Status of the orders to filter by", example = "COMPLETED")
+            OrderStatus status,
+
+            @RequestParam(defaultValue = "0")
+            @Schema(description = "Page number for pagination (0-based)", example = "0")
+            int page,
+
+            @RequestParam(defaultValue = "10")
+            @Schema(description = "Number of orders per page", example = "10")
+            int size,
+
+            @RequestParam(defaultValue = "dateTime,asc")
+            @Schema(description = "Sorting criteria in the format 'field,direction'", example = "dateTime,asc")
+            String sort
     ) {
         Pageable pageable = PageRequest.of(page, size, sortUtils.buildSort(sort));
         Page<OrderResponseDTO> orders = orderService.getOrders(startDate, endDate, customerId, employeeId, status, pageable);
