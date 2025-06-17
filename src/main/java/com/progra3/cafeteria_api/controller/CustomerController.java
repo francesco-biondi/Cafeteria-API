@@ -45,13 +45,14 @@ public class CustomerController {
                     content = @Content(
                             schema = @Schema(implementation = CustomerRequestDTO.class),
                             examples = @ExampleObject(value = """
-                                    {
-                                      "firstName": "John",
-                                      "lastName": "Doe",
-                                      "email": "john.doe@example.com",
-                                      "phone": "123456789"
-                                    }
-                                    """)
+                                {
+                                  "name": "John",
+                                  "lastName": "Doe",
+                                  "dni": "12345678",
+                                  "phoneNumber": "541112345678",
+                                  "email": "john.doe@example.com"
+                                }
+                                """)
                     )
             )
             @Valid @RequestBody CustomerRequestDTO dto) {
@@ -103,11 +104,12 @@ public class CustomerController {
                     content = @Content(
                             schema = @Schema(implementation = CustomerUpdateDTO.class),
                             examples = @ExampleObject(value = """
-                                    {
-                                      "email": "new.email@example.com",
-                                      "phone": "987654321"
-                                    }
-                                    """)
+                                {
+                                  "email": "new.email@example.com",
+                                  "phoneNumber": "541198765432",
+                                  "discount": 15
+                                }
+                                """)
                     )
             )
             @Valid @RequestBody CustomerUpdateDTO dto) {
