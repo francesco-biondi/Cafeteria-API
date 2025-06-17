@@ -45,16 +45,16 @@ public class EmployeeController {
                     content = @Content(
                             schema = @Schema(implementation = EmployeeRequestDTO.class),
                             examples = @ExampleObject(value = """
-                                    {
-                                      "name": "Alice",
-                                      "lastName": "Smith",
-                                      "dni": "12345678",
-                                      "email": "alice.smith@example.com",
-                                      "phoneNumber": "1122334455",
-                                      "role": "WAITER",
-                                      "password": "securePassword"
-                                    }
-                                    """)
+                                {
+                                  "name": "Alice",
+                                  "lastName": "Smith",
+                                  "dni": "12345678",
+                                  "email": "alice.smith@example.com",
+                                  "phoneNumber": "541123456789",
+                                  "role": "WAITER",
+                                  "password": "securePassword"
+                                }
+                                """)
                     )
             )
             @RequestBody @Valid EmployeeRequestDTO dto) {
@@ -93,17 +93,18 @@ public class EmployeeController {
             @ApiResponse(responseCode = "200", description = "Filtered employees retrieved successfully",
                     content = @Content(mediaType = "application/json",
                             array = @ArraySchema(schema = @Schema(implementation = EmployeeResponseDTO.class)))),
+            @ApiResponse(responseCode = "400", description = "Invalid query parameters", content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     @GetMapping("/filter")
     public List<EmployeeResponseDTO> filterEmployees(
-            @Parameter(description = "Employee's first name") @RequestParam(required = false) String name,
-            @Parameter(description = "Employee's last name") @RequestParam(required = false) String lastName,
-            @Parameter(description = "Employee's DNI") @RequestParam(required = false) String dni,
-            @Parameter(description = "Employee's email") @RequestParam(required = false) String email,
-            @Parameter(description = "Employee's phone number") @RequestParam(required = false) String phoneNumber,
-            @Parameter(description = "Employee's role") @RequestParam(required = false) Role role,
-            @Parameter(description = "Filter by deleted status") @RequestParam(required = false) Boolean deleted
+            @Parameter(description = "First name of the employee to filter by (optional)") @RequestParam(required = false) String name,
+            @Parameter(description = "Last name of the employee to filter by (optional)") @RequestParam(required = false) String lastName,
+            @Parameter(description = "DNI of the employee to filter by (optional)") @RequestParam(required = false) String dni,
+            @Parameter(description = "Email of the employee to filter by (optional)") @RequestParam(required = false) String email,
+            @Parameter(description = "Phone number of the employee to filter by (optional)") @RequestParam(required = false) String phoneNumber,
+            @Parameter(description = "Role of the employee to filter by (optional)") @RequestParam(required = false) Role role,
+            @Parameter(description = "Filter by deleted status (optional)") @RequestParam(required = false) Boolean deleted
     ) {
         return employeeService.filterEmployees(name, lastName, dni, email, phoneNumber, role, deleted);
     }
@@ -125,11 +126,16 @@ public class EmployeeController {
                     content = @Content(
                             schema = @Schema(implementation = EmployeeUpdateDTO.class),
                             examples = @ExampleObject(value = """
-                                    {
-                                      "email": "new.email@example.com",
-                                      "phoneNumber": "1199887766"
-                                    }
-                                    """)
+                                {
+                                  "name": "John",
+                                  "lastName": "Doe",
+                                  "dni": "12345678",
+                                  "email": "new.email@example.com",
+                                  "phoneNumber": "541199887766",
+                                  "password": "newSecurePassword",
+                                  "role": "ADMIN"
+                                }
+                                """)
                     )
             )
             @RequestBody @Valid EmployeeUpdateDTO dto) {
