@@ -45,11 +45,10 @@ public class CategoryController {
                     content = @Content(
                             schema = @Schema(implementation = CategoryRequestDTO.class),
                             examples = @ExampleObject(value = """
-                                    {
-                                      "name": "Electronics",
-                                      "description": "Technology and devices"
-                                    }
-                                    """)
+                                {
+                                  "name": "Electronics"
+                                }
+                                """)
                     )
             )
             @RequestBody @Valid CategoryRequestDTO categoryRequestDTO) {
@@ -97,11 +96,10 @@ public class CategoryController {
                     content = @Content(
                             schema = @Schema(implementation = CategoryRequestDTO.class),
                             examples = @ExampleObject(value = """
-                                    {
-                                      "name": "Accessories",
-                                      "description": "Complementary items for other products"
-                                    }
-                                    """)
+                                {
+                                  "name": "Accessories"
+                                }
+                                """)
                     )
             )
             @RequestBody @Valid CategoryRequestDTO categoryRequestDTO) {
