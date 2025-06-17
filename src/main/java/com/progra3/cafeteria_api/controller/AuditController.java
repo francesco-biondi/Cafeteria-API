@@ -40,14 +40,10 @@ public class AuditController {
                     content = @Content(
                             schema = @Schema(implementation = AuditRequestDTO.class),
                             examples = @ExampleObject(value = """
-                                    {
-                                      "employeeId": 5,
-                                      "action": "MODIFY",
-                                      "entity": "Product",
-                                      "entityId": 12,
-                                      "description": "Updated product price"
-                                    }
-                                    """)
+                                {
+                                  "initialCash": 1000.0
+                                }
+                                """)
                     )
             )
             @Valid @RequestBody AuditRequestDTO dto) {
