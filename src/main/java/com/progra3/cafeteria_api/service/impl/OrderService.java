@@ -1,5 +1,7 @@
 package com.progra3.cafeteria_api.service.impl;
 
+import com.progra3.cafeteria_api.event.OrderCreatedEvent;
+import com.progra3.cafeteria_api.event.OrderFinalizedEvent;
 import com.progra3.cafeteria_api.exception.order.ItemNotFoundException;
 import com.progra3.cafeteria_api.exception.utilities.InvalidDateException;
 import com.progra3.cafeteria_api.exception.order.OrderModificationNotAllowedException;
@@ -21,6 +23,7 @@ import com.progra3.cafeteria_api.service.port.IOrderService;
 import com.progra3.cafeteria_api.service.helper.Constant;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -42,6 +45,7 @@ public class OrderService implements IOrderService {
     private final CustomerService customerService;
     private final SeatingService seatingService;
     private final ItemService itemService;
+    private final ApplicationEventPublisher eventPublisher;
 
     private final OrderMapper orderMapper;
     private final ItemMapper itemMapper;
@@ -136,8 +140,11 @@ public class OrderService implements IOrderService {
 
         order.setStatus(newStatus);
 
-        Order savedOrder = orderRepository.save(order);
-        return orderMapper.toDTO(savedOrder);
+        if (newStatus == OrderStatus.FINALIZED) {
+            eventPublisher.publishEvent(new OrderFinalizedEvent(order));
+        }
+
+        return orderMapper.toDTO(orderRepository.save(order));
     }
 
     @Transactional
@@ -259,6 +266,7 @@ public class OrderService implements IOrderService {
         order.setStatus(OrderStatus.ACTIVE);
         order.setSubtotal(Constant.ZERO_AMOUNT);
         order.setTotal(Constant.ZERO_AMOUNT);
+        eventPublisher.publishEvent(new OrderCreatedEvent(order));
 
         return order;
     }

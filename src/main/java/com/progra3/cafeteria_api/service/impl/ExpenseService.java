@@ -1,5 +1,6 @@
 package com.progra3.cafeteria_api.service.impl;
 
+import com.progra3.cafeteria_api.event.ExpenseCreatedEvent;
 import com.progra3.cafeteria_api.exception.expense.ExpenseNotFoundException;
 import com.progra3.cafeteria_api.exception.utilities.InvalidDateException;
 import com.progra3.cafeteria_api.exception.supplier.SupplierNotFoundException;
@@ -13,6 +14,7 @@ import com.progra3.cafeteria_api.repository.ExpenseRepository;
 import com.progra3.cafeteria_api.security.EmployeeContext;
 import com.progra3.cafeteria_api.service.port.IExpenseService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,8 @@ public class ExpenseService implements IExpenseService {
     private final EmployeeContext employeeContext;
     private final SupplierService supplierService;
 
+    private final ApplicationEventPublisher eventPublisher;
+
     private final ExpenseMapper expenseMapper;
 
     private final Clock clock;
@@ -42,6 +46,7 @@ public class ExpenseService implements IExpenseService {
         expense.setSupplier(supplier);
         expense.setBusiness(employeeContext.getCurrentBusiness());
         expense.setDateTime(LocalDateTime.now(clock));
+        eventPublisher.publishEvent(new ExpenseCreatedEvent(expense));
 
         return expenseMapper.toDTO(expenseRepository.save(expense));
     }

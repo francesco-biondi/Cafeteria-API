@@ -32,12 +32,10 @@ public class Audit{
     @Column(name = "real_cash", nullable = false)
     private Double realCash;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "audit_id")
+    @OneToMany(mappedBy = "audit", cascade = CascadeType.ALL)
     private List<Order> orders;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "audit_id")
+    @OneToMany(mappedBy = "audit", cascade = CascadeType.ALL)
     private List<Expense> expenses;
 
     @Enumerated(EnumType.STRING)

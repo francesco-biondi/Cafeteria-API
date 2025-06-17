@@ -1,5 +1,6 @@
 package com.progra3.cafeteria_api.controller;
 
+import com.progra3.cafeteria_api.model.dto.AuditFinalizeRequestDTO;
 import com.progra3.cafeteria_api.service.helper.SortUtils;
 import com.progra3.cafeteria_api.model.dto.AuditRequestDTO;
 import com.progra3.cafeteria_api.model.dto.AuditResponseDTO;
@@ -112,10 +113,22 @@ public class AuditController {
             @ApiResponse(responseCode = "404", description = "Audit not found", content = @Content)
     })
     @PreAuthorize("hasAnyRole('OWNER', 'ADMIN', 'CASHIER')")
-    @PatchMapping("/{id}")
+    @PatchMapping("/{id}/finalize")
     public ResponseEntity<AuditResponseDTO> finalizeAudit(
-            @Parameter(description = "ID of the audit to finalize") @PathVariable Long id) {
-        return ResponseEntity.ok(auditService.finalize(id));
+            @Parameter(description = "ID of the audit to finalize") @PathVariable Long id,
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Audit data to finalize",
+                    required = true,
+                    content = @Content(
+                            schema = @Schema(implementation = AuditFinalizeRequestDTO.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "realCash": 150000.0
+                                    }
+                                    """)
+                    )
+            ) @Valid @RequestBody AuditFinalizeRequestDTO dto) {
+        return ResponseEntity.ok(auditService.finalize(id, dto));
     }
 
 

@@ -1,6 +1,7 @@
 package com.progra3.cafeteria_api.repository;
 
 import com.progra3.cafeteria_api.model.entity.Audit;
+import com.progra3.cafeteria_api.model.enums.AuditStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,7 +13,7 @@ import java.util.Optional;
 
 @Repository
 public interface AuditRepository extends JpaRepository<Audit, Long> {
-    Optional<Audit> findTopByBusiness_IdOrderByIdDesc(Long business_id);
+    Optional<Audit> findByBusiness_IdAndAuditStatus(Long business_id, AuditStatus status);
 
     @Query("SELECT a FROM Audit a WHERE " +
             "a.business.id = :businessId AND " +
