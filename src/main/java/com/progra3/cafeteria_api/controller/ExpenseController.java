@@ -36,7 +36,7 @@ public class ExpenseController {
 
     private final SortUtils sortUtils;
 
-    @Operation(summary = "Create a new expense", description = "Registers a new expense in the system")
+    @Operation(summary = "Create a new expense", description = "Registers a new expense in the system, including supplier, amount, and optional comment.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Expense created successfully",
                     content = @Content(mediaType = "application/json",
@@ -48,17 +48,17 @@ public class ExpenseController {
     @PostMapping
     public ResponseEntity<ExpenseResponseDTO> createExpense(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "Expense data to create",
+                    description = "Expense data to create, including supplier ID, amount, and optional comment.",
                     required = true,
                     content = @Content(
                             schema = @Schema(implementation = ExpenseRequestDTO.class),
                             examples = @ExampleObject(value = """
-                                    {
-                                      "description": "Office supplies",
-                                      "amount": 1500.00,
-                                      "date": "2025-06-14"
-                                    }
-                                    """)
+                                {
+                                  "supplierId": 12,
+                                  "amount": 1500.50,
+                                  "comment": "Office supplies purchase"
+                                }
+                                """)
                     )
             )
             @RequestBody @Valid ExpenseRequestDTO dto) {
@@ -68,25 +68,44 @@ public class ExpenseController {
                 .body(responseDTO);
     }
 
-    @Operation(summary = "Get all expenses", description = "Retrieves a list of all registered expenses")
+    @Operation(
+            summary = "Get all expenses",
+            description = "Retrieves a paginated list of expenses, optionally filtered by supplier, amount range, or date range."
+    )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Expenses retrieved successfully",
                     content = @Content(mediaType = "application/json",
                             array = @ArraySchema(schema = @Schema(implementation = ExpenseResponseDTO.class)))),
+            @ApiResponse(responseCode = "400", description = "Invalid request parameters", content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     @PreAuthorize("hasAnyRole('OWNER', 'ADMIN', 'CASHIER')")
     @GetMapping
     public ResponseEntity<Page<ExpenseResponseDTO>> getExpenses(
+            @Parameter(description = "Filter by supplier ID (optional)", example = "12")
             @RequestParam(required = false) Long supplierId,
+
+            @Parameter(description = "Minimum amount for filtering expenses (optional)", example = "100.00")
             @RequestParam(required = false) Double minAmount,
+
+            @Parameter(description = "Maximum amount for filtering expenses (optional)", example = "5000.00")
             @RequestParam(required = false) Double maxAmount,
+
+            @Parameter(description = "Start date for filtering expenses (optional, ISO 8601 format)", example = "2025-01-01T00:00:00")
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+
+            @Parameter(description = "End date for filtering expenses (optional, ISO 8601 format)", example = "2025-12-31T23:59:59")
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
+
+            @Parameter(description = "Page number for pagination (default is 0)", example = "0")
             @RequestParam(defaultValue = "0") int page,
+
+            @Parameter(description = "Number of records per page (default is 10)", example = "10")
             @RequestParam(defaultValue = "10") int size,
+
+            @Parameter(description = "Sorting criteria in the format 'field,direction' (default is 'dateTime,asc')", example = "dateTime,asc")
             @RequestParam(defaultValue = "dateTime,asc") String sort
-    ){
+    ) {
         Pageable pageable = PageRequest.of(page, size, sortUtils.buildSort(sort));
         Page<ExpenseResponseDTO> expenses = expenseService.getExpenses(supplierId, minAmount, maxAmount, startDate, endDate, pageable);
         return ResponseEntity.ok(expenses);
@@ -124,11 +143,12 @@ public class ExpenseController {
                     content = @Content(
                             schema = @Schema(implementation = ExpenseUpdateDTO.class),
                             examples = @ExampleObject(value = """
-                                    {
-                                      "description": "Updated office supplies",
-                                      "amount": 1800.00
-                                    }
-                                    """)
+                                {
+                                  "supplierId": 15,
+                                  "amount": 1800.00,
+                                  "comment": "Updated office supplies purchase"
+                                }
+                                """)
                     )
             )
             @RequestBody @Valid ExpenseUpdateDTO dto) {

@@ -50,14 +50,10 @@ public class AuditController {
                     content = @Content(
                             schema = @Schema(implementation = AuditRequestDTO.class),
                             examples = @ExampleObject(value = """
-                                    {
-                                      "employeeId": 5,
-                                      "action": "MODIFY",
-                                      "entity": "Product",
-                                      "entityId": 12,
-                                      "description": "Updated product price"
-                                    }
-                                    """)
+                                {
+                                  "initialCash": 1000.0
+                                }
+                                """)
                     )
             )
             @Valid @RequestBody AuditRequestDTO dto) {
@@ -67,22 +63,75 @@ public class AuditController {
     }
 
 
-    @Operation(summary = "Get all audits", description = "Returns a list of all audit entries")
+    @Operation(
+            summary = "Get all audits",
+            description = "Retrieves a paginated list of all audit entries. Supports filtering by start and end dates, and sorting by specific fields."
+    )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Audit list retrieved successfully",
-                    content = @Content(mediaType = "application/json",
-                            array = @ArraySchema(schema = @Schema(implementation = AuditResponseDTO.class)))),
-            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Audit list retrieved successfully",
+                    content = @Content(
+                            mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = AuditResponseDTO.class)),
+                            examples = @ExampleObject(value = """
+                {
+                  "content": [
+                    {
+                      "id": 1,
+                      "startTime": "2025-06-14T10:15:30",
+                      "closeTime": "2025-06-14T18:00:00",
+                      "initialCash": 1000.0,
+                      "orders": [],
+                      "expenses": [],
+                      "auditStatus": "OPEN",
+                      "totalExpensed": 500.0,
+                      "total": 1500.0,
+                      "balanceGap": 0.0,
+                      "deleted": false
+                    }
+                  ],
+                  "pageable": {
+                    "pageNumber": 0,
+                    "pageSize": 10
+                  },
+                  "totalElements": 1,
+                  "totalPages": 1
+                }
+                """)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content
+            )
     })
     @PreAuthorize("hasAnyRole('OWNER', 'ADMIN', 'CASHIER')")
     @GetMapping
     public ResponseEntity<Page<AuditResponseDTO>> getAudits(
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "closeTime,asc") String sort
-    ){
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            @Parameter(description = "Filter audits starting from this date (inclusive). Format: yyyy-MM-dd")
+            LocalDate startDate,
+
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            @Parameter(description = "Filter audits ending at this date (inclusive). Format: yyyy-MM-dd")
+            LocalDate endDate,
+
+            @RequestParam(defaultValue = "0")
+            @Parameter(description = "Page number for pagination. Default is 0.")
+            int page,
+
+            @RequestParam(defaultValue = "10")
+            @Parameter(description = "Number of items per page. Default is 10.")
+            int size,
+
+            @RequestParam(defaultValue = "closeTime,asc")
+            @Parameter(description = "Sorting criteria in the format 'field,direction'. Default is 'closeTime,asc'.")
+            String sort
+    ) {
         Pageable pageable = PageRequest.of(page, size, sortUtils.buildSort(sort));
         Page<AuditResponseDTO> audits = auditService.getAudits(startDate, endDate, pageable);
         return ResponseEntity.ok(audits);

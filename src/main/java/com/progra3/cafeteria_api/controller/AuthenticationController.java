@@ -43,11 +43,11 @@ public class AuthenticationController {
                     content = @Content(
                             schema = @Schema(implementation = LoginRequestDTO.class),
                             examples = @ExampleObject(value = """
-                                    {
-                                      "username": "admin",
-                                      "password": "1234"
-                                    }
-                                    """)
+                                {
+                                  "username": "admin",
+                                  "password": "MySecret123"
+                                }
+                                """)
                     )
             )
             @Valid @RequestBody LoginRequestDTO requestDTO) {
