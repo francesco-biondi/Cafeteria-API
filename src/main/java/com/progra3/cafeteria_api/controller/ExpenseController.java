@@ -45,12 +45,12 @@ public class ExpenseController {
                     content = @Content(
                             schema = @Schema(implementation = ExpenseRequestDTO.class),
                             examples = @ExampleObject(value = """
-                                    {
-                                      "description": "Office supplies",
-                                      "amount": 1500.00,
-                                      "date": "2025-06-14"
-                                    }
-                                    """)
+                                {
+                                  "supplierId": 12,
+                                  "amount": 1500.50,
+                                  "comment": "Office supplies purchase"
+                                }
+                                """)
                     )
             )
             @RequestBody @Valid ExpenseRequestDTO dto) {
@@ -102,11 +102,12 @@ public class ExpenseController {
                     content = @Content(
                             schema = @Schema(implementation = ExpenseUpdateDTO.class),
                             examples = @ExampleObject(value = """
-                                    {
-                                      "description": "Updated office supplies",
-                                      "amount": 1800.00
-                                    }
-                                    """)
+                                {
+                                  "supplierId": 15,
+                                  "amount": 1800.00,
+                                  "comment": "Updated office supplies"
+                                }
+                                """)
                     )
             )
             @RequestBody @Valid ExpenseUpdateDTO dto) {
